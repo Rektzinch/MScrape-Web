@@ -16,6 +16,8 @@ npm run dev
 
 Tidak ada environment variable wajib. Route `POST /api/scrape` membuat satu request server ke Google Maps dan mengembalikan 30–50 tempat nyata secara sinkron. Fetch memakai `cache: "no-store"`; route juga mengirim `Cache-Control: no-store`.
 
+Jika host utama Google gagal, terkena rate limit, atau mengembalikan format yang tidak dapat dibaca, route mencoba host pencarian Google cadangan di dalam request pengguna yang sama.
+
 ## Backend Google Maps DOM opsional
 
 Backend scraper memakai browser automation sehingga dijalankan terpisah dari Vercel. Opsi termudah adalah Docker Web API:

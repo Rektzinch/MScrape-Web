@@ -125,31 +125,51 @@ function parseGoogleResponse(raw: string, limit: number) {
 }
 
 export async function searchGoogleMapsLive(input: SearchInput) {
-  const baseUrl = (
-    process.env.GOOGLE_MAPS_SEARCH_URL || "https://maps.google.com/search"
-  ).replace(/\/+$/, "");
+  const configuredUrl = process.env.GOOGLE_MAPS_SEARCH_URL?.replace(/\/+$/, "");
+  const baseUrls = configuredUrl
+    ? [configuredUrl]
+    : ["https://maps.google.com/search", "https://www.google.com/search"];
   const limit = Math.min(Math.max(input.limit, 30), 50);
-  const response = await fetch(`${baseUrl}?${buildParams(input)}`, {
-    cache: "no-store",
-    headers: {
-      Accept: "application/json, text/plain, */*",
-      "Accept-Language": `${input.lang},en;q=0.8`,
-      Referer: "https://www.google.com/maps/",
-      "User-Agent":
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 " +
-        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    },
-    signal: AbortSignal.timeout(25_000),
-  });
+  let lastError: unknown;
 
-  if (!response.ok) {
-    throw new Error(`Google Maps merespons dengan status ${response.status}.`);
+  for (const [index, baseUrl] of baseUrls.entries()) {
+    try {
+      const response = await fetch(`${baseUrl}?${buildParams(input)}`, {
+        cache: "no-store",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Accept-Language": `${input.lang},en;q=0.8`,
+          Referer: "https://www.google.com/maps/",
+          "User-Agent":
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 " +
+            "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        },
+        signal: AbortSignal.timeout(20_000),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Google Maps merespons dengan status ${response.status}.`);
+      }
+
+      const results = parseGoogleResponse(await response.text(), limit);
+      if (results.length === 0) {
+        throw new Error(
+          "Google Maps tidak mengembalikan tempat untuk pencarian ini.",
+        );
+      }
+
+      return results;
+    } catch (error) {
+      lastError = error;
+      if (index < baseUrls.length - 1) {
+        console.warn("[google-maps-live] retrying fallback host", {
+          message: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
   }
 
-  const results = parseGoogleResponse(await response.text(), limit);
-  if (results.length === 0) {
-    throw new Error("Google Maps tidak mengembalikan tempat untuk pencarian ini.");
-  }
-
-  return results;
+  throw lastError instanceof Error
+    ? lastError
+    : new Error("Google Maps tidak dapat dijangkau.");
 }
