@@ -20,7 +20,7 @@ export default function ProduksiPage() {
             </div>
             <p>
               Tentukan niche dan wilayah. Pro menerima jumlah manual hingga 250; Max menerima
-              angka tanpa batas preset atau seluruh hasil yang tersedia dari sumber.
+              hingga 500 hasil per scan. Status hasil selalu menjelaskan bila sumber atau batas proses menghentikan pengambilan.
             </p>
           </div>
         </section>

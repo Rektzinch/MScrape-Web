@@ -4,6 +4,7 @@ import { type FormEvent, useCallback, useDeferredValue, useEffect, useMemo, useR
 import type { LeadRow } from "@/lib/leads";
 import { ALL_RESULTS_LIMIT, NUMERIC_LIMITS, planAccess, type PlanAccess, type ResultLimit } from "@/lib/plans";
 import { SearchableCombobox, type ComboboxOption } from "./searchable-combobox";
+import { Turnstile } from "./turnstile";
 
 type ApiState = {
   checked: boolean;
@@ -12,6 +13,12 @@ type ApiState = {
   mode: "web" | "queue" | "google-live" | null;
   access: PlanAccess;
   activationAvailable: boolean;
+  turnstileSiteKey: string | null;
+};
+
+type SearchCompletion = {
+  isComplete: boolean;
+  stoppedReason: "limit-reached" | "source-exhausted" | "time-budget";
 };
 
 type JobState = {
@@ -19,6 +26,7 @@ type JobState = {
   status: "pending" | "running" | "completed" | "failed";
   resultCount: number | null;
   rows: LeadRow[];
+  completion: SearchCompletion | null;
   downloadReady: boolean;
   fetchedAt: string | null;
   keyword: string;
@@ -46,6 +54,7 @@ const initialApiState: ApiState = {
   mode: null,
   access: planAccess("free"),
   activationAvailable: false,
+  turnstileSiteKey: null,
 };
 
 const websiteOptions: ComboboxOption[] = [
@@ -110,6 +119,13 @@ function accessLimitLabel(limit: ResultLimit) {
   return limit === ALL_RESULTS_LIMIT ? "semua hasil yang tersedia" : `hingga ${limit} hasil`;
 }
 
+function completionLabel(completion: SearchCompletion | null) {
+  if (!completion) return "Kelengkapan hasil akan dilaporkan oleh backend bila tersedia.";
+  if (completion.stoppedReason === "source-exhausted") return "Sumber tidak mengembalikan halaman tambahan; hasil saat ini lengkap menurut sumber.";
+  if (completion.stoppedReason === "limit-reached") return "Batas hasil scan telah tercapai; sumber mungkin masih memiliki bisnis tambahan.";
+  return "Batas waktu scan tercapai; hasil mungkin parsial. Persempit niche atau wilayah untuk hasil yang lebih lengkap.";
+}
+
 function licenseDateLabel(value: string | null) {
   if (!value) return "—";
   return new Intl.DateTimeFormat("id-ID", {
@@ -135,6 +151,8 @@ export function ScrapeConsole() {
   const [resultQuery, setResultQuery] = useState("");
   const [resultPage, setResultPage] = useState(1);
   const [manualLimit, setManualLimit] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileNonce, setTurnstileNonce] = useState(0);
   const activationRef = useRef<HTMLInputElement>(null);
   const noticeId = useRef(0);
   const toastTimer = useRef<number | null>(null);
@@ -172,7 +190,7 @@ export function ScrapeConsole() {
 
   useEffect(() => {
     setManualLimit("");
-    setLimit(api.access.tier === "max" ? ALL_RESULTS_LIMIT : 10);
+    setLimit(api.access.tier === "max" ? api.access.maxLimit : 10);
   }, [api.access.tier]);
 
   useEffect(() => {
@@ -193,7 +211,7 @@ export function ScrapeConsole() {
         const response = await fetch(`/api/jobs/${encodeURIComponent(job.id)}`, { cache: "no-store" });
         const data = (await response.json()) as {
           status?: JobState["status"]; resultCount?: number | null; results?: LeadRow[];
-          downloadReady?: boolean; error?: string | null; message?: string;
+          completion?: SearchCompletion; downloadReady?: boolean; error?: string | null; message?: string;
         };
         if (!response.ok) throw new Error(data.message || "Status job gagal dibaca.");
         if (!alive || !data.status) return;
@@ -202,6 +220,7 @@ export function ScrapeConsole() {
           status: data.status!,
           resultCount: data.resultCount ?? null,
           rows: Array.isArray(data.results) ? data.results : [],
+          completion: data.completion ?? current.completion,
           downloadReady: data.downloadReady === true,
           fetchedAt: data.status === "completed" && !current.fetchedAt ? new Date().toISOString() : current.fetchedAt,
         } : current);
@@ -269,11 +288,14 @@ export function ScrapeConsole() {
       ? "Masukkan bilangan bulat lebih dari 0."
       : api.access.tier === "pro" && Number(manualLimitNumber) > 250
         ? "Tier Pro menerima maksimal 250 hasil."
-        : "";
+        : api.access.tier === "max" && Number(manualLimitNumber) > 500
+          ? "Tier Max menerima maksimal 500 hasil per scan."
+          : "";
   const requestedLimit: ResultLimit = api.access.tier === "free" ? 10
     : hasManualLimit && !manualLimitError ? Number(manualLimitNumber)
-      : api.access.tier === "max" ? ALL_RESULTS_LIMIT : limit;
-  const canSubmit = api.reachable && !submitting && !active && remainingSeconds === 0 && !manualLimitError;
+      : api.access.tier === "max" ? api.access.maxLimit : limit;
+  const challengeRequired = api.access.tier === "free" && Boolean(api.turnstileSiteKey);
+  const canSubmit = api.reachable && !submitting && !active && remainingSeconds === 0 && !manualLimitError && (!challengeRequired || Boolean(turnstileToken));
 
   const limitOptions = useMemo<ComboboxOption[]>(() => {
     if (api.access.tier === "max") return [];
@@ -388,7 +410,7 @@ export function ScrapeConsole() {
     const form = new FormData(event.currentTarget);
     const keyword = String(form.get("keyword") || "");
     const city = String(form.get("city") || "");
-    const payload = { keyword, city, country: form.get("country"), lang: form.get("lang"), limit: requestedLimit, email: true };
+    const payload = { keyword, city, country: form.get("country"), lang: form.get("lang"), limit: requestedLimit, email: true, turnstileToken };
     notify("Scan dimulai", `${keyword} di ${city} sedang dipindai dengan batas ${resultLimitLabel(requestedLimit).toLocaleLowerCase("id")}.`);
     try {
       const response = await fetch("/api/scrape", {
@@ -398,7 +420,7 @@ export function ScrapeConsole() {
       });
       const data = (await response.json()) as {
         jobId?: string; status?: JobState["status"]; resultCount?: number | null; results?: LeadRow[];
-        downloadReady?: boolean; fetchedAt?: string; message?: string; access?: PlanAccess;
+        completion?: SearchCompletion; downloadReady?: boolean; fetchedAt?: string; message?: string; access?: PlanAccess;
       };
       if (data.access) setApi((current) => ({ ...current, access: data.access! }));
       if (!response.ok || !data.jobId) throw new Error(messageFrom(data, "Job tidak dapat dibuat."));
@@ -407,6 +429,7 @@ export function ScrapeConsole() {
         status: data.status === "completed" ? "completed" : data.status === "running" ? "running" : "pending",
         resultCount: data.resultCount ?? null,
         rows: Array.isArray(data.results) ? data.results : [],
+        completion: data.completion ?? null,
         downloadReady: data.downloadReady === true,
         fetchedAt: data.fetchedAt || null,
         keyword,
@@ -425,6 +448,10 @@ export function ScrapeConsole() {
       notify("Scan gagal dimulai", failure, "error");
     } finally {
       setSubmitting(false);
+      if (challengeRequired) {
+        setTurnstileToken("");
+        setTurnstileNonce((nonce) => nonce + 1);
+      }
     }
   }
 
@@ -513,9 +540,16 @@ export function ScrapeConsole() {
           {api.access.tier !== "free" ? (
             <label className={`field custom-limit${api.access.tier === "max" ? " field--wide" : ""}`}>
               <span>Jumlah hasil custom · {api.access.label}</span>
-              <input type="number" min="1" max={api.access.tier === "pro" ? 250 : undefined} step="1" inputMode="numeric" value={manualLimit} onChange={(event) => setManualLimit(event.target.value)} placeholder={api.access.tier === "pro" ? "Opsional · maksimal 250" : "Kosong = semua hasil"} aria-label={`Jumlah hasil custom untuk tier ${api.access.label}`} aria-invalid={Boolean(manualLimitError)} aria-describedby="manual-limit-help" />
-              <small className="field__hint" id="manual-limit-help">{manualLimitError || (api.access.tier === "pro" ? "Kosongkan untuk memakai preset batas hasil." : "Kosongkan untuk mengambil semua bisnis yang cocok di area.")}</small>
+              <input type="number" min="1" max={api.access.tier === "pro" ? 250 : 500} step="1" inputMode="numeric" value={manualLimit} onChange={(event) => setManualLimit(event.target.value)} placeholder={api.access.tier === "pro" ? "Opsional · maksimal 250" : "Opsional · maksimal 500"} aria-label={`Jumlah hasil custom untuk tier ${api.access.label}`} aria-invalid={Boolean(manualLimitError)} aria-describedby="manual-limit-help" />
+              <small className="field__hint" id="manual-limit-help">{manualLimitError || (api.access.tier === "pro" ? "Kosongkan untuk memakai preset batas hasil." : "Kosongkan untuk memakai batas maksimal 500 hasil per scan.")}</small>
             </label>
+          ) : null}
+          {challengeRequired && api.turnstileSiteKey ? (
+            <div className="field field--wide turnstile-field">
+              <span>Verifikasi keamanan</span>
+              <Turnstile key={turnstileNonce} siteKey={api.turnstileSiteKey} onToken={setTurnstileToken} />
+              <small className="field__hint">Selesaikan verifikasi sebelum menjalankan scan Free.</small>
+            </div>
           ) : null}
           <button className="button button--primary field--wide" type="submit" disabled={!canSubmit} data-state={submitting ? "loading" : error ? "error" : job?.status === "completed" ? "success" : "default"}>
             <span>{submitting ? "Memindai Google Maps" : active ? "Menunggu hasil" : remainingSeconds > 0 ? `Tunggu ${countdownLabel(remainingSeconds)}` : !api.reachable ? "API belum terhubung" : job?.status === "completed" ? "Pindai wilayah baru" : error ? "Coba lagi" : "Mulai scan"}</span>
@@ -537,7 +571,7 @@ export function ScrapeConsole() {
         </div>
 
         <dl className="result-facts" aria-label="Ringkasan hasil"><div><dt>Diterima</dt><dd>{sourceRows.length || "—"}</dd></div><div><dt>Tanpa website</dt><dd>{sourceRows.length ? missingWebsiteCount : "—"}</dd></div><div><dt>Punya nomor</dt><dd>{sourceRows.length ? contactableWithoutWebsiteCount : "—"}</dd></div></dl>
-        <p className="results__captured">{job?.fetchedAt ? `Diambil ${new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short" }).format(new Date(job.fetchedAt))} · ${emailCount} baris memiliki email.` : "Waktu pengambilan dan jumlah email akan dicatat setelah scan selesai."}</p>
+        <p className="results__captured">{job?.fetchedAt ? `Diambil ${new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short" }).format(new Date(job.fetchedAt))} · ${emailCount} baris memiliki email. ${completionLabel(job.completion)}` : "Waktu pengambilan dan jumlah email akan dicatat setelah scan selesai."}</p>
         {job?.status === "completed" && sourceRows.length === 0 ? <div className="results-empty"><h3>Tidak ada baris yang dikembalikan.</h3><p>Ubah niche atau perluas wilayah, lalu jalankan scan baru.</p></div> : null}
         {sourceRows.length > 0 && visibleRows.length === 0 ? <div className="results-empty"><h3>Tidak ada bisnis pada filter ini.</h3><p>Ganti filter website untuk melihat baris lain dari request yang sama.</p></div> : null}
 

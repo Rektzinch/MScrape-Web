@@ -83,7 +83,7 @@ const pricing = [
     tier: "Max",
     price: "Rp175.000",
     term: "/ bulan",
-    capacity: "Semua hasil / jumlah manual",
+    capacity: "Hingga 500 hasil per scan",
     cooldown: "Tanpa cooldown",
     cta: "Beli Max via WhatsApp ↗",
     href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Max 1 bulan seharga Rp175.000.")}`,
