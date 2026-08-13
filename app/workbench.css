@@ -1583,12 +1583,16 @@
 }
 
 .production-page .result-facts > div {
-  padding-block: var(--space-md);
+  padding: var(--space-md);
   border-bottom: var(--rule-hair) solid color-mix(in oklch, var(--color-ink) 24%, var(--color-transparent));
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: baseline;
   gap: var(--space-md);
+}
+
+.production-page .result-facts > div:last-child {
+  border-bottom: 0;
 }
 
 .production-page .result-facts dd {
@@ -2067,6 +2071,7 @@
 
   .production-page .result-facts > div {
     padding-inline: var(--space-md);
+    border-bottom: 0;
     border-inline-end: var(--rule-hair) solid var(--color-rule);
   }
 
@@ -2149,7 +2154,7 @@
   }
 
   .production-page .results__head {
-    grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.55fr);
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .production-page .results__actions {
