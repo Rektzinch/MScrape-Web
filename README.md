@@ -20,7 +20,7 @@ akan meminta kode aktivasi yang dibeli dari admin.
 | Tier | Harga | Batas hasil | Cooldown |
 | --- | --- | --- | --- |
 | Free | Rp0 | 10 | 5 menit |
-| Pro | Rp27.000 / 3 bulan | 10, 50, 75, 100 | 30 detik |
+| Pro | Rp27.000 / 3 bulan | 10, 50, 75, 100 | 15 detik |
 | Max | Rp55.000 / 3 bulan | 10, 50, 75, 100, 150, 250, 500 | Tanpa cooldown |
 
 API memvalidasi tier, tanggal kedaluwarsa, dan cooldown di server. Saat kode

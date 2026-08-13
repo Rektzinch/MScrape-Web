@@ -40,7 +40,11 @@ function signedNextAllowedAt(request: Request, key: string) {
   if (!secret || !raw) return 0;
 
   const [cookieKey, timestamp, suppliedSignature] = raw.split("|");
-  if (cookieKey !== key || !/^\d+$/.test(timestamp) || !suppliedSignature) return 0;
+  // Mobile browsers replace their User-Agent in desktop-site mode. Keep the
+  // signed Free cooldown attached to the browser cookie across that switch.
+  const compatibleKey = cookieKey === key
+    || (key.startsWith("free:") && cookieKey?.startsWith("free:"));
+  if (!compatibleKey || !/^\d+$/.test(timestamp) || !suppliedSignature) return 0;
   const expectedSignature = createHmac("sha256", secret)
     .update(`${cookieKey}|${timestamp}`)
     .digest("hex")

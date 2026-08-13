@@ -6,11 +6,11 @@ import "./workbench.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "MScrape — Temukan bisnis tanpa website",
+    default: "MScrape — Data bisnis lokal siap kerja",
     template: "%s — MScrape",
   },
   description:
-    "Pindai Google Maps secara live, saring bisnis tanpa website, dan ekspor lead yang rapi ke CSV.",
+    "Pindai Google Maps secara live, saring data bisnis lokal, dan ekspor hasil yang rapi ke CSV.",
 };
 
 export const viewport: Viewport = {

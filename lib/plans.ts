@@ -29,7 +29,7 @@ export const PLAN_RULES: Record<
     label: "Pro",
     maxLimit: 100,
     allowedLimits: [10, 50, 75, 100],
-    cooldownSeconds: 30,
+    cooldownSeconds: 15,
   },
   max: {
     tier: "max",

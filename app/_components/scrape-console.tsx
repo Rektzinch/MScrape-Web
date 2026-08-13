@@ -247,7 +247,7 @@ export function ScrapeConsole() {
 
   const limitOptions = useMemo<ComboboxOption[]>(() => ALL_LIMITS.map((value) => {
     const requiredTier = value === 10 ? "Free" : value <= 100 ? "Pro" : "Max";
-    const cooldown = value === 10 ? "5 menit" : value <= 100 ? "30 detik" : "tanpa cooldown";
+    const cooldown = value === 10 ? "5 menit" : value <= 100 ? "15 detik" : "tanpa cooldown";
     return {
       value: String(value),
       label: `${value} hasil`,

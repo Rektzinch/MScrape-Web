@@ -53,23 +53,31 @@ cobalt, gradient hero, atau warna inline di luar token.
   motion. `prefers-reduced-motion` mematikan motion spasial.
 - Aksi operasional memberi feedback inline, lalu dicatat pada badge aktivitas;
   snackbar dipakai untuk hasil async, kegagalan, aktivasi, dan ekspor.
+- Dashboard memakai fade masuk/keluar progresif hanya pada scene utama ketika
+  melewati viewport; mode reduced-motion menjadikannya statis.
 - Semua target sentuh minimal 44 px dan label klik tidak boleh membungkus.
 
 ## Model akses
 
 - Free: 10 hasil, cooldown 300 detik.
-- Pro: 10/50/75/100 hasil, cooldown 30 detik.
+- Pro: 10/50/75/100 hasil, cooldown 15 detik.
 - Max: 10/50/75/100/150/250/500 hasil, tanpa cooldown.
 - Kode aktivasi diverifikasi server dan disimpan dalam cookie HttpOnly,
   SameSite=Lax. Sesi Pro/Max kedaluwarsa tiga bulan sejak kode diredeem.
   API tetap melakukan enforcement walaupun UI dimanipulasi.
 - Harga Dashboard: Free Rp0; Pro Rp27.000 / 3 bulan; Max Rp55.000 / 3 bulan.
+- Harga ditempatkan langsung setelah hero sebagai rail kartu horizontal dengan
+  scroll-snap; kartu berikutnya tetap terlihat sebagian di mobile dan setiap
+  tier memiliki CTA yang jelas.
 - Pembelian diarahkan ke admin melalui `https://wa.me/6285111349699`.
+- Cooldown Free tetap mengikuti cookie browser ketika smartphone berpindah
+  antara mode situs mobile dan desktop.
 
 ## Per halaman
 
 - Dashboard boleh memakai teks, satu gambar produk, satu video produk, pola
-  koordinat, ikon garis custom, dan satu entrance animation.
+  survey-grid koordinat, ikon garis custom, satu entrance animation, dan scene
+  fade berbasis scroll.
 - Produksi tidak boleh memuat gambar/video Dashboard atau footer statement.
 - Keduanya berbagi wordmark, header, tombol lintas halaman, tokens, font, focus
   ring, dan bahasa rule.

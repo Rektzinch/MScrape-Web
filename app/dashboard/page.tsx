@@ -26,7 +26,7 @@ const specifications = [
   ["Pengambilan", "Live request", "Cache-Control: no-store"],
   ["Cakupan", "10 hingga 500 tempat", "Bergantung tier"],
   ["Akses", "Kode aktivasi", "Tanpa login · aktif 3 bulan sejak redeem"],
-  ["Jeda", "5 menit / 30 detik / tanpa cooldown", "Free / Pro / Max"],
+  ["Jeda", "5 menit / 15 detik / tanpa cooldown", "Free / Pro / Max"],
   ["Kolom kosong", "Dipertahankan kosong", "Tidak ditebak"],
   ["Mode backend", "Google live / web / queue", "Bergantung konfigurasi"],
 ];
@@ -56,25 +56,37 @@ const adminWhatsapp = "https://wa.me/6285111349699";
 
 const pricing = [
   {
+    code: "01 / FREE",
     tier: "Free",
     price: "Rp0",
-    term: "aktif otomatis",
-    detail: "10 hasil · jeda 5 menit / request",
-    cta: null,
+    term: "selamanya",
+    capacity: "10 hasil",
+    cooldown: "Jeda 5 menit / request",
+    cta: "Mulai Free →",
+    href: "/produksi",
+    external: false,
   },
   {
+    code: "02 / PRO",
     tier: "Pro",
     price: "Rp27.000",
     term: "/ 3 bulan",
-    detail: "Hingga 100 hasil · jeda 30 detik / request",
-    cta: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Pro 3 bulan seharga Rp27.000.")}`,
+    capacity: "Hingga 100 hasil",
+    cooldown: "Jeda 15 detik / request",
+    cta: "Beli Pro via WhatsApp ↗",
+    href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Pro 3 bulan seharga Rp27.000.")}`,
+    external: true,
   },
   {
+    code: "03 / MAX",
     tier: "Max",
     price: "Rp55.000",
     term: "/ 3 bulan",
-    detail: "Hingga 500 hasil · tanpa cooldown",
-    cta: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Max 3 bulan seharga Rp55.000.")}`,
+    capacity: "Hingga 500 hasil",
+    cooldown: "Tanpa cooldown",
+    cta: "Beli Max via WhatsApp ↗",
+    href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Max 3 bulan seharga Rp55.000.")}`,
+    external: true,
   },
 ] as const;
 
@@ -96,7 +108,7 @@ export default function DashboardPage() {
         <section className="dashboard-hero wb-shell" aria-labelledby="dashboard-title">
           <div className="dashboard-hero__copy wb-reveal" style={{ "--reveal-index": 0 } as React.CSSProperties}>
             <p className="dashboard-kicker">Google Maps live · no-store</p>
-            <h1 id="dashboard-title">Cari bisnis yang belum punya website.</h1>
+            <h1 id="dashboard-title">Dari pencarian lokal ke data siap kerja.</h1>
             <p className="dashboard-hero__lede">
               MScrape mengubah satu niche dan satu wilayah menjadi daftar bisnis yang dapat
               diperiksa, difilter, lalu dibawa ke CSV tanpa mengisi celah data dengan tebakan.
@@ -145,7 +157,55 @@ export default function DashboardPage() {
           </figure>
         </section>
 
-        <section className="dashboard-essay wb-shell" aria-labelledby="essay-title">
+        <section className="dashboard-pricing" aria-labelledby="pricing-title">
+          <div className="dashboard-pricing__inner wb-shell dashboard-scroll-scene">
+            <header className="dashboard-pricing__head">
+              <div>
+                <p className="dashboard-pricing__kicker">Harga akses · Pro/Max aktif 3 bulan</p>
+                <h2 id="pricing-title">Pilih kapasitas sebelum mulai scan.</h2>
+              </div>
+              <div className="dashboard-pricing__intro">
+                <p>
+                  Free langsung aktif. Pro dan Max dibeli dari admin, lalu masa aktif dihitung
+                  sejak kode berhasil diredeem di Produksi.
+                </p>
+                <span aria-hidden="true">Geser kartu untuk membandingkan →</span>
+              </div>
+            </header>
+
+            <div className="pricing-rail" aria-label="Harga lisensi MScrape" tabIndex={0}>
+              {pricing.map((plan) => (
+                <article className="pricing-card" data-tier={plan.tier.toLowerCase()} key={plan.tier}>
+                  <header className="pricing-card__head">
+                    <span>{plan.code}</span>
+                    <span>{plan.term}</span>
+                  </header>
+                  <div className="pricing-card__title">
+                    <h3>{plan.tier}</h3>
+                    <p>{plan.price}</p>
+                  </div>
+                  <dl className="pricing-card__facts">
+                    <div><dt>Batas hasil</dt><dd>{plan.capacity}</dd></div>
+                    <div><dt>Kecepatan</dt><dd>{plan.cooldown}</dd></div>
+                  </dl>
+                  <a
+                    className="pricing-card__cta"
+                    href={plan.href}
+                    {...(plan.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                  >
+                    {plan.cta}
+                  </a>
+                </article>
+              ))}
+            </div>
+
+            <p className="dashboard-pricing__note">
+              Butuh bantuan memilih? <a href={adminWhatsapp} target="_blank" rel="noreferrer">Chat admin · 0851 1134 9699 ↗</a>
+            </p>
+          </div>
+        </section>
+
+        <section className="dashboard-essay wb-shell dashboard-scroll-scene" aria-labelledby="essay-title">
           <header className="dashboard-section-head">
             <h2 id="essay-title">Satu request, jejak yang dapat diperiksa.</h2>
             <p>
@@ -176,7 +236,7 @@ export default function DashboardPage() {
         </section>
 
         <section className="dashboard-process" aria-labelledby="process-title">
-          <div className="dashboard-process__inner wb-shell">
+          <div className="dashboard-process__inner wb-shell dashboard-scroll-scene">
             <header className="dashboard-process__head">
               <h2 id="process-title">Dari titik peta ke antrean kerja.</h2>
               <p>
@@ -199,36 +259,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <section className="dashboard-pricing wb-shell" aria-labelledby="pricing-title">
-          <header className="dashboard-section-head dashboard-section-head--compact">
-            <h2 id="pricing-title">Pilih kapasitas kerja.</h2>
-            <p>
-              Free langsung aktif. Pro dan Max dibeli dari admin, lalu masa tiga bulan dihitung
-              sejak kode berhasil diredeem di Produksi.
-            </p>
-          </header>
-          <div className="pricing-ledger" aria-label="Harga lisensi MScrape">
-            {pricing.map((plan) => (
-              <article className="pricing-ledger__row" key={plan.tier}>
-                <div className="pricing-ledger__tier">
-                  <h3>{plan.tier}</h3>
-                  <p>{plan.detail}</p>
-                </div>
-                <p className="pricing-ledger__price"><strong>{plan.price}</strong><span>{plan.term}</span></p>
-                {plan.cta ? (
-                  <a href={plan.cta} target="_blank" rel="noreferrer">Beli via WhatsApp ↗</a>
-                ) : (
-                  <span className="pricing-ledger__included">Tanpa kode</span>
-                )}
-              </article>
-            ))}
-          </div>
-          <p className="dashboard-pricing__note">
-            Admin WhatsApp: <a href={adminWhatsapp} target="_blank" rel="noreferrer">0851 1134 9699 ↗</a>
-          </p>
-        </section>
-
-        <section className="dashboard-capture wb-shell" aria-labelledby="capture-title">
+        <section className="dashboard-capture wb-shell dashboard-scroll-scene" aria-labelledby="capture-title">
           <header className="dashboard-section-head dashboard-section-head--compact">
             <h2 id="capture-title">UI yang menunjukkan sumber keputusan.</h2>
             <p>
@@ -259,7 +290,7 @@ export default function DashboardPage() {
           </figure>
         </section>
 
-        <section className="dashboard-spec wb-shell" aria-labelledby="spec-title">
+        <section className="dashboard-spec wb-shell dashboard-scroll-scene" aria-labelledby="spec-title">
           <header className="dashboard-section-head dashboard-section-head--compact">
             <h2 id="spec-title">Batas produk dibuat terlihat.</h2>
             <p>Setiap baris menyatakan perilaku yang sudah ada di source, bukan janji pemasaran.</p>
@@ -281,7 +312,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <footer className="dashboard-footer wb-shell">
+        <footer className="dashboard-footer wb-shell dashboard-scroll-scene">
           <p className="dashboard-footer__statement">Data yang tidak ada tetap kosong.</p>
           <div className="dashboard-footer__meta">
             <span className="app-wordmark">MSCRAPE/</span>
