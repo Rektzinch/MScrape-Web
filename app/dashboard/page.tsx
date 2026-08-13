@@ -24,10 +24,43 @@ const principles = [
 
 const specifications = [
   ["Pengambilan", "Live request", "Cache-Control: no-store"],
-  ["Cakupan", "Hingga 100 tempat", "Per request"],
+  ["Cakupan", "10 hingga 500 tempat", "Bergantung tier"],
+  ["Akses", "Kode aktivasi", "Tanpa login"],
+  ["Jeda", "5 menit / 30 detik / tanpa cooldown", "Free / Pro / Max"],
   ["Kolom kosong", "Dipertahankan kosong", "Tidak ditebak"],
   ["Mode backend", "Google live / web / queue", "Bergantung konfigurasi"],
 ];
+
+const processSteps = [
+  {
+    icon: "query",
+    coordinate: "01 / INPUT",
+    title: "Kueri dibentuk",
+    detail: "Niche, kota, negara, bahasa, dan batas hasil dipadatkan menjadi satu permintaan yang dapat dilacak.",
+  },
+  {
+    icon: "filter",
+    coordinate: "02 / FILTER",
+    title: "Celah dipertahankan",
+    detail: "Website, email, atau telepon yang tidak tersedia tetap kosong—bukan ditebak agar tabel terlihat penuh.",
+  },
+  {
+    icon: "export",
+    coordinate: "03 / OUTPUT",
+    title: "Antrean siap dibawa",
+    detail: "Filter aktif menentukan baris CSV; awalan formula dinetralkan sebelum file meninggalkan browser.",
+  },
+] as const;
+
+function ProcessIcon({ name }: { name: (typeof processSteps)[number]["icon"] }) {
+  if (name === "query") {
+    return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="21" cy="21" r="11" /><path d="m29 29 9 9M21 15v12M15 21h12" /></svg>;
+  }
+  if (name === "filter") {
+    return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 12h32L28 25v10l-8 4V25L8 12Z" /><path d="M14 18h20" /></svg>;
+  }
+  return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 30v8h28v-8M24 8v22M16 22l8 8 8-8" /></svg>;
+}
 
 export default function DashboardPage() {
   return (
@@ -45,7 +78,7 @@ export default function DashboardPage() {
             <dl className="hero-facts" aria-label="Karakteristik utama">
               <div><dt>Data contoh</dt><dd>Tidak digunakan</dd></div>
               <div><dt>Cache pencarian</dt><dd>Dimatikan</dd></div>
-              <div><dt>Hasil maksimum</dt><dd>100 / request</dd></div>
+              <div><dt>Rentang hasil</dt><dd>10—500 / request</dd></div>
             </dl>
           </div>
 
@@ -114,6 +147,30 @@ export default function DashboardPage() {
               </div>
             ))}
           </dl>
+        </section>
+
+        <section className="dashboard-process" aria-labelledby="process-title">
+          <div className="dashboard-process__inner wb-shell">
+            <header className="dashboard-process__head">
+              <h2 id="process-title">Dari titik peta ke antrean kerja.</h2>
+              <p>
+                Pola koordinat bukan tempelan dekoratif. Ia menandai tiga perubahan bentuk data
+                yang benar-benar terjadi sebelum hasil bisa diunduh.
+              </p>
+            </header>
+            <ol className="process-track">
+              {processSteps.map((step) => (
+                <li key={step.coordinate}>
+                  <span className="process-track__icon"><ProcessIcon name={step.icon} /></span>
+                  <div>
+                    <span className="process-track__coordinate">{step.coordinate}</span>
+                    <h3>{step.title}</h3>
+                    <p>{step.detail}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
         </section>
 
         <section className="dashboard-capture wb-shell" aria-labelledby="capture-title">

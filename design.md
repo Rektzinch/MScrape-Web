@@ -1,111 +1,98 @@
 # Design — MScrape
 
-A locked design system for the two-page MScrape application. Every page reads
-this file before visual changes are made. Extend this system deliberately; do
-not create page-local palettes or typography.
+Sistem desain terkunci untuk aplikasi MScrape dua halaman. Perubahan visual
+harus memperpanjang sistem ini, bukan membuat palet atau pola komponen lokal.
 
-## Genre
+## Genre dan struktur
 
-Modern-minimal with an editorial utility layer: an operator's workbench printed
-on warm paper. The interface is technical, direct, and specific without looking
-like a generic SaaS dashboard.
+Modern-minimal dengan lapisan utilitas editorial: workbench operator pada kertas
+hangat, diberi panel hitam dan sinyal oranye. Dashboard bersifat naratif dan kaya
+media; Produksi murni workspace operasional. Keduanya hanya dihubungkan oleh satu
+tombol pada header.
 
-## Macrostructure family
+- Dashboard: Workbench dengan H7 video produk, alur F4 pada grid koordinat,
+  F5 gambar produk beranotasi, tabel fakta F3, dan penutup Ft5.
+- Produksi: Workbench padat yang hanya memuat form, aktivasi lisensi, status,
+  hasil, filter, dan ekspor. Tidak boleh memuat narasi atau media Dashboard.
+- Nav: N1a dibenarkan karena produk hanya memiliki dua tujuan.
 
-- Dashboard: Workbench with H7 clipped product video, F5 annotated product image,
-  F3 factual specification rows, and Ft5 statement close.
-- App page: Workbench workspace. The form, feedback, results, and export controls
-  are the visual content; no marketing sections are allowed.
-- Content pages: not applicable. The product has exactly Dashboard and Produksi.
+## Tema
 
-## Theme
+- `--color-paper` oklch(96.5% 0.017 70)
+- `--color-paper-2` oklch(93.5% 0.021 68)
+- `--color-paper-3` oklch(89.5% 0.025 65)
+- `--color-ink` oklch(17% 0.018 48)
+- `--color-ink-2` oklch(29% 0.022 48)
+- `--color-muted` oklch(40% 0.026 48)
+- `--color-rule` oklch(78% 0.028 64)
+- `--color-rule-strong` oklch(51% 0.034 54)
+- `--color-accent` oklch(47% 0.18 38)
+- `--color-accent-warm` oklch(70% 0.17 58)
+- `--color-focus` oklch(39% 0.17 32)
 
-- `--color-paper` oklch(96.5% 0.015 74)
-- `--color-paper-2` oklch(93.5% 0.018 72)
-- `--color-paper-3` oklch(89.5% 0.022 70)
-- `--color-ink` oklch(17% 0.018 54)
-- `--color-ink-2` oklch(29% 0.022 54)
-- `--color-muted` oklch(40% 0.024 54)
-- `--color-rule` oklch(78% 0.024 68)
-- `--color-rule-strong` oklch(51% 0.028 62)
-- `--color-accent` oklch(48% 0.19 258)
-- `--color-accent-warm` oklch(52% 0.17 34)
-- `--color-focus` oklch(55% 0.21 258)
+Hitam hangat adalah permukaan kerja dan oranye gelap adalah warna aksi. Oranye
+terang hanya untuk ikon, jalur, dan penanda di atas permukaan hitam. Tidak ada
+cobalt, gradient hero, atau warna inline di luar token.
 
-Electric cobalt is the action signal. Vermilion is editorial punctuation only.
-Combined accent coverage stays below 5% of any viewport.
-
-## Typography
+## Tipografi, ruang, dan bentuk
 
 - Display: Bricolage Grotesque Variable, weight 760, normal.
-- Body: Archivo Variable, weight 400.
-- Technical labels: Archivo Variable with tabular numerals and compact tracking.
+- Body dan label teknis: Archivo Variable; angka memakai tabular numerals.
 - Display tracking: -0.055em.
-- Type scale anchor: `--text-display: clamp(3rem, 7vw, 5.25rem)`.
+- Skala ruang: kelipatan empat pada `tokens.css`.
+- Radius kontrol: 6 px; radius kartu: 8 px; bukan pill.
 
-## Spacing
+## Interaksi
 
-4-point named scale. Values live in `tokens.css`; pages use semantic token names,
-never raw colour or font-family values.
+- Combobox dibangun khusus dan menggantikan native select. Kontraknya mencakup
+  pencarian, ArrowUp/ArrowDown, Enter, Escape, light-dismiss, dan fokus terlihat.
+- Opsi limit yang terkunci tetap terlihat dengan hatch + ikon gembok. Klik
+  membuka aktivasi inline; lisensi tidak memerlukan login.
+- Button press bergerak 1 px selama 100–120 ms. Dropdown masuk selama 180 ms.
+- Produksi hanya memakai spinner, progress, dan dropdown sebagai tiga primitive
+  motion. `prefers-reduced-motion` mematikan motion spasial.
+- Semua target sentuh minimal 44 px dan label klik tidak boleh membungkus.
 
-## Motion
+## Model akses
 
-- Easings: `--ease-out`, `--ease-in`, and `--ease-in-out` from `tokens.css`.
-- Dashboard: one coordinated first-paint reveal plus the muted product video.
-- Produksi: functional progress and spinner motion only.
-- Reduced motion: spatial movement becomes a <=150 ms opacity change; the hero
-  video is replaced by its poster.
+- Free: 10 hasil, cooldown 300 detik.
+- Pro: 10/50/75/100 hasil, cooldown 30 detik.
+- Max: 10/50/75/100/150/250/500 hasil, tanpa cooldown.
+- Kode aktivasi diverifikasi server dan disimpan dalam cookie HttpOnly,
+  SameSite=Lax. API tetap melakukan enforcement walaupun UI dimanipulasi.
 
-## Microinteractions stance
+## Per halaman
 
-- Button press: 1 px down, 100 ms; hover feedback only on fine pointers.
-- Focus appears instantly with a high-contrast ring.
-- Success stays silent when its result is already visible.
-- Form errors name what stopped, why when known, and the next action.
-
-## CTA voice
-
-- Cross-page action: one outlined rectangular switch button in the header.
-- Primary production action: dark ink fill, short verb label, square 6 px corners.
-- Secondary actions: outlined or typographic; no pills.
-
-## Per-page allowances
-
-- Dashboard may use text, one product image, one product video, and one entrance
-  animation. It must not contain the live production form or results table.
-- Produksi contains only the live scraper workspace and its operational context.
-  It must not contain Dashboard narrative, image, video, or footer statement.
-
-## What pages MUST share
-
-- MSCRAPE wordmark, header dimensions, cross-page button shape, warm paper,
-  cobalt action colour, typography, focus style, rule language, and spacing scale.
-
-## What pages MAY differ on
-
-- Dashboard uses spacious editorial rhythm and rich media.
-- Produksi uses compact workspace rhythm and denser information.
+- Dashboard boleh memakai teks, satu gambar produk, satu video produk, pola
+  koordinat, ikon garis custom, dan satu entrance animation.
+- Produksi tidak boleh memuat gambar/video Dashboard atau footer statement.
+- Keduanya berbagi wordmark, header, tombol lintas halaman, tokens, font, focus
+  ring, dan bahasa rule.
 
 ## Exports
 
-### tokens.css
+### `tokens.css` — sumber utama
 
 ```css
 :root {
-  --color-paper: oklch(96.5% 0.015 74);
-  --color-paper-2: oklch(93.5% 0.018 72);
-  --color-paper-3: oklch(89.5% 0.022 70);
-  --color-ink: oklch(17% 0.018 54);
-  --color-ink-2: oklch(29% 0.022 54);
-  --color-muted: oklch(40% 0.024 54);
-  --color-rule: oklch(78% 0.024 68);
-  --color-rule-strong: oklch(51% 0.028 62);
-  --color-accent: oklch(48% 0.19 258);
-  --color-accent-warm: oklch(52% 0.17 34);
-  --color-focus: oklch(55% 0.21 258);
-  --font-display: "Bricolage Grotesque Variable", sans-serif;
-  --font-body: "Archivo Variable", sans-serif;
-  --font-mono: "Archivo Variable", sans-serif;
+  --color-paper: oklch(96.5% 0.017 70);
+  --color-paper-2: oklch(93.5% 0.021 68);
+  --color-paper-3: oklch(89.5% 0.025 65);
+  --color-ink: oklch(17% 0.018 48);
+  --color-ink-2: oklch(29% 0.022 48);
+  --color-muted: oklch(40% 0.026 48);
+  --color-rule: oklch(78% 0.028 64);
+  --color-rule-strong: oklch(51% 0.034 54);
+  --color-accent: oklch(47% 0.18 38);
+  --color-accent-warm: oklch(70% 0.17 58);
+  --color-accent-ink: oklch(97% 0.012 74);
+  --color-focus: oklch(39% 0.17 32);
+  --font-display: "Bricolage Grotesque Variable", "Archivo Variable", sans-serif;
+  --font-body: "Archivo Variable", Arial, sans-serif;
+  --font-mono: "Archivo Variable", Arial, sans-serif;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
 ```
 
@@ -113,12 +100,24 @@ never raw colour or font-family values.
 
 ```css
 @theme {
-  --color-paper: oklch(96.5% 0.015 74);
-  --color-ink: oklch(17% 0.018 54);
-  --color-accent: oklch(48% 0.19 258);
-  --font-display: "Bricolage Grotesque Variable", sans-serif;
-  --font-body: "Archivo Variable", sans-serif;
+  --color-paper: oklch(96.5% 0.017 70);
+  --color-paper-2: oklch(93.5% 0.021 68);
+  --color-paper-3: oklch(89.5% 0.025 65);
+  --color-ink: oklch(17% 0.018 48);
+  --color-ink-2: oklch(29% 0.022 48);
+  --color-muted: oklch(40% 0.026 48);
+  --color-rule: oklch(78% 0.028 64);
+  --color-accent: oklch(47% 0.18 38);
+  --color-accent-warm: oklch(70% 0.17 58);
+  --color-focus: oklch(39% 0.17 32);
+  --font-display: "Bricolage Grotesque Variable", "Archivo Variable", sans-serif;
+  --font-body: "Archivo Variable", Arial, sans-serif;
+  --font-mono: "Archivo Variable", Arial, sans-serif;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
   --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2.5rem;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 ```
@@ -127,16 +126,36 @@ never raw colour or font-family values.
 
 ```json
 {
+  "$schema": "https://design-tokens.github.io/community-group/format/",
   "color": {
-    "paper": { "$value": "oklch(96.5% 0.015 74)", "$type": "color" },
-    "ink": { "$value": "oklch(17% 0.018 54)", "$type": "color" },
-    "accent": { "$value": "oklch(48% 0.19 258)", "$type": "color" }
+    "paper": { "$value": "oklch(96.5% 0.017 70)", "$type": "color" },
+    "paper-2": { "$value": "oklch(93.5% 0.021 68)", "$type": "color" },
+    "paper-3": { "$value": "oklch(89.5% 0.025 65)", "$type": "color" },
+    "ink": { "$value": "oklch(17% 0.018 48)", "$type": "color" },
+    "ink-2": { "$value": "oklch(29% 0.022 48)", "$type": "color" },
+    "muted": { "$value": "oklch(40% 0.026 48)", "$type": "color" },
+    "rule": { "$value": "oklch(78% 0.028 64)", "$type": "color" },
+    "accent": { "$value": "oklch(47% 0.18 38)", "$type": "color" },
+    "accent-warm": { "$value": "oklch(70% 0.17 58)", "$type": "color" },
+    "focus": { "$value": "oklch(39% 0.17 32)", "$type": "color" }
   },
   "font": {
-    "display": { "$value": "Bricolage Grotesque Variable", "$type": "fontFamily" },
-    "body": { "$value": "Archivo Variable", "$type": "fontFamily" }
+    "display": { "$value": "Bricolage Grotesque Variable, Archivo Variable, sans-serif", "$type": "fontFamily" },
+    "body": { "$value": "Archivo Variable, Arial, sans-serif", "$type": "fontFamily" },
+    "mono": { "$value": "Archivo Variable, Arial, sans-serif", "$type": "fontFamily" }
   },
-  "space": { "md": { "$value": "1rem", "$type": "dimension" } }
+  "space": {
+    "xs": { "$value": "0.5rem", "$type": "dimension" },
+    "sm": { "$value": "0.75rem", "$type": "dimension" },
+    "md": { "$value": "1rem", "$type": "dimension" },
+    "lg": { "$value": "1.5rem", "$type": "dimension" },
+    "xl": { "$value": "2.5rem", "$type": "dimension" }
+  },
+  "duration": {
+    "fast": { "$value": "120ms", "$type": "duration" },
+    "base": { "$value": "200ms", "$type": "duration" },
+    "slow": { "$value": "420ms", "$type": "duration" }
+  }
 }
 ```
 
@@ -144,15 +163,25 @@ never raw colour or font-family values.
 
 ```css
 :root {
-  --background: 96.5% 0.015 74;
-  --foreground: 17% 0.018 54;
-  --primary: 48% 0.19 258;
+  --background: 96.5% 0.017 70;
+  --foreground: 17% 0.018 48;
+  --card: 93.5% 0.021 68;
+  --card-foreground: 17% 0.018 48;
+  --popover: 93.5% 0.021 68;
+  --popover-foreground: 17% 0.018 48;
+  --primary: 47% 0.18 38;
   --primary-foreground: 97% 0.012 74;
-  --muted: 93.5% 0.018 72;
-  --muted-foreground: 40% 0.024 54;
-  --border: 78% 0.024 68;
-  --input: 51% 0.028 62;
-  --ring: 55% 0.21 258;
+  --secondary: 89.5% 0.025 65;
+  --secondary-foreground: 29% 0.022 48;
+  --muted: 78% 0.028 64;
+  --muted-foreground: 40% 0.026 48;
+  --accent: 47% 0.18 38;
+  --accent-foreground: 97% 0.012 74;
+  --destructive: 46% 0.18 26;
+  --destructive-foreground: 97% 0.012 74;
+  --border: 78% 0.028 64;
+  --input: 51% 0.034 54;
+  --ring: 39% 0.17 32;
   --radius: 0.375rem;
 }
 ```

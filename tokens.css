@@ -1,16 +1,16 @@
 :root {
-  --color-paper: oklch(96.5% 0.015 74);
-  --color-paper-2: oklch(93.5% 0.018 72);
-  --color-paper-3: oklch(89.5% 0.022 70);
-  --color-ink: oklch(17% 0.018 54);
-  --color-ink-2: oklch(29% 0.022 54);
-  --color-muted: oklch(40% 0.024 54);
-  --color-rule: oklch(78% 0.024 68);
-  --color-rule-strong: oklch(51% 0.028 62);
-  --color-accent: oklch(48% 0.19 258);
-  --color-accent-warm: oklch(52% 0.17 34);
+  --color-paper: oklch(96.5% 0.017 70);
+  --color-paper-2: oklch(93.5% 0.021 68);
+  --color-paper-3: oklch(89.5% 0.025 65);
+  --color-ink: oklch(17% 0.018 48);
+  --color-ink-2: oklch(29% 0.022 48);
+  --color-muted: oklch(40% 0.026 48);
+  --color-rule: oklch(78% 0.028 64);
+  --color-rule-strong: oklch(51% 0.034 54);
+  --color-accent: oklch(47% 0.18 38);
+  --color-accent-warm: oklch(70% 0.17 58);
   --color-accent-ink: oklch(97% 0.012 74);
-  --color-focus: oklch(55% 0.21 258);
+  --color-focus: oklch(39% 0.17 32);
   --color-focus-inner: var(--color-paper);
   --color-success: oklch(43% 0.12 152);
   --color-error: oklch(46% 0.18 26);

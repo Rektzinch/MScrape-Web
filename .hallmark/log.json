@@ -4,6 +4,16 @@
     "scope": "app",
     "macrostructure": "Workbench",
     "theme": "custom",
+    "theme_axes": "light / geometric-sans / warm",
+    "vibe": "coordinate paper, black workbench, signal orange",
+    "enrichment": "coordinate grid + custom line icons + product footage",
+    "brief": "MScrape tier activation, custom combobox, and dashboard enrichment"
+  },
+  {
+    "date": "2026-08-13",
+    "scope": "app",
+    "macrostructure": "Workbench",
+    "theme": "custom",
     "theme_axes": "light / geometric-sans / cool",
     "vibe": "editorial utility, paper warmth, electric precision",
     "enrichment": "E1 clipped product video + F5 product image",

@@ -36,23 +36,20 @@ a {
 }
 
 button,
-input,
-select {
+input {
   color: inherit;
   font: inherit;
 }
 
 button,
 a,
-input,
-select {
+input {
   -webkit-tap-highlight-color: var(--color-transparent);
 }
 
 button:focus-visible,
 a:focus-visible,
-input:focus-visible,
-select:focus-visible {
+input:focus-visible {
   outline: 2px solid var(--color-focus-inner);
   outline-offset: 2px;
   box-shadow: 0 0 0 4px var(--color-focus);

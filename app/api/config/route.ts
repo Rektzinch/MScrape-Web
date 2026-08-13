@@ -1,4 +1,6 @@
 import { backendFetch, getBackendConfig } from "@/lib/backend";
+import { activationIsConfigured, resolveLicense } from "@/lib/license";
+import { readRateAccess } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -7,8 +9,11 @@ const noStoreHeaders = {
   "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
 };
 
-export async function GET() {
+export async function GET(request: Request) {
   const config = getBackendConfig();
+  const license = resolveLicense(request);
+  const access = readRateAccess(request, license);
+  const activationAvailable = activationIsConfigured();
 
   if (!config) {
     return Response.json(
@@ -16,6 +21,8 @@ export async function GET() {
         configured: true,
         reachable: true,
         mode: "google-live",
+        access,
+        activationAvailable,
       },
       { headers: noStoreHeaders },
     );
@@ -30,12 +37,16 @@ export async function GET() {
       configured: true,
       reachable: response.ok,
       mode: config.mode,
-    });
+      access,
+      activationAvailable,
+    }, { headers: noStoreHeaders });
   } catch {
     return Response.json({
       configured: true,
       reachable: false,
       mode: config.mode,
-    });
+      access,
+      activationAvailable,
+    }, { headers: noStoreHeaders });
   }
 }

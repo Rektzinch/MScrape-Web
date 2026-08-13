@@ -96,7 +96,7 @@ function toLead(value: unknown): { key: string; row: LeadRow } | null {
 }
 
 function buildParams(input: SearchInput) {
-  const limit = Math.min(Math.max(input.limit, 30), 100);
+  const limit = Math.min(Math.max(input.limit, 10), 500);
   const params = new URLSearchParams({
     tbm: "map",
     authuser: "0",
@@ -150,7 +150,7 @@ export async function searchGoogleMapsLive(input: SearchInput) {
   const baseUrls = configuredUrl
     ? [configuredUrl]
     : ["https://maps.google.com/search", "https://www.google.com/search"];
-  const limit = Math.min(Math.max(input.limit, 30), 100);
+  const limit = Math.min(Math.max(input.limit, 10), 500);
   let lastError: unknown;
 
   for (const [index, baseUrl] of baseUrls.entries()) {

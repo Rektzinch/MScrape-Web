@@ -18,8 +18,8 @@ export default function ProduksiPage() {
             <h1 id="production-title">Produksi</h1>
           </div>
           <p>
-            Tentukan niche dan wilayah, jalankan request, lalu periksa hanya data yang benar-benar
-            dikembalikan oleh sumber.
+            Tentukan niche dan wilayah, pilih batas hingga 500 hasil sesuai lisensi, lalu periksa
+            hanya data yang benar-benar dikembalikan oleh sumber.
           </p>
         </section>
         <section className="production-workspace wb-shell" aria-label="Workspace scraping">
