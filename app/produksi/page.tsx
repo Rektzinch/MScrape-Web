@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AppFooter } from "../_components/app-footer";
 import { AppHeader } from "../_components/app-header";
 import { ScrapeConsole } from "../_components/scrape-console";
 
@@ -27,6 +28,7 @@ export default function ProduksiPage() {
         <section className="production-workspace wb-shell" aria-label="Workspace scraping">
           <ScrapeConsole />
         </section>
+        <AppFooter />
       </main>
     </>
   );

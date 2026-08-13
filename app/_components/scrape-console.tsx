@@ -26,7 +26,23 @@ type JobState = {
 };
 
 type WebsiteFilter = "ready" | "missing" | "all" | "present";
+type DownloadFormat = "csv" | "txt" | "xlsx" | "json" | "sheets";
 type NoticeTone = "info" | "success" | "error";
+
+type ExportRecord = {
+  business: string;
+  category: string;
+  phone: string;
+  whatsapp: string;
+  email: string;
+  address: string;
+  cityProvince: string;
+  rating: string;
+  reviews: string;
+  websiteStatus: string;
+  website: string;
+  googleMaps: string;
+};
 
 type ActionNotice = {
   id: number;
@@ -55,6 +71,14 @@ const websiteOptions: ComboboxOption[] = [
   { value: "present", label: "Punya website", description: "Website sudah tersedia" },
 ];
 
+const downloadOptions: ComboboxOption[] = [
+  { value: "csv", label: "CSV", description: "12 kolom data bisnis untuk spreadsheet" },
+  { value: "txt", label: "TXT", description: "Ringkasan teks berurutan per bisnis" },
+  { value: "xlsx", label: "XLSX", description: "Tabel, filter, header beku, dan tautan aktif" },
+  { value: "json", label: "JSON", description: "Metadata pencarian dan data bisnis terstruktur" },
+  { value: "sheets", label: "Google Sheets", description: "XLSX siap impor dengan kolom tindak lanjut" },
+];
+
 function messageFrom(value: unknown, fallback: string) {
   if (value && typeof value === "object" && "message" in value) {
     const message = (value as { message?: unknown }).message;
@@ -69,19 +93,93 @@ function csvCell(value: string | number) {
   return `"${formulaSafe.replaceAll('"', '""')}"`;
 }
 
-function rowsToCsv(rows: LeadRow[], fetchedAt: string | null) {
-  const headers = [
-    "No", "Nama Bisnis", "Kategori", "Alamat", "Telepon", "Email", "Status Kontak",
-    "Status Website", "Website", "Rating", "Jumlah Ulasan", "Latitude", "Longitude",
-    "Google Maps", "Waktu Pengambilan",
-  ];
-  const lines = rows.map((row, index) => [
-    index + 1, row.business, row.category, row.address, row.phone, row.email,
-    row.phone ? "Nomor tersedia" : row.email ? "Email tersedia" : "Kontak tidak tersedia",
-    row.website ? "Memiliki website" : "Belum memiliki website", row.website, row.rating,
-    row.reviewCount, row.latitude, row.longitude, row.source, fetchedAt || "",
-  ].map(csvCell).join(","));
-  return `\uFEFF${[headers.map(csvCell).join(","), ...lines].join("\r\n")}`;
+const exportColumns = [
+  ["business", "Nama Bisnis"],
+  ["category", "Kategori"],
+  ["phone", "Telepon"],
+  ["whatsapp", "WhatsApp"],
+  ["email", "Email"],
+  ["address", "Alamat"],
+  ["cityProvince", "Kota/Provinsi"],
+  ["rating", "Rating"],
+  ["reviews", "Ulasan"],
+  ["websiteStatus", "Status Website"],
+  ["website", "Website"],
+  ["googleMaps", "Google Maps"],
+] as const satisfies readonly (readonly [keyof ExportRecord, string])[];
+
+const exportHeaders = exportColumns.map(([, label]) => label);
+
+function toExportRecord(row: LeadRow, city: string): ExportRecord {
+  return {
+    business: row.business,
+    category: row.category,
+    phone: row.phone,
+    // WhatsApp tidak ditebak dari nomor telepon; kosong bila sumber tidak menyediakannya.
+    whatsapp: "",
+    email: row.email,
+    address: row.address,
+    cityProvince: city,
+    rating: row.rating,
+    reviews: row.reviewCount,
+    websiteStatus: row.website ? "Memiliki website" : "Belum memiliki website",
+    website: row.website,
+    googleMaps: row.source,
+  };
+}
+
+function recordsToCsv(records: ExportRecord[]) {
+  const lines = records.map((record) => exportColumns
+    .map(([key]) => csvCell(record[key]))
+    .join(","));
+  return `\uFEFF${[exportHeaders.map(csvCell).join(","), ...lines].join("\r\n")}`;
+}
+
+function recordsToText(records: ExportRecord[]) {
+  return records.map((record, index) => [
+    `# ${index + 1}`,
+    `Nama Bisnis: ${record.business}`,
+    `Kategori: ${record.category}`,
+    `Kontak: ${record.phone}`,
+    `Email: ${record.email}`,
+    `Alamat: ${record.address}`,
+    `Rating/Ulasan: ${[record.rating, record.reviews && `${record.reviews} ulasan`].filter(Boolean).join(" · ")}`,
+    `Status Website: ${record.websiteStatus}`,
+    `Website: ${record.website}`,
+    `Google Maps: ${record.googleMaps}`,
+  ].join("\n")).join("\n\n");
+}
+
+function recordsToJson(records: ExportRecord[], job: JobState, websiteFilter: WebsiteFilter) {
+  return JSON.stringify({
+    metadataPencarian: {
+      kataKunci: job.keyword,
+      kota: job.city,
+      filterWebsite: websiteFilter,
+      waktuPengambilan: job.fetchedAt,
+      jumlahBisnis: records.length,
+    },
+    bisnis: records.map((record) => ({
+      nama: record.business,
+      kategori: record.category,
+      kontak: { telepon: record.phone, whatsapp: record.whatsapp, email: record.email },
+      lokasi: { alamat: record.address, kotaProvinsi: record.cityProvince },
+      ratingUlasan: { rating: record.rating, ulasan: record.reviews },
+      website: { status: record.websiteStatus, url: record.website },
+      googleMaps: record.googleMaps,
+    })),
+  }, null, 2);
+}
+
+function triggerDownload(content: BlobPart, type: string, filename: string) {
+  const url = URL.createObjectURL(new Blob([content], { type }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
 function safeFilenamePart(value: string) {
@@ -124,6 +222,8 @@ export function ScrapeConsole() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [websiteFilter, setWebsiteFilter] = useState<WebsiteFilter>("all");
+  const [downloadFormat, setDownloadFormat] = useState<DownloadFormat>("csv");
+  const [downloading, setDownloading] = useState(false);
   const [limit, setLimit] = useState<ResultLimit>(10);
   const [activationOpen, setActivationOpen] = useState(false);
   const [activationCode, setActivationCode] = useState("");
@@ -428,18 +528,72 @@ export function ScrapeConsole() {
     }
   }
 
-  function downloadQueueCsv() {
+  async function downloadResults() {
     if (!job || visibleRows.length === 0) return;
-    const url = URL.createObjectURL(new Blob([rowsToCsv(visibleRows, job.fetchedAt)], { type: "text/csv;charset=utf-8" }));
-    const link = document.createElement("a");
-    link.href = url;
+
+    const records = visibleRows.map((row) => toExportRecord(row, job.city));
     const queryName = [safeFilenamePart(job.keyword), safeFilenamePart(job.city)].filter(Boolean).join("-");
-    link.download = `mscrape-${queryName || job.id}-${websiteFilter}.csv`;
-    document.body.append(link);
-    link.click();
-    link.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 0);
-    notify("CSV diunduh", `${visibleRows.length} baris dari filter aktif dimasukkan ke file.`, "success");
+    const filename = `mscrape-${queryName || job.id}-${websiteFilter}`;
+    const format = downloadOptions.find((option) => option.value === downloadFormat)?.label || "File";
+
+    setDownloading(true);
+    try {
+      if (downloadFormat === "csv") {
+        triggerDownload(recordsToCsv(records), "text/csv;charset=utf-8", `${filename}.csv`);
+      } else if (downloadFormat === "txt") {
+        triggerDownload(recordsToText(records), "text/plain;charset=utf-8", `${filename}.txt`);
+      } else if (downloadFormat === "json") {
+        triggerDownload(recordsToJson(records, job, websiteFilter), "application/json;charset=utf-8", `${filename}.json`);
+      } else {
+        const ExcelJS = await import("exceljs");
+        const isSheetsImport = downloadFormat === "sheets";
+        const headers = isSheetsImport
+          ? [...exportHeaders, "Status Prospek", "Terakhir Dihubungi", "Follow-up", "Catatan"]
+          : exportHeaders;
+        const rows = records.map((record) => [
+          ...exportColumns.map(([key]) => record[key]),
+          ...(isSheetsImport ? ["", "", "", ""] : []),
+        ]);
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = "MScrape";
+        workbook.created = new Date();
+        const worksheet = workbook.addWorksheet(isSheetsImport ? "Google Sheets" : "Data Bisnis", {
+          views: [{ state: "frozen", ySplit: 1, topLeftCell: "A2" }],
+        });
+        worksheet.addTable({
+          name: isSheetsImport ? "DataGoogleSheets" : "DataBisnis",
+          ref: "A1",
+          headerRow: true,
+          totalsRow: false,
+          columns: headers.map((name) => ({ name, filterButton: true })),
+          rows,
+          style: { theme: "TableStyleMedium2", showRowStripes: true },
+        });
+        headers.forEach((header, index) => {
+          const widest = Math.max(header.length, ...rows.map((row) => String(row[index] || "").length));
+          worksheet.getColumn(index + 1).width = Math.min(Math.max(widest + 2, 14), 42);
+        });
+        records.forEach((record, index) => {
+          const rowNumber = index + 2;
+          const websiteCell = worksheet.getCell(rowNumber, exportHeaders.indexOf("Website") + 1);
+          const mapsCell = worksheet.getCell(rowNumber, exportHeaders.indexOf("Google Maps") + 1);
+          if (record.website) websiteCell.value = { text: record.website, hyperlink: record.website };
+          if (record.googleMaps) mapsCell.value = { text: record.googleMaps, hyperlink: record.googleMaps };
+        });
+        const buffer = await workbook.xlsx.writeBuffer();
+        triggerDownload(
+          buffer as ArrayBuffer,
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          `${filename}${isSheetsImport ? "-google-sheets" : ""}.xlsx`,
+        );
+      }
+      notify(`${format} diunduh`, `${records.length} baris dari filter aktif dimasukkan ke file.`, "success");
+    } catch (downloadError) {
+      const detail = downloadError instanceof Error ? downloadError.message : "File tidak dapat dibuat.";
+      notify("Unduhan gagal", detail, "error");
+    } finally {
+      setDownloading(false);
+    }
   }
 
   return (
@@ -532,7 +686,10 @@ export function ScrapeConsole() {
           <div className="results__actions">
             <label className="results-search"><span>Cari hasil</span><input type="search" value={resultQuery} onChange={(event) => { setResultQuery(event.target.value); setResultPage(1); }} placeholder="Nama, alamat, atau kontak" /></label>
             <SearchableCombobox label="Filter website" value={websiteFilter} options={websiteOptions} onChange={changeWebsiteFilter} searchPlaceholder="Cari filter" />
-            <button className="button button--secondary" type="button" onClick={downloadQueueCsv} disabled={visibleRows.length === 0}>Unduh CSV <span aria-hidden="true">↓</span></button>
+            <SearchableCombobox label="Format unduhan" value={downloadFormat} options={downloadOptions} onChange={(value) => setDownloadFormat(value as DownloadFormat)} searchPlaceholder="Cari format" />
+            <button className="button button--secondary" type="button" onClick={downloadResults} disabled={visibleRows.length === 0 || downloading} data-state={downloading ? "loading" : "default"}>
+              {downloading ? "Membuat file" : `Unduh ${downloadOptions.find((option) => option.value === downloadFormat)?.label || "file"}`} <span aria-hidden="true">↓</span>
+            </button>
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { AppFooter } from "../_components/app-footer";
 import { AppHeader } from "../_components/app-header";
 
 export const metadata: Metadata = {
@@ -11,15 +12,15 @@ export const metadata: Metadata = {
 const principles = [
   {
     term: "Manfaat",
-    detail: "Mulai dari bisnis lokal yang belum memiliki website agar pencarian peluang layanan digital lebih terarah.",
+    detail: "Kumpulkan data bisnis yang relevan agar riset, analisis, dan tindak lanjut dapat dimulai dari konteks yang jelas.",
   },
   {
     term: "Kelebihan",
-    detail: "Hasil Google Maps diminta saat scan berjalan, lalu dapat difilter dan diekspor ke CSV tanpa data contoh.",
+    detail: "Hasil Google Maps diminta saat scan berjalan, lalu dapat difilter dan diunduh dalam format kerja yang sesuai tanpa data contoh.",
   },
   {
     term: "Cocok untuk",
-    detail: "Agen web, freelancer, tim sales, dan konsultan digital yang ingin menyiapkan prospek pasar lokal.",
+    detail: "Tim sales, peneliti pasar, agen, freelancer, dan siapa pun yang membutuhkan data bisnis untuk langkah berikutnya.",
   },
 ];
 
@@ -108,16 +109,16 @@ export default function DashboardPage() {
       <main className="dashboard-page">
         <section className="dashboard-hero wb-shell" aria-labelledby="dashboard-title">
           <div className="dashboard-hero__copy wb-reveal" style={{ "--reveal-index": 0 } as React.CSSProperties}>
-            <p className="dashboard-kicker">Prospek lokal · Google Maps live</p>
-            <h1 id="dashboard-title">Temukan calon klien lokal yang siap Anda dekati.</h1>
+            <p className="dashboard-kicker">Data bisnis · Google Maps live</p>
+            <h1 id="dashboard-title">Temukan data bisnis yang relevan untuk langkah berikutnya.</h1>
             <p className="dashboard-hero__lede">
-              MScrape membantu Anda mencari bisnis lokal yang belum memiliki website, memeriksa data yang tersedia,
-              lalu membawa daftar prospek ke alur penawaran layanan digital Anda.
+              MScrape membantu Anda menemukan, mengumpulkan, dan menata data bisnis sesuai kebutuhan pencarian—
+              lalu menyiapkannya untuk riset, analisis, tindak lanjut, atau ekspor.
             </p>
             <dl className="hero-facts" aria-label="Manfaat utama MScrape">
-              <div><dt>Target peluang</dt><dd>Bisnis tanpa website</dd></div>
+              <div><dt>Ruang lingkup</dt><dd>Kata kunci &amp; wilayah</dd></div>
               <div><dt>Data pencarian</dt><dd>Google Maps live</dd></div>
-              <div><dt>Hasil kerja</dt><dd>Siap difilter ke CSV</dd></div>
+              <div><dt>Hasil kerja</dt><dd>Siap filter &amp; unduh</dd></div>
             </dl>
           </div>
 
@@ -311,13 +312,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <footer className="dashboard-footer wb-shell dashboard-scroll-scene">
-          <p className="dashboard-footer__statement">Mulai dari peluang lokal. Lanjutkan dengan penawaran yang tepat.</p>
-          <div className="dashboard-footer__meta">
-            <span className="app-wordmark" aria-label="Logo MScrape">MSCRAPE/</span>
-            <span>MScrape · pencarian prospek lokal untuk layanan digital</span>
-          </div>
-        </footer>
+        <AppFooter />
       </main>
     </>
   );
