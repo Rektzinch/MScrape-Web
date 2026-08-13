@@ -1,6 +1,6 @@
 # MScrape Web
 
-Frontend Next.js untuk [MScrape](https://github.com/Indra-cahya/MScrape), siap dideploy ke Vercel. Pencarian default memakai API publik [Photon/OpenStreetMap](https://github.com/komoot/photon), tanpa API key.
+Frontend Next.js untuk [MScrape](https://github.com/Indra-cahya/MScrape), siap dideploy ke Vercel. Pencarian default membaca respons Google Maps langsung menggunakan format fast mode dari [gosom/google-maps-scraper](https://github.com/gosom/google-maps-scraper), tanpa API key.
 
 Tidak ada seed, hasil demo, statistik buatan, atau fallback data. Tabel hanya dirender dari respons API nyata.
 
@@ -14,7 +14,7 @@ npm run dev
 
 ## API siap pakai
 
-Tidak ada environment variable wajib. Route `POST /api/scrape` membuat satu request ke Photon dan mengembalikan hingga 50 tempat nyata secara sinkron. Respons identik di-cache selama satu jam.
+Tidak ada environment variable wajib. Route `POST /api/scrape` membuat satu request server ke Google Maps dan mengembalikan 30–50 tempat nyata secara sinkron. Fetch memakai `cache: "no-store"`; route juga mengirim `Cache-Control: no-store`.
 
 ## Backend Google Maps DOM opsional
 
@@ -49,7 +49,7 @@ MAPS_API_KEY=api-key-kamu
 ## Endpoint frontend
 
 - `GET /api/config` — sumber API yang sedang aktif
-- `POST /api/scrape` — mencari langsung via Photon atau membuat job backend
+- `POST /api/scrape` — mencari langsung via Google Maps atau membuat job backend
 - `GET /api/jobs/:id` — membaca status dan hasil job
 - `GET /api/jobs/:id/download` — meneruskan unduhan CSV pada mode web
 

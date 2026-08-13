@@ -4,7 +4,14 @@ import {
   getBackendConfig,
   readBackendJson,
 } from "@/lib/backend";
-import { searchPhoton } from "@/lib/photon";
+import { searchGoogleMapsLive } from "@/lib/google-maps-live";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+const noStoreHeaders = {
+  "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+};
 
 type ScrapeInput = {
   keyword?: unknown;
@@ -55,7 +62,7 @@ export async function POST(request: Request) {
   const query = `${keyword} in ${city}, ${country}`;
 
   console.info("[api/scrape] request", {
-    provider: config ? `google-maps-${config.mode}` : "photon",
+    provider: config ? `google-maps-${config.mode}` : "google-maps-live",
     keyword,
     city,
     country,
@@ -64,30 +71,36 @@ export async function POST(request: Request) {
 
   if (!config) {
     try {
-      const results = await searchPhoton({
+      const results = await searchGoogleMapsLive({
         keyword,
         city,
         country,
+        lang,
         limit,
       });
+      const fetchedAt = new Date().toISOString();
 
       console.info("[api/scrape] success", {
-        provider: "photon",
+        provider: "google-maps-live",
         count: results.length,
         durationMs: Date.now() - startedAt,
       });
 
-      return Response.json({
-        jobId: `photon-${crypto.randomUUID()}`,
-        status: "completed",
-        mode: "photon",
-        resultCount: results.length,
-        results,
-        downloadReady: false,
-      });
+      return Response.json(
+        {
+          jobId: `google-live-${crypto.randomUUID()}`,
+          status: "completed",
+          mode: "google-live",
+          fetchedAt,
+          resultCount: results.length,
+          results,
+          downloadReady: false,
+        },
+        { headers: noStoreHeaders },
+      );
     } catch (error) {
       console.error("[api/scrape] failed", {
-        provider: "photon",
+        provider: "google-maps-live",
         message: error instanceof Error ? error.message : String(error),
         durationMs: Date.now() - startedAt,
       });
@@ -97,9 +110,9 @@ export async function POST(request: Request) {
           message:
             error instanceof Error
               ? error.message
-              : "Photon tidak dapat dijangkau.",
+              : "Google Maps tidak dapat dijangkau.",
         },
-        { status: 502 },
+        { status: 502, headers: noStoreHeaders },
       );
     }
   }

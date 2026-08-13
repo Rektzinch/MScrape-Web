@@ -7,7 +7,7 @@ type ApiState = {
   checked: boolean;
   configured: boolean;
   reachable: boolean;
-  mode: "web" | "queue" | "photon" | null;
+  mode: "web" | "queue" | "google-live" | null;
 };
 
 type JobState = {
@@ -16,6 +16,7 @@ type JobState = {
   resultCount: number | null;
   rows: LeadRow[];
   downloadReady: boolean;
+  fetchedAt: string | null;
 };
 
 const initialApiState: ApiState = {
@@ -131,7 +132,9 @@ export function ScrapeConsole() {
       ? "belum dikonfigurasi"
       : !api.reachable
         ? "tidak terjangkau"
-        : `terhubung · mode ${api.mode}`;
+        : api.mode === "google-live"
+          ? "terhubung · Google Maps live"
+          : `terhubung · mode ${api.mode}`;
 
   const active = job?.status === "pending" || job?.status === "running";
   const canSubmit = api.reachable && !submitting && !active;
@@ -164,6 +167,7 @@ export function ScrapeConsole() {
         resultCount?: number | null;
         results?: LeadRow[];
         downloadReady?: boolean;
+        fetchedAt?: string;
         message?: string;
       };
 
@@ -182,6 +186,7 @@ export function ScrapeConsole() {
         resultCount: data.resultCount ?? null,
         rows: Array.isArray(data.results) ? data.results : [],
         downloadReady: data.downloadReady === true,
+        fetchedAt: data.fetchedAt || null,
       });
     } catch (submitError) {
       setError(
@@ -283,6 +288,17 @@ export function ScrapeConsole() {
               <div><dt>Job ID</dt><dd>{job.id}</dd></div>
               <div><dt>Status</dt><dd>{job.status}</dd></div>
               <div><dt>Jumlah hasil</dt><dd>{job.resultCount ?? "—"}</dd></div>
+              <div>
+                <dt>Diambil langsung</dt>
+                <dd>
+                  {job.fetchedAt
+                    ? new Intl.DateTimeFormat("id-ID", {
+                        dateStyle: "medium",
+                        timeStyle: "medium",
+                      }).format(new Date(job.fetchedAt))
+                    : "—"}
+                </dd>
+              </div>
             </dl>
           ) : (
             <div className="empty-state">
@@ -341,7 +357,7 @@ export function ScrapeConsole() {
                   <td>{row.email || "—"}</td>
                   <td>{row.rating || "—"}</td>
                   <td>
-                    {row.source ? <a href={row.source} target="_blank" rel="noreferrer">OSM ↗</a> : "—"}
+                    {row.source ? <a href={row.source} target="_blank" rel="noreferrer">Google ↗</a> : "—"}
                   </td>
                 </tr>
               ))}
