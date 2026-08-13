@@ -3,52 +3,53 @@ import Image from "next/image";
 import { AppHeader } from "../_components/app-header";
 
 export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "Cara MScrape mengambil, menyaring, dan mengekspor data bisnis dari Google Maps.",
+  title: "Cari Prospek Bisnis Lokal",
+  description:
+    "Temukan bisnis lokal tanpa website, pilih akses MScrape yang sesuai, lalu siapkan daftar prospek untuk layanan digital Anda.",
 };
 
 const principles = [
   {
-    term: "Sumber",
-    detail: "Google Maps diminta ketika scan dijalankan; respons tidak diambil dari seed atau data demo.",
+    term: "Manfaat",
+    detail: "Mulai dari bisnis lokal yang belum memiliki website agar pencarian peluang layanan digital lebih terarah.",
   },
   {
-    term: "Prioritas",
-    detail: "Tampilan awal mempertahankan semua bisnis; filter tanpa website hanya diterapkan saat dipilih.",
+    term: "Kelebihan",
+    detail: "Hasil Google Maps diminta saat scan berjalan, lalu dapat difilter dan diekspor ke CSV tanpa data contoh.",
   },
   {
-    term: "Ekspor",
-    detail: "CSV mengikuti filter aktif dan menetralkan awalan formula sebelum file diunduh.",
+    term: "Cocok untuk",
+    detail: "Agen web, freelancer, tim sales, dan konsultan digital yang ingin menyiapkan prospek pasar lokal.",
   },
 ];
 
 const specifications = [
-  ["Pengambilan", "Live request", "Cache-Control: no-store"],
-  ["Cakupan", "10 hingga semua hasil tersedia", "Bergantung tier"],
-  ["Akses", "Kode aktivasi", "Tanpa login · aktif 1 bulan sejak redeem"],
-  ["Jeda", "1 jam / 1 menit / tanpa cooldown", "Free / Pro / Max"],
-  ["Kolom kosong", "Dipertahankan kosong", "Tidak ditebak"],
-  ["Mode backend", "Google live / web / queue", "Bergantung konfigurasi"],
+  ["Sumber prospek", "Google Maps live", "Data diminta saat scan dijalankan"],
+  ["Alur kerja", "Cari · filter · ekspor", "Siap untuk riset dan outreach"],
+  ["Cocok untuk", "Layanan digital lokal", "Agen web, freelancer, dan tim sales"],
+  ["Akses", "Free, Pro, atau Max", "Pilih kapasitas sesuai ritme pencarian"],
+  ["Data", "Kontak sesuai sumber", "Kolom kosong tetap transparan"],
+  ["Langkah berikutnya", "Pilih paket lalu mulai scan", "CTA tersedia di setiap paket"],
 ];
 
 const processSteps = [
   {
     icon: "query",
-    coordinate: "01 / INPUT",
-    title: "Kueri dibentuk",
-    detail: "Niche, kota, negara, bahasa, dan batas hasil dipadatkan menjadi satu permintaan yang dapat dilacak.",
+    coordinate: "01 / TEMUKAN",
+    title: "Tentukan pasar lokal",
+    detail: "Masukkan niche dan wilayah untuk mengarahkan pencarian kepada bisnis yang relevan dengan layanan Anda.",
   },
   {
     icon: "filter",
-    coordinate: "02 / FILTER",
-    title: "Celah dipertahankan",
-    detail: "Website, email, atau telepon yang tidak tersedia tetap kosong—bukan ditebak agar tabel terlihat penuh.",
+    coordinate: "02 / PILAH",
+    title: "Fokus pada peluang",
+    detail: "Gunakan ketersediaan website, email, dan telepon sebagai konteks untuk memprioritaskan tindak lanjut.",
   },
   {
     icon: "export",
-    coordinate: "03 / OUTPUT",
-    title: "Antrean siap dibawa",
-    detail: "Filter aktif menentukan baris CSV; awalan formula dinetralkan sebelum file meninggalkan browser.",
+    coordinate: "03 / TINDAK LANJUT",
+    title: "Bawa daftar kerja Anda",
+    detail: "Ekspor hasil yang dipilih ke CSV untuk riset, penawaran layanan, dan percakapan penjualan berikutnya.",
   },
 ] as const;
 
@@ -107,16 +108,16 @@ export default function DashboardPage() {
       <main className="dashboard-page">
         <section className="dashboard-hero wb-shell" aria-labelledby="dashboard-title">
           <div className="dashboard-hero__copy wb-reveal" style={{ "--reveal-index": 0 } as React.CSSProperties}>
-            <p className="dashboard-kicker">Google Maps live · no-store</p>
-            <h1 id="dashboard-title">Dari pencarian lokal ke data siap kerja.</h1>
+            <p className="dashboard-kicker">Prospek lokal · Google Maps live</p>
+            <h1 id="dashboard-title">Temukan calon klien lokal yang siap Anda dekati.</h1>
             <p className="dashboard-hero__lede">
-              MScrape mengubah satu niche dan satu wilayah menjadi daftar bisnis yang dapat
-              diperiksa, difilter, lalu dibawa ke CSV tanpa mengisi celah data dengan tebakan.
+              MScrape membantu Anda mencari bisnis lokal yang belum memiliki website, memeriksa data yang tersedia,
+              lalu membawa daftar prospek ke alur penawaran layanan digital Anda.
             </p>
-            <dl className="hero-facts" aria-label="Karakteristik utama">
-              <div><dt>Data contoh</dt><dd>Tidak digunakan</dd></div>
-              <div><dt>Cache pencarian</dt><dd>Dimatikan</dd></div>
-              <div><dt>Rentang hasil</dt><dd>10—semua tersedia</dd></div>
+            <dl className="hero-facts" aria-label="Manfaat utama MScrape">
+              <div><dt>Target peluang</dt><dd>Bisnis tanpa website</dd></div>
+              <div><dt>Data pencarian</dt><dd>Google Maps live</dd></div>
+              <div><dt>Hasil kerja</dt><dd>Siap difilter ke CSV</dd></div>
             </dl>
           </div>
 
@@ -152,7 +153,7 @@ export default function DashboardPage() {
               priority
             />
             <figcaption id="tour-caption">
-              Tur singkat workspace Produksi—mulai dari konfigurasi hingga hasil siap difilter.
+              Lihat bagaimana MScrape membantu mengubah niche dan wilayah menjadi daftar prospek lokal yang bisa ditindaklanjuti.
             </figcaption>
           </figure>
         </section>
@@ -162,14 +163,14 @@ export default function DashboardPage() {
             <header className="dashboard-pricing__head">
               <div>
                 <p className="dashboard-pricing__kicker">Harga akses · Pro/Max aktif 1 bulan</p>
-                <h2 id="pricing-title">Pilih kapasitas sebelum mulai scan.</h2>
+                <h2 id="pricing-title">Pilih akses yang mendukung ritme penjualan Anda.</h2>
               </div>
               <div className="dashboard-pricing__intro">
                 <p>
-                  Free langsung aktif. Pro dan Max dibeli dari admin, lalu masa aktif dihitung
-                  sejak kode berhasil diredeem di Produksi.
+                  Mulai gratis untuk mencoba alur kerja. Pilih Pro atau Max saat Anda membutuhkan kapasitas pencarian
+                  yang lebih besar untuk membangun daftar prospek secara konsisten.
                 </p>
-                <span aria-hidden="true">Geser kartu untuk membandingkan →</span>
+                <span aria-hidden="true">Geser kartu untuk memilih paket →</span>
               </div>
             </header>
 
@@ -200,29 +201,27 @@ export default function DashboardPage() {
             </div>
 
             <p className="dashboard-pricing__note">
-              Butuh bantuan memilih? <a href={adminWhatsapp} target="_blank" rel="noreferrer">Chat admin · 0851 1134 9699 ↗</a>
+              Ingin memilih paket yang tepat? <a href={adminWhatsapp} target="_blank" rel="noreferrer">Chat admin MScrape · 0851 1134 9699 ↗</a>
             </p>
           </div>
         </section>
 
         <section className="dashboard-essay wb-shell dashboard-scroll-scene" aria-labelledby="essay-title">
           <header className="dashboard-section-head">
-            <h2 id="essay-title">Satu request, jejak yang dapat diperiksa.</h2>
+            <h2 id="essay-title">Satu alat untuk membuka peluang sebelum percakapan dimulai.</h2>
             <p>
-              Dashboard ini menjelaskan perilaku produk. Pekerjaan sebenarnya tetap berada di
-              Produksi agar konteks membaca dan konteks menjalankan scan tidak bercampur.
+              MScrape menyusun titik awal pencarian prospek. Workspace Produksi tetap menjadi tempat Anda menjalankan
+              scan, memeriksa hasil, dan menyiapkan daftar untuk ditindaklanjuti.
             </p>
           </header>
           <div className="dashboard-essay__body">
             <p>
-              Ketika form dikirim, route server membentuk kueri dari niche, kota, negara, bahasa,
-              dan batas hasil. Mode Google live mengembalikan hasil dalam request yang sama;
-              backend web atau queue dapat melanjutkannya sebagai job yang dipantau berkala.
+              Ketika Anda menjual website, strategi digital, atau layanan pemasaran, bisnis yang belum memiliki website
+              dapat menjadi pintu masuk percakapan yang relevan. Masukkan niche dan wilayah untuk mulai memetakan peluang lokal.
             </p>
             <p>
-              Data yang diterima tetap apa adanya. Nama, alamat, telepon, email, website, rating,
-              koordinat, dan tautan sumber hanya ditampilkan bila sumber menyediakannya. Tidak
-              ada skor prospek, testimoni, atau statistik keberhasilan yang dibuat untuk mengisi UI.
+              Data yang ditampilkan mengikuti hasil yang tersedia dari sumber: nama, alamat, telepon, email, website,
+              rating, koordinat, dan tautan sumber. Transparansi ini membantu Anda menentukan prioritas outreach dengan konteks yang jelas.
             </p>
           </div>
           <dl className="principle-ledger">
@@ -238,10 +237,10 @@ export default function DashboardPage() {
         <section className="dashboard-process" aria-labelledby="process-title">
           <div className="dashboard-process__inner wb-shell dashboard-scroll-scene">
             <header className="dashboard-process__head">
-              <h2 id="process-title">Dari titik peta ke antrean kerja.</h2>
+              <h2 id="process-title">Dari pencarian lokal ke peluang penjualan.</h2>
               <p>
-                Pola koordinat bukan tempelan dekoratif. Ia menandai tiga perubahan bentuk data
-                yang benar-benar terjadi sebelum hasil bisa diunduh.
+                Tiga langkah sederhana menjaga fokus Anda: temukan bisnis yang relevan, pilah berdasarkan konteks,
+                lalu bawa daftar pilihan ke proses tindak lanjut.
               </p>
             </header>
             <ol className="process-track">
@@ -261,9 +260,9 @@ export default function DashboardPage() {
 
         <section className="dashboard-capture wb-shell dashboard-scroll-scene" aria-labelledby="capture-title">
           <header className="dashboard-section-head dashboard-section-head--compact">
-            <h2 id="capture-title">UI yang menunjukkan sumber keputusan.</h2>
+            <h2 id="capture-title">Workspace yang dibuat untuk mempercepat tindak lanjut.</h2>
             <p>
-              Satu tangkapan nyata dari Produksi menjadi dokumentasi visual, bukan dekorasi.
+              Satu tampilan Produksi memperlihatkan alur dari konfigurasi pencarian sampai daftar prospek siap diperiksa.
             </p>
           </header>
           <figure className="product-capture">
@@ -282,9 +281,9 @@ export default function DashboardPage() {
             </div>
             <figcaption>
               <ol className="capture-legend">
-                <li><span>1</span> Konfigurasi pencarian tetap ringkas dan berlabel jelas.</li>
-                <li><span>2</span> Status API dan request dibaca pada konteks yang sama.</li>
-                <li><span>3</span> Filter serta ekspor bekerja pada hasil yang benar-benar diterima.</li>
+                <li><span>1</span> Tentukan pasar yang ingin Anda jangkau melalui niche dan wilayah.</li>
+                <li><span>2</span> Baca status scan serta data yang tersedia pada konteks yang sama.</li>
+                <li><span>3</span> Filter hasil dan ekspor daftar pilihan untuk proses outreach.</li>
               </ol>
             </figcaption>
           </figure>
@@ -292,14 +291,14 @@ export default function DashboardPage() {
 
         <section className="dashboard-spec wb-shell dashboard-scroll-scene" aria-labelledby="spec-title">
           <header className="dashboard-section-head dashboard-section-head--compact">
-            <h2 id="spec-title">Batas produk dibuat terlihat.</h2>
-            <p>Setiap baris menyatakan perilaku yang sudah ada di source, bukan janji pemasaran.</p>
+            <h2 id="spec-title">Nilai yang Anda bawa ke proses penjualan.</h2>
+            <p>Setiap bagian dirancang untuk membantu Anda bergerak dari pencarian lokal menuju daftar prospek yang lebih terarah.</p>
           </header>
           <div className="spec-table-wrap">
             <table className="dashboard-spec__table">
-              <caption className="sr-only">Spesifikasi perilaku MScrape</caption>
+              <caption className="sr-only">Manfaat dan perilaku MScrape</caption>
               <thead>
-                <tr><th>Bagian</th><th>Perilaku</th><th>Catatan</th></tr>
+                <tr><th>Bagian</th><th>Manfaat</th><th>Untuk Anda</th></tr>
               </thead>
               <tbody>
                 {specifications.map(([part, behavior, note]) => (
@@ -313,11 +312,10 @@ export default function DashboardPage() {
         </section>
 
         <footer className="dashboard-footer wb-shell dashboard-scroll-scene">
-          <p className="dashboard-footer__statement">Data yang tidak ada tetap kosong.</p>
+          <p className="dashboard-footer__statement">Mulai dari peluang lokal. Lanjutkan dengan penawaran yang tepat.</p>
           <div className="dashboard-footer__meta">
-            <span className="app-wordmark">MSCRAPE/</span>
-            <span>Google Maps live · open source</span>
-            <a href="https://github.com/Rektzinch/MScrape-Web">Periksa source ↗</a>
+            <span className="app-wordmark" aria-label="Logo MScrape">MSCRAPE/</span>
+            <span>MScrape · pencarian prospek lokal untuk layanan digital</span>
           </div>
         </footer>
       </main>

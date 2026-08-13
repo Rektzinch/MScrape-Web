@@ -713,6 +713,9 @@
 .dashboard-footer {
   padding-block: var(--space-4xl) max(var(--space-xl), env(safe-area-inset-bottom));
   border-top: var(--rule-hair) solid var(--color-rule);
+  display: grid;
+  justify-items: center;
+  text-align: center;
 }
 
 .dashboard-footer__statement {
@@ -726,10 +729,11 @@
 }
 
 .dashboard-footer__meta {
+  width: min(100%, 40rem);
   padding-block-start: var(--space-md);
   border-top: var(--rule-strong) solid var(--color-ink);
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
   gap: var(--space-md);
   color: var(--color-muted);
   font-size: var(--text-sm);
@@ -1943,7 +1947,7 @@
   }
 
   .dashboard-footer__meta {
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr);
     align-items: center;
   }
 
