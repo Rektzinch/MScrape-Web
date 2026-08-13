@@ -25,7 +25,7 @@ const principles = [
 const specifications = [
   ["Pengambilan", "Live request", "Cache-Control: no-store"],
   ["Cakupan", "10 hingga 500 tempat", "Bergantung tier"],
-  ["Akses", "Kode aktivasi", "Tanpa login"],
+  ["Akses", "Kode aktivasi", "Tanpa login · aktif 3 bulan sejak redeem"],
   ["Jeda", "5 menit / 30 detik / tanpa cooldown", "Free / Pro / Max"],
   ["Kolom kosong", "Dipertahankan kosong", "Tidak ditebak"],
   ["Mode backend", "Google live / web / queue", "Bergantung konfigurasi"],
@@ -49,6 +49,32 @@ const processSteps = [
     coordinate: "03 / OUTPUT",
     title: "Antrean siap dibawa",
     detail: "Filter aktif menentukan baris CSV; awalan formula dinetralkan sebelum file meninggalkan browser.",
+  },
+] as const;
+
+const adminWhatsapp = "https://wa.me/6285111349699";
+
+const pricing = [
+  {
+    tier: "Free",
+    price: "Rp0",
+    term: "aktif otomatis",
+    detail: "10 hasil · jeda 5 menit / request",
+    cta: null,
+  },
+  {
+    tier: "Pro",
+    price: "Rp27.000",
+    term: "/ 3 bulan",
+    detail: "Hingga 100 hasil · jeda 30 detik / request",
+    cta: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Pro 3 bulan seharga Rp27.000.")}`,
+  },
+  {
+    tier: "Max",
+    price: "Rp55.000",
+    term: "/ 3 bulan",
+    detail: "Hingga 500 hasil · tanpa cooldown",
+    cta: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Max 3 bulan seharga Rp55.000.")}`,
   },
 ] as const;
 
@@ -171,6 +197,35 @@ export default function DashboardPage() {
               ))}
             </ol>
           </div>
+        </section>
+
+        <section className="dashboard-pricing wb-shell" aria-labelledby="pricing-title">
+          <header className="dashboard-section-head dashboard-section-head--compact">
+            <h2 id="pricing-title">Pilih kapasitas kerja.</h2>
+            <p>
+              Free langsung aktif. Pro dan Max dibeli dari admin, lalu masa tiga bulan dihitung
+              sejak kode berhasil diredeem di Produksi.
+            </p>
+          </header>
+          <div className="pricing-ledger" aria-label="Harga lisensi MScrape">
+            {pricing.map((plan) => (
+              <article className="pricing-ledger__row" key={plan.tier}>
+                <div className="pricing-ledger__tier">
+                  <h3>{plan.tier}</h3>
+                  <p>{plan.detail}</p>
+                </div>
+                <p className="pricing-ledger__price"><strong>{plan.price}</strong><span>{plan.term}</span></p>
+                {plan.cta ? (
+                  <a href={plan.cta} target="_blank" rel="noreferrer">Beli via WhatsApp ↗</a>
+                ) : (
+                  <span className="pricing-ledger__included">Tanpa kode</span>
+                )}
+              </article>
+            ))}
+          </div>
+          <p className="dashboard-pricing__note">
+            Admin WhatsApp: <a href={adminWhatsapp} target="_blank" rel="noreferrer">0851 1134 9699 ↗</a>
+          </p>
         </section>
 
         <section className="dashboard-capture wb-shell" aria-labelledby="capture-title">

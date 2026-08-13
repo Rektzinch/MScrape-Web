@@ -51,6 +51,8 @@ cobalt, gradient hero, atau warna inline di luar token.
 - Button press bergerak 1 px selama 100–120 ms. Dropdown masuk selama 180 ms.
 - Produksi hanya memakai spinner, progress, dan dropdown sebagai tiga primitive
   motion. `prefers-reduced-motion` mematikan motion spasial.
+- Aksi operasional memberi feedback inline, lalu dicatat pada badge aktivitas;
+  snackbar dipakai untuk hasil async, kegagalan, aktivasi, dan ekspor.
 - Semua target sentuh minimal 44 px dan label klik tidak boleh membungkus.
 
 ## Model akses
@@ -59,7 +61,10 @@ cobalt, gradient hero, atau warna inline di luar token.
 - Pro: 10/50/75/100 hasil, cooldown 30 detik.
 - Max: 10/50/75/100/150/250/500 hasil, tanpa cooldown.
 - Kode aktivasi diverifikasi server dan disimpan dalam cookie HttpOnly,
-  SameSite=Lax. API tetap melakukan enforcement walaupun UI dimanipulasi.
+  SameSite=Lax. Sesi Pro/Max kedaluwarsa tiga bulan sejak kode diredeem.
+  API tetap melakukan enforcement walaupun UI dimanipulasi.
+- Harga Dashboard: Free Rp0; Pro Rp27.000 / 3 bulan; Max Rp55.000 / 3 bulan.
+- Pembelian diarahkan ke admin melalui `https://wa.me/6285111349699`.
 
 ## Per halaman
 

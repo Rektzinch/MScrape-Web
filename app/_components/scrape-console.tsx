@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { LeadRow } from "@/lib/leads";
 import { ALL_LIMITS, planAccess, type PlanAccess, type ResultLimit } from "@/lib/plans";
 import { SearchableCombobox, type ComboboxOption } from "./searchable-combobox";
@@ -26,6 +26,18 @@ type JobState = {
 };
 
 type WebsiteFilter = "ready" | "missing" | "all" | "present";
+type NoticeTone = "info" | "success" | "error";
+
+type ActionNotice = {
+  id: number;
+  title: string;
+  detail: string;
+  tone: NoticeTone;
+  createdAt: string;
+  unread: boolean;
+};
+
+const ADMIN_WHATSAPP = "https://wa.me/6285111349699";
 
 const initialApiState: ApiState = {
   checked: false,
@@ -89,6 +101,20 @@ function countdownLabel(seconds: number) {
   return `${minutes}:${remainder}`;
 }
 
+function expiryLabel(expiresAt: string | null) {
+  if (!expiresAt) return "";
+  return new Intl.DateTimeFormat("id-ID", {
+    dateStyle: "long",
+  }).format(new Date(expiresAt));
+}
+
+function noticeTime(createdAt: string) {
+  return new Intl.DateTimeFormat("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(createdAt));
+}
+
 export function ScrapeConsole() {
   const [api, setApi] = useState<ApiState>(initialApiState);
   const [job, setJob] = useState<JobState | null>(null);
@@ -102,7 +128,33 @@ export function ScrapeConsole() {
   const [activating, setActivating] = useState(false);
   const [pendingLimit, setPendingLimit] = useState<ResultLimit | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [notices, setNotices] = useState<ActionNotice[]>([]);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [toast, setToast] = useState<ActionNotice | null>(null);
   const activationRef = useRef<HTMLInputElement>(null);
+  const noticeId = useRef(0);
+  const toastTimer = useRef<number | null>(null);
+  const notifiedJobs = useRef(new Set<string>());
+
+  const notify = useCallback((title: string, detail: string, tone: NoticeTone = "info") => {
+    noticeId.current += 1;
+    const next: ActionNotice = {
+      id: noticeId.current,
+      title,
+      detail,
+      tone,
+      createdAt: new Date().toISOString(),
+      unread: true,
+    };
+    setNotices((current) => [next, ...current].slice(0, 8));
+    setToast(next);
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(null), 5_000);
+  }, []);
+
+  useEffect(() => () => {
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -147,20 +199,40 @@ export function ScrapeConsole() {
           downloadReady: data.downloadReady === true,
           fetchedAt: data.status === "completed" && !current.fetchedAt ? new Date().toISOString() : current.fetchedAt,
         } : current);
-        if (data.status === "failed") setError(data.error || "Job dihentikan oleh backend.");
+        if (data.status === "completed" && !notifiedJobs.current.has(job.id)) {
+          notifiedJobs.current.add(job.id);
+          const received = Array.isArray(data.results) ? data.results.length : data.resultCount ?? 0;
+          notify("Scan selesai", `${received} data bisnis diterima dan siap difilter.`, "success");
+        }
+        if (data.status === "failed") {
+          const failure = data.error || "Job dihentikan oleh backend.";
+          setError(failure);
+          if (!notifiedJobs.current.has(`${job.id}:failed`)) {
+            notifiedJobs.current.add(`${job.id}:failed`);
+            notify("Scan berhenti", failure, "error");
+          }
+        }
       } catch (pollError) {
-        if (alive) setError(pollError instanceof Error ? pollError.message : "Status job gagal dibaca.");
+        if (alive) {
+          const failure = pollError instanceof Error ? pollError.message : "Status job gagal dibaca.";
+          setError(failure);
+          if (!notifiedJobs.current.has(`${job.id}:poll`)) {
+            notifiedJobs.current.add(`${job.id}:poll`);
+            notify("Status job tidak terbaca", `${failure} Sistem akan mencoba lagi.`, "error");
+          }
+        }
       }
     };
     void poll();
     const timer = window.setInterval(poll, 4_000);
     return () => { alive = false; window.clearInterval(timer); };
-  }, [job?.id, job?.status]);
+  }, [job?.id, job?.status, notify]);
 
   const remainingSeconds = api.access.nextAllowedAt
     ? Math.max(0, Math.ceil((new Date(api.access.nextAllowedAt).getTime() - now) / 1_000))
     : 0;
   const active = job?.status === "pending" || job?.status === "running";
+  const unreadCount = notices.filter((notice) => notice.unread).length;
   const canSubmit = api.reachable && !submitting && !active && remainingSeconds === 0;
   const sourceRows = job?.rows ?? [];
   const missingWebsiteCount = sourceRows.filter((row) => !row.website).length;
@@ -201,12 +273,42 @@ export function ScrapeConsole() {
     setPendingLimit(option ? Number(option.value) as ResultLimit : null);
     setActivationError("");
     setActivationOpen(true);
+    notify(
+      option ? `Batas ${option.value} masih terkunci` : "Aktivasi lisensi dibuka",
+      "Masukkan kode Pro atau Max dari admin. Masa aktif dimulai saat kode berhasil diredeem.",
+    );
+  }
+
+  function toggleNotifications() {
+    setNotificationOpen((open) => {
+      if (!open) setNotices((current) => current.map((notice) => ({ ...notice, unread: false })));
+      return !open;
+    });
+  }
+
+  function closeActivation() {
+    setActivationOpen(false);
+    notify("Aktivasi ditutup", "Tier dan batas hasil tidak berubah.");
+  }
+
+  function changeLimit(value: string) {
+    const nextLimit = Number(value) as ResultLimit;
+    setLimit(nextLimit);
+    notify("Batas hasil diperbarui", `Request berikutnya akan meminta maksimal ${nextLimit} data.`);
+  }
+
+  function changeWebsiteFilter(value: string) {
+    const nextFilter = value as WebsiteFilter;
+    setWebsiteFilter(nextFilter);
+    const selected = websiteOptions.find((option) => option.value === nextFilter);
+    notify("Filter hasil diperbarui", selected?.description || "Tabel hasil sudah disaring ulang.");
   }
 
   async function handleActivation(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setActivating(true);
     setActivationError("");
+    notify("Kode sedang diverifikasi", "Server memeriksa tier dan tanda tangan kode aktivasi.");
     try {
       const response = await fetch("/api/license/activate", {
         method: "POST",
@@ -220,8 +322,15 @@ export function ScrapeConsole() {
       setActivationCode("");
       setPendingLimit(null);
       setActivationOpen(false);
+      notify(
+        `Tier ${data.access.label} aktif`,
+        `Lisensi berlaku sampai ${expiryLabel(data.access.expiresAt)}.`,
+        "success",
+      );
     } catch (activationFailure) {
-      setActivationError(activationFailure instanceof Error ? activationFailure.message : "Lisensi tidak dapat diaktifkan.");
+      const failure = activationFailure instanceof Error ? activationFailure.message : "Lisensi tidak dapat diaktifkan.";
+      setActivationError(failure);
+      notify("Aktivasi gagal", failure, "error");
     } finally {
       setActivating(false);
     }
@@ -236,6 +345,7 @@ export function ScrapeConsole() {
     const keyword = String(form.get("keyword") || "");
     const city = String(form.get("city") || "");
     const payload = { keyword, city, country: form.get("country"), lang: form.get("lang"), limit, email: true };
+    notify("Scan dimulai", `${keyword} di ${city} sedang dipindai dengan batas ${limit} hasil.`);
     try {
       const response = await fetch("/api/scrape", {
         method: "POST",
@@ -248,7 +358,7 @@ export function ScrapeConsole() {
       };
       if (data.access) setApi((current) => ({ ...current, access: data.access! }));
       if (!response.ok || !data.jobId) throw new Error(messageFrom(data, "Job tidak dapat dibuat."));
-      setJob({
+      const nextJob = {
         id: data.jobId,
         status: data.status === "completed" ? "completed" : data.status === "running" ? "running" : "pending",
         resultCount: data.resultCount ?? null,
@@ -257,9 +367,18 @@ export function ScrapeConsole() {
         fetchedAt: data.fetchedAt || null,
         keyword,
         city,
-      });
+      } satisfies JobState;
+      setJob(nextJob);
+      if (nextJob.status === "completed") {
+        notifiedJobs.current.add(nextJob.id);
+        notify("Scan selesai", `${nextJob.rows.length} data bisnis diterima dan siap difilter.`, "success");
+      } else {
+        notify("Job diterima", "Backend memproses permintaan. Status diperbarui setiap empat detik.");
+      }
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Job tidak dapat dibuat.");
+      const failure = submitError instanceof Error ? submitError.message : "Job tidak dapat dibuat.";
+      setError(failure);
+      notify("Scan gagal dimulai", failure, "error");
     } finally {
       setSubmitting(false);
     }
@@ -276,6 +395,7 @@ export function ScrapeConsole() {
     link.click();
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    notify("CSV diunduh", `${visibleRows.length} baris dari filter aktif dimasukkan ke file.`, "success");
   }
 
   return (
@@ -289,7 +409,21 @@ export function ScrapeConsole() {
               {api.access.label}
             </button>
           </div>
-          <p className="api-state" data-online={api.reachable} aria-live="polite"><span className="api-state__dot" aria-hidden="true" />API {apiLabel}</p>
+          <div className="console__status">
+            <p className="api-state" data-online={api.reachable} aria-live="polite"><span className="api-state__dot" aria-hidden="true" />API {apiLabel}</p>
+            <div className="notification-center">
+              <button className="notification-trigger" type="button" onClick={toggleNotifications} aria-expanded={notificationOpen} aria-controls="notification-feed" aria-label={unreadCount ? `${unreadCount} notifikasi belum dibaca` : "Buka notifikasi"} data-busy={active || submitting}>
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.2 8.4a4.8 4.8 0 0 1 9.6 0v3.1l1.4 2.1H3.8l1.4-2.1V8.4Z" /><path d="M8.2 15.7a2 2 0 0 0 3.6 0" /></svg>
+                {unreadCount ? <span className="notification-badge" aria-hidden="true">{Math.min(unreadCount, 9)}</span> : null}
+              </button>
+              {notificationOpen ? (
+                <div className="notification-feed" id="notification-feed">
+                  <div className="notification-feed__head"><strong>Aktivitas</strong><span>{notices.length} terbaru</span></div>
+                  {notices.length ? <ol>{notices.map((notice) => <li key={notice.id} data-tone={notice.tone}><span className="notification-feed__signal" aria-hidden="true" /><div><strong>{notice.title}</strong><p>{notice.detail}</p><time dateTime={notice.createdAt}>{noticeTime(notice.createdAt)}</time></div></li>)}</ol> : <p className="notification-feed__empty">Belum ada aksi. Feedback scan akan dicatat di sini.</p>}
+                </div>
+              ) : null}
+            </div>
+          </div>
         </div>
 
         {activationOpen ? (
@@ -297,7 +431,11 @@ export function ScrapeConsole() {
             <div className="activation-panel__copy">
               <p className="activation-panel__label">Aktivasi lisensi</p>
               <h2>{pendingLimit ? `Buka batas ${pendingLimit} hasil` : "Masukkan kode dari admin"}</h2>
-              <p>Beli lisensi Pro atau Max dari admin, lalu tempel kode aktivasi di bawah. Tidak perlu membuat akun.</p>
+              <p>
+                Beli lisensi Pro atau Max dari admin, lalu tempel kode aktivasi di bawah. Tidak
+                perlu membuat akun; lisensi berlaku tiga bulan sejak berhasil diredeem.{" "}
+                <a href={ADMIN_WHATSAPP} target="_blank" rel="noreferrer" onClick={() => notify("WhatsApp admin dibuka", "Lanjutkan pembelian lisensi pada percakapan baru.")}>Hubungi admin ↗</a>
+              </p>
             </div>
             <label className="activation-panel__field">
               <span>Kode aktivasi</span>
@@ -306,7 +444,7 @@ export function ScrapeConsole() {
             </label>
             <div className="activation-panel__actions">
               <button className="button button--activation" type="submit" disabled={activating || !api.activationAvailable}>{activating ? "Memverifikasi" : "Aktifkan"}{activating ? <span className="button__spinner" aria-hidden="true" /> : <span aria-hidden="true">→</span>}</button>
-              <button className="activation-panel__close" type="button" onClick={() => setActivationOpen(false)}>Tutup</button>
+              <button className="activation-panel__close" type="button" onClick={closeActivation}>Tutup</button>
             </div>
           </form>
         ) : null}
@@ -317,7 +455,7 @@ export function ScrapeConsole() {
           <label className="field"><span>Negara</span><input name="country" type="text" defaultValue="Indonesia" required maxLength={100} autoComplete="country-name" /><small className="field__hint">Dipakai untuk memperjelas kueri.</small></label>
           <label className="field"><span>Bahasa</span><input name="lang" type="text" defaultValue="id" minLength={2} maxLength={2} required /><small className="field__hint">Kode ISO dua huruf.</small></label>
           <div className="field">
-            <SearchableCombobox label="Batas hasil" name="limit" value={String(limit)} options={limitOptions} onChange={(value) => setLimit(Number(value) as ResultLimit)} onLockedOption={requestActivation} helper={`Tier ${api.access.label} membuka hingga ${api.access.maxLimit} hasil.`} searchPlaceholder="Cari batas hasil" />
+            <SearchableCombobox label="Batas hasil" name="limit" value={String(limit)} options={limitOptions} onChange={changeLimit} onLockedOption={requestActivation} helper={`Tier ${api.access.label} membuka hingga ${api.access.maxLimit} hasil.${api.access.expiresAt ? ` Aktif sampai ${expiryLabel(api.access.expiresAt)}.` : ""}`} searchPlaceholder="Cari batas hasil" />
           </div>
           <button className="button button--primary field--wide" type="submit" disabled={!canSubmit} data-state={submitting ? "loading" : error ? "error" : job?.status === "completed" ? "success" : "default"}>
             <span>{submitting ? "Memindai Google Maps" : active ? "Menunggu hasil" : remainingSeconds > 0 ? `Tunggu ${countdownLabel(remainingSeconds)}` : !api.reachable ? "API belum terhubung" : job?.status === "completed" ? "Pindai wilayah baru" : error ? "Coba lagi" : "Mulai scan"}</span>
@@ -331,7 +469,7 @@ export function ScrapeConsole() {
       <div className="results" id="results">
         <div className="results__head">
           <div><h2>Lead hasil scan</h2><p>{sourceRows.length ? `${sourceRows.length} ${job?.keyword || "bisnis"} ditemukan → ${missingWebsiteCount} tidak punya website → ${contactableWithoutWebsiteCount} punya nomor yang bisa dihubungi.` : "Hasil nyata akan muncul di sini setelah scan selesai."}</p></div>
-          <div className="results__actions"><SearchableCombobox label="Filter website" value={websiteFilter} options={websiteOptions} onChange={(value) => setWebsiteFilter(value as WebsiteFilter)} searchPlaceholder="Cari filter" /><button className="button button--secondary" type="button" onClick={downloadQueueCsv} disabled={visibleRows.length === 0}>Unduh CSV <span aria-hidden="true">↓</span></button></div>
+          <div className="results__actions"><SearchableCombobox label="Filter website" value={websiteFilter} options={websiteOptions} onChange={changeWebsiteFilter} searchPlaceholder="Cari filter" /><button className="button button--secondary" type="button" onClick={downloadQueueCsv} disabled={visibleRows.length === 0}>Unduh CSV <span aria-hidden="true">↓</span></button></div>
         </div>
 
         <dl className="result-facts" aria-label="Ringkasan hasil"><div><dt>Diterima</dt><dd>{sourceRows.length || "—"}</dd></div><div><dt>Tanpa website</dt><dd>{sourceRows.length ? missingWebsiteCount : "—"}</dd></div><div><dt>Punya nomor</dt><dd>{sourceRows.length ? contactableWithoutWebsiteCount : "—"}</dd></div></dl>
@@ -346,6 +484,7 @@ export function ScrapeConsole() {
         ) : null}
         {job?.downloadReady && sourceRows.length === 0 ? <a className="text-link" href={`/api/jobs/${job.id}/download`}>Unduh file mentah dari backend <span aria-hidden="true">↓</span></a> : null}
       </div>
+      {toast ? <div className="action-toast" data-tone={toast.tone} role={toast.tone === "error" ? "alert" : "status"} aria-live={toast.tone === "error" ? "assertive" : "polite"}><span className="action-toast__signal" aria-hidden="true" /><div><strong>{toast.title}</strong><p>{toast.detail}</p></div><button type="button" onClick={() => setToast(null)} aria-label="Tutup feedback">×</button></div> : null}
     </section>
   );
 }

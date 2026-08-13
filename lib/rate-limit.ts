@@ -74,7 +74,9 @@ export function readRateAccess(
   request: Request,
   license: ResolvedLicense,
 ): PlanAccess {
-  if (license.access.cooldownSeconds === 0) return planAccess(license.access.tier);
+  if (license.access.cooldownSeconds === 0) {
+    return planAccess(license.access.tier, null, license.access.expiresAt);
+  }
 
   const now = Date.now();
   const key = keyFor(request, license);
@@ -84,7 +86,7 @@ export function readRateAccess(
     ? new Date(timestamp).toISOString()
     : null;
 
-  return planAccess(license.access.tier, nextAllowedAt);
+  return planAccess(license.access.tier, nextAllowedAt, license.access.expiresAt);
 }
 
 export function consumeRateLimit(
@@ -95,7 +97,12 @@ export function consumeRateLimit(
   cleanExpired(now);
 
   if (license.access.cooldownSeconds === 0) {
-    return { allowed: true, access: planAccess(license.access.tier), retryAfter: 0, cookie: null };
+    return {
+      allowed: true,
+      access: planAccess(license.access.tier, null, license.access.expiresAt),
+      retryAfter: 0,
+      cookie: null,
+    };
   }
 
   const key = keyFor(request, license);
@@ -108,7 +115,11 @@ export function consumeRateLimit(
     const retryAfter = Math.ceil((currentNextAllowedAt - now) / 1_000);
     return {
       allowed: false,
-      access: planAccess(license.access.tier, new Date(currentNextAllowedAt).toISOString()),
+      access: planAccess(
+        license.access.tier,
+        new Date(currentNextAllowedAt).toISOString(),
+        license.access.expiresAt,
+      ),
       retryAfter,
       cookie: null,
     };
@@ -118,7 +129,11 @@ export function consumeRateLimit(
   rateLimits.set(key, { nextAllowedAt });
   return {
     allowed: true,
-    access: planAccess(license.access.tier, new Date(nextAllowedAt).toISOString()),
+    access: planAccess(
+      license.access.tier,
+      new Date(nextAllowedAt).toISOString(),
+      license.access.expiresAt,
+    ),
     retryAfter: 0,
     cookie: cooldownCookie(key, nextAllowedAt, license.access.cooldownSeconds),
   };

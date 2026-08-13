@@ -17,16 +17,20 @@ npm run dev
 Pengguna tidak membuat akun. Semua sesi dimulai sebagai Free; opsi yang terkunci
 akan meminta kode aktivasi yang dibeli dari admin.
 
-| Tier | Batas hasil | Cooldown |
-| --- | --- | --- |
-| Free | 10 | 5 menit |
-| Pro | 10, 50, 75, 100 | 30 detik |
-| Max | 10, 50, 75, 100, 150, 250, 500 | Tanpa cooldown |
+| Tier | Harga | Batas hasil | Cooldown |
+| --- | --- | --- | --- |
+| Free | Rp0 | 10 | 5 menit |
+| Pro | Rp27.000 / 3 bulan | 10, 50, 75, 100 | 30 detik |
+| Max | Rp55.000 / 3 bulan | 10, 50, 75, 100, 150, 250, 500 | Tanpa cooldown |
 
-API memvalidasi tier dan cooldown di server. Lisensi disimpan sebagai cookie
-HttpOnly/SameSite=Lax, sedangkan cooldown memakai identitas client atau lisensi
-serta cookie yang ditandatangani. Manipulasi combobox di browser tidak membuka
-batas yang terkunci.
+API memvalidasi tier, tanggal kedaluwarsa, dan cooldown di server. Saat kode
+diredeem, lisensi Pro/Max disimpan sebagai sesi bertanda tangan pada cookie
+HttpOnly/SameSite=Lax dan berlaku tiga bulan. Cooldown memakai identitas client
+atau lisensi serta cookie yang ditandatangani. Manipulasi combobox di browser
+tidak membuka batas yang terkunci.
+
+Pembelian lisensi diarahkan ke admin melalui
+[WhatsApp 0851 1134 9699](https://wa.me/6285111349699).
 
 Tambahkan rahasia minimal 32 karakter:
 

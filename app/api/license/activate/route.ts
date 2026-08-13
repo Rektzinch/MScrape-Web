@@ -1,5 +1,4 @@
-import { activationIsConfigured, licenseCookie, validateLicenseCode } from "@/lib/license";
-import { planAccess } from "@/lib/plans";
+import { activationIsConfigured, redeemLicense, validateLicenseCode } from "@/lib/license";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -34,12 +33,14 @@ export async function POST(request: Request) {
     );
   }
 
+  const redeemed = redeemLicense(license);
+
   return Response.json(
-    { access: planAccess(license.tier) },
+    { access: redeemed.access },
     {
       headers: {
         ...noStoreHeaders,
-        "Set-Cookie": licenseCookie(license.code),
+        "Set-Cookie": redeemed.cookie,
       },
     },
   );
