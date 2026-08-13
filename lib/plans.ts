@@ -40,8 +40,8 @@ export const PLAN_RULES: Record<
   max: {
     tier: "max",
     label: "Max",
-    maxLimit: ALL_RESULTS_LIMIT,
-    allowedLimits: [...ALL_LIMITS],
+    maxLimit: 500,
+    allowedLimits: [...NUMERIC_LIMITS],
     cooldownSeconds: 0,
     allowsCustomLimit: true,
   },

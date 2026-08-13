@@ -12,6 +12,16 @@ type SearchInput = {
 const PAGE_SIZE = 500;
 const SEARCH_BUDGET_MS = 48_000;
 
+export type SearchCompletion = {
+  isComplete: boolean;
+  stoppedReason: "limit-reached" | "source-exhausted" | "time-budget";
+};
+
+export type LiveSearchResult = {
+  results: LeadRow[];
+  completion: SearchCompletion;
+};
+
 function at(value: unknown, ...indexes: number[]): unknown {
   return indexes.reduce<unknown>(
     (current, index) => (Array.isArray(current) ? current[index] : undefined),
@@ -162,12 +172,16 @@ export async function searchGoogleMapsLive(input: SearchInput) {
     try {
       const collected = new Map<string, LeadRow>();
       let offset = 0;
+      let stoppedReason: SearchCompletion["stoppedReason"] = "time-budget";
 
       while (Date.now() - searchStartedAt < SEARCH_BUDGET_MS) {
         const batchSize = requestedLimit === ALL_RESULTS_LIMIT
           ? PAGE_SIZE
           : Math.min(PAGE_SIZE, requestedLimit - collected.size);
-        if (batchSize <= 0) break;
+        if (batchSize <= 0) {
+          stoppedReason = "limit-reached";
+          break;
+        }
         const remainingBudget = SEARCH_BUDGET_MS - (Date.now() - searchStartedAt);
         const response = await fetch(`${baseUrl}?${buildParams(input, batchSize, offset)}`, {
           cache: "no-store",
@@ -190,8 +204,14 @@ export async function searchGoogleMapsLive(input: SearchInput) {
         const previousSize = collected.size;
         for (const result of page.results) collected.set(result.key, result.row);
 
-        if (requestedLimit !== ALL_RESULTS_LIMIT && collected.size >= requestedLimit) break;
-        if (page.candidateCount === 0 || collected.size === previousSize) break;
+        if (requestedLimit !== ALL_RESULTS_LIMIT && collected.size >= requestedLimit) {
+          stoppedReason = "limit-reached";
+          break;
+        }
+        if (page.candidateCount === 0 || collected.size === previousSize) {
+          stoppedReason = "source-exhausted";
+          break;
+        }
         offset += page.candidateCount;
       }
 
@@ -202,9 +222,13 @@ export async function searchGoogleMapsLive(input: SearchInput) {
         );
       }
 
-      return requestedLimit === ALL_RESULTS_LIMIT
-        ? results
-        : results.slice(0, requestedLimit);
+      return {
+        results: requestedLimit === ALL_RESULTS_LIMIT ? results : results.slice(0, requestedLimit),
+        completion: {
+          isComplete: stoppedReason === "source-exhausted",
+          stoppedReason,
+        },
+      } satisfies LiveSearchResult;
     } catch (error) {
       lastError = error;
       if (index < baseUrls.length - 1) {

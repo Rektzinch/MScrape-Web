@@ -1,8 +1,11 @@
 import { backendFetch, getBackendConfig } from "@/lib/backend";
+import { DurableStoreError } from "@/lib/durable-store";
+import { ownsJob } from "@/lib/job-ownership";
+import { existingVisitorSession } from "@/lib/visitor-session";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-export async function GET(_request: Request, context: RouteContext) {
+export async function GET(request: Request, context: RouteContext) {
   const config = getBackendConfig();
   if (!config) {
     return Response.json(
@@ -24,6 +27,10 @@ export async function GET(_request: Request, context: RouteContext) {
   }
 
   try {
+    if (!await ownsJob(id, existingVisitorSession(request))) {
+      return Response.json({ message: "File tidak tersedia." }, { status: 404 });
+    }
+
     const response = await backendFetch(
       config,
       `/api/v1/jobs/${encodeURIComponent(id)}/download`,
@@ -45,10 +52,13 @@ export async function GET(_request: Request, context: RouteContext) {
         "Cache-Control": "no-store",
       },
     });
-  } catch {
+  } catch (error) {
+    const message = error instanceof DurableStoreError
+      ? "Pemeriksaan akses file sementara tidak tersedia."
+      : "Backend tidak dapat dijangkau.";
     return Response.json(
-      { message: "Backend tidak dapat dijangkau." },
-      { status: 502 },
+      { message },
+      { status: error instanceof DurableStoreError ? 503 : 502 },
     );
   }
 }

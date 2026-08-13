@@ -4,10 +4,14 @@ import {
   getBackendConfig,
   readBackendJson,
 } from "@/lib/backend";
+import { DurableStoreError, durableStoreConfigured } from "@/lib/durable-store";
 import { searchGoogleMapsLive } from "@/lib/google-maps-live";
+import { rememberJobOwner } from "@/lib/job-ownership";
 import { resolveLicense } from "@/lib/license";
 import { ALL_RESULTS_LIMIT, allowsResultLimit, isResultLimit } from "@/lib/plans";
 import { consumeRateLimit, readRateAccess } from "@/lib/rate-limit";
+import { turnstileConfigured, verifyTurnstile } from "@/lib/turnstile";
+import { visitorSession } from "@/lib/visitor-session";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -24,6 +28,7 @@ type ScrapeInput = {
   lang?: unknown;
   limit?: unknown;
   email?: unknown;
+  turnstileToken?: unknown;
 };
 
 function cleanText(value: unknown, maxLength: number) {
@@ -33,7 +38,23 @@ function cleanText(value: unknown, maxLength: number) {
 export async function POST(request: Request) {
   const startedAt = Date.now();
   const config = getBackendConfig();
-  const license = resolveLicense(request);
+  if (!durableStoreConfigured()) {
+    return Response.json(
+      { message: "Kontrol keamanan belum dikonfigurasi oleh admin." },
+      { status: 503, headers: noStoreHeaders },
+    );
+  }
+
+  let license;
+  try {
+    license = await resolveLicense(request);
+  } catch {
+    return Response.json(
+      { message: "Kontrol keamanan sementara tidak tersedia." },
+      { status: 503, headers: noStoreHeaders },
+    );
+  }
+  const visitor = visitorSession(request);
 
   let body: ScrapeInput;
   try {
@@ -77,13 +98,31 @@ export async function POST(request: Request) {
       {
         message: `Batas ${limitLabel} memerlukan lisensi ${requiredTier}. Masukkan kode aktivasi dari admin.`,
         requiredTier: requiredTier.toLowerCase(),
-        access: readRateAccess(request, license),
+        access: await readRateAccess(request, license),
       },
       { status: 403, headers: noStoreHeaders },
     );
   }
 
-  const rate = consumeRateLimit(request, license);
+  if (license.access.tier === "free" && turnstileConfigured()) {
+    const verified = await verifyTurnstile(body.turnstileToken, request);
+    if (!verified) {
+      return Response.json(
+        { message: "Verifikasi keamanan diperlukan sebelum scan Free." },
+        { status: 403, headers: noStoreHeaders },
+      );
+    }
+  }
+
+  let rate: Awaited<ReturnType<typeof consumeRateLimit>>;
+  try {
+    rate = await consumeRateLimit(request, license);
+  } catch {
+    return Response.json(
+      { message: "Limiter keamanan sementara tidak tersedia." },
+      { status: 503, headers: noStoreHeaders },
+    );
+  }
   if (!rate.allowed) {
     return Response.json(
       {
@@ -101,8 +140,8 @@ export async function POST(request: Request) {
   const backendDepth = limit === ALL_RESULTS_LIMIT
     ? 100
     : Math.min(Math.max(Math.ceil(limit / 10), 1), 100);
-  const rateHeaders = rate.cookie
-    ? { ...noStoreHeaders, "Set-Cookie": rate.cookie }
+  const responseHeaders = visitor.cookie
+    ? { ...noStoreHeaders, "Set-Cookie": visitor.cookie }
     : noStoreHeaders;
 
   const query = `${keyword} in ${city}, ${country}`;
@@ -117,13 +156,14 @@ export async function POST(request: Request) {
 
   if (!config) {
     try {
-      const results = await searchGoogleMapsLive({
+      const search = await searchGoogleMapsLive({
         keyword,
         city,
         country,
         lang,
         limit,
       });
+      const { results, completion } = search;
       const fetchedAt = new Date().toISOString();
 
       console.info("[api/scrape] success", {
@@ -140,10 +180,11 @@ export async function POST(request: Request) {
           fetchedAt,
           resultCount: results.length,
           results,
+          completion,
           downloadReady: false,
           access: rate.access,
         },
-        { headers: rateHeaders },
+        { headers: responseHeaders },
       );
     } catch (error) {
       console.error("[api/scrape] failed", {
@@ -160,7 +201,7 @@ export async function POST(request: Request) {
               : "Google Maps tidak dapat dijangkau.",
           access: rate.access,
         },
-        { status: 502, headers: rateHeaders },
+        { status: 502, headers: responseHeaders },
       );
     }
   }
@@ -200,7 +241,7 @@ export async function POST(request: Request) {
           ),
           access: rate.access,
         },
-        { status: 502, headers: rateHeaders },
+        { status: 502, headers: responseHeaders },
       );
     }
 
@@ -208,7 +249,14 @@ export async function POST(request: Request) {
     if (typeof jobId !== "string" || !jobId) {
       return Response.json(
         { message: "Backend tidak mengembalikan ID job." },
-        { status: 502, headers: rateHeaders },
+        { status: 502, headers: responseHeaders },
+      );
+    }
+
+    if (!await rememberJobOwner(jobId, visitor.id)) {
+      return Response.json(
+        { message: "Job tidak dapat diamankan. Coba lagi." },
+        { status: 502, headers: responseHeaders },
       );
     }
 
@@ -219,12 +267,15 @@ export async function POST(request: Request) {
         mode: config.mode,
         access: rate.access,
       },
-      { status: 202, headers: rateHeaders },
+      { status: 202, headers: responseHeaders },
     );
-  } catch {
+  } catch (error) {
+    const message = error instanceof DurableStoreError
+      ? "Kontrol akses job sementara tidak tersedia."
+      : "Backend tidak dapat dijangkau.";
     return Response.json(
-      { message: "Backend tidak dapat dijangkau.", access: rate.access },
-      { status: 502, headers: rateHeaders },
+      { message, access: rate.access },
+      { status: error instanceof DurableStoreError ? 503 : 502, headers: responseHeaders },
     );
   }
 }

@@ -1,3 +1,4 @@
+import { DurableStoreError, durableStoreConfigured } from "@/lib/durable-store";
 import { activationIsConfigured, redeemLicense, validateLicenseCode } from "@/lib/license";
 
 export const dynamic = "force-dynamic";
@@ -8,9 +9,9 @@ const noStoreHeaders = {
 };
 
 export async function POST(request: Request) {
-  if (!activationIsConfigured()) {
+  if (!activationIsConfigured() || !durableStoreConfigured()) {
     return Response.json(
-      { message: "Aktivasi belum dikonfigurasi oleh admin." },
+      { message: "Aktivasi belum dikonfigurasi aman oleh admin." },
       { status: 503, headers: noStoreHeaders },
     );
   }
@@ -33,15 +34,28 @@ export async function POST(request: Request) {
     );
   }
 
-  const redeemed = redeemLicense(license);
+  try {
+    const redeemed = await redeemLicense(license);
+    if (!redeemed.redeemed) {
+      return Response.json(
+        { message: "Kode ini sudah diaktifkan. Hubungi admin untuk reset perangkat bila diperlukan." },
+        { status: 409, headers: noStoreHeaders },
+      );
+    }
 
-  return Response.json(
-    { access: redeemed.access },
-    {
-      headers: {
-        ...noStoreHeaders,
-        "Set-Cookie": redeemed.cookie,
+    return Response.json(
+      { access: redeemed.access },
+      {
+        headers: {
+          ...noStoreHeaders,
+          "Set-Cookie": redeemed.cookie,
+        },
       },
-    },
-  );
+    );
+  } catch (error) {
+    const message = error instanceof DurableStoreError
+      ? "Aktivasi sementara tidak tersedia. Coba lagi nanti."
+      : "Aktivasi tidak dapat diproses.";
+    return Response.json({ message }, { status: 503, headers: noStoreHeaders });
+  }
 }
