@@ -5,9 +5,9 @@ export async function GET() {
 
   if (!config) {
     return Response.json({
-      configured: false,
-      reachable: false,
-      mode: null,
+      configured: true,
+      reachable: true,
+      mode: "osm",
     });
   }
 

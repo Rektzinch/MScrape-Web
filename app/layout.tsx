@@ -3,9 +3,9 @@ import "@fontsource-variable/archivo";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "MScrape — Google Maps lead workspace",
+  title: "MScrape — Local business lead workspace",
   description:
-    "Frontend MScrape untuk menjalankan job Google Maps scraper melalui API yang di-host sendiri.",
+    "Cari data bisnis nyata dari sumber terbuka atau backend scraper yang kamu host sendiri.",
 };
 
 export const viewport: Viewport = {

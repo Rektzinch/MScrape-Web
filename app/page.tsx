@@ -2,8 +2,8 @@ import { ScrapeConsole } from "./_components/scrape-console";
 
 const workflow = [
   ["Atur", "Masukkan niche, kota, negara, bahasa, dan kedalaman pencarian."],
-  ["Kirim", "Frontend membuat job pada backend scraper yang kamu host sendiri."],
-  ["Pantau", "Status dibaca langsung dari API sampai job selesai atau gagal."],
+  ["Kirim", "Route server mencari bisnis lewat API publik yang benar-benar aktif."],
+  ["Pantau", "Hasil dibaca langsung dari respons API, tanpa baris buatan."],
   ["Ekspor", "Unduh hasil asli sebagai CSV; tidak ada baris yang dibuat di browser."],
 ];
 
@@ -27,10 +27,10 @@ export default function Home() {
       <section className="hero shell" id="top">
         <div className="rails" aria-hidden="true" />
         <div className="hero__content">
-          <p className="hero__meta">Google Maps lead workspace · open source</p>
+          <p className="hero__meta">Local business lead workspace · open source</p>
           <h1>temukan lead lokal<span className="period" aria-hidden="true" /></h1>
           <p className="hero__lede">
-            Masukkan niche dan wilayah. MScrape mengirim job ke backend yang kamu host,
+            Masukkan niche dan wilayah. MScrape mencari data bisnis dari sumber publik,
             lalu menampilkan hanya data yang benar-benar dikembalikan API.
           </p>
           <div className="hero__actions">
@@ -40,8 +40,8 @@ export default function Home() {
         </div>
         <div className="hero__object" aria-label="Status alur MScrape">
           <div className="object-row"><span>Input</span><strong>menunggu</strong></div>
-          <div className="object-row"><span>Backend</span><strong>env server</strong></div>
-          <div className="object-row"><span>Output</span><strong>API asli</strong></div>
+          <div className="object-row"><span>Sumber</span><strong>OpenStreetMap</strong></div>
+          <div className="object-row"><span>Output</span><strong>data API asli</strong></div>
         </div>
       </section>
 
@@ -54,7 +54,7 @@ export default function Home() {
         <div className="rails" aria-hidden="true" />
         <div className="section-head">
           <h2 id="workflow-title">empat langkah. satu sumber data.</h2>
-          <p>Alur sengaja transparan agar data asli dan status backend tidak tertutup animasi atau angka pemasaran.</p>
+          <p>Alur sengaja transparan agar data asli dan status API tidak tertutup animasi atau angka pemasaran.</p>
         </div>
         <ol className="workflow-list">
           {workflow.map(([title, copy], index) => (
@@ -71,19 +71,19 @@ export default function Home() {
       <section className="api-band shell shell--section" id="api" aria-labelledby="api-title">
         <div className="rails" aria-hidden="true" />
         <div className="api-band__copy">
-          <h2 id="api-title">REST API, bukan simulasi.</h2>
+          <h2 id="api-title">API publik, bukan simulasi.</h2>
           <p>
-            Frontend ini memakai kontrak API dari <code>gosom/google-maps-scraper</code>:
-            buat job, baca status, ambil hasil. URL dan API key tinggal di server Vercel.
+            Tanpa konfigurasi tambahan, pencarian memakai Nominatim/OpenStreetMap.
+            Backend DOM Google Maps tetap bisa dipasang melalui environment server.
           </p>
-          <a className="text-link" href="https://github.com/gosom/google-maps-scraper">
+          <a className="text-link" href="https://github.com/osm-search/Nominatim">
             Buka repositori API <span aria-hidden="true">↗</span>
           </a>
         </div>
         <dl className="api-spec">
-          <div><dt>Base URL</dt><dd>MAPS_API_BASE_URL</dd></div>
-          <div><dt>Mode</dt><dd>web / queue</dd></div>
-          <div><dt>Credential</dt><dd>server-only</dd></div>
+          <div><dt>Base URL</dt><dd>nominatim.openstreetmap.org</dd></div>
+          <div><dt>Mode</dt><dd>osm · siap pakai</dd></div>
+          <div><dt>Credential</dt><dd>tidak diperlukan</dd></div>
           <div><dt>Fallback data</dt><dd>tidak ada</dd></div>
         </dl>
       </section>
@@ -102,7 +102,8 @@ export default function Home() {
           <div className="footer__links">
             <a href="https://github.com/Indra-cahya/MScrape">Repo sumber</a>
             <a href="https://github.com/Rektzinch/MScrape-Web">Frontend</a>
-            <a href="https://github.com/gosom/google-maps-scraper">API</a>
+            <a href="https://github.com/osm-search/Nominatim">API</a>
+            <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a>
           </div>
           <span>Open source · 2026</span>
         </div>

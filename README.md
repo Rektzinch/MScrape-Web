@@ -1,6 +1,6 @@
 # MScrape Web
 
-Frontend Next.js untuk [MScrape](https://github.com/Indra-cahya/MScrape), siap dideploy ke Vercel dan dihubungkan ke backend [gosom/google-maps-scraper](https://github.com/gosom/google-maps-scraper).
+Frontend Next.js untuk [MScrape](https://github.com/Indra-cahya/MScrape), siap dideploy ke Vercel. Pencarian default memakai API publik [Nominatim/OpenStreetMap](https://github.com/osm-search/Nominatim), tanpa API key.
 
 Tidak ada seed, hasil demo, statistik buatan, atau fallback data. Tabel hanya dirender dari respons API nyata.
 
@@ -12,7 +12,11 @@ cp .env.example .env.local
 npm run dev
 ```
 
-## Backend API
+## API siap pakai
+
+Tidak ada environment variable wajib. Route `POST /api/scrape` memanggil endpoint pencarian Nominatim dari server, lalu mengembalikan hasil bisnis nyata secara sinkron. Respons identik di-cache selama 24 jam agar ramah terhadap layanan publik.
+
+## Backend Google Maps DOM opsional
 
 Backend scraper memakai browser automation sehingga dijalankan terpisah dari Vercel. Opsi termudah adalah Docker Web API:
 
@@ -25,7 +29,7 @@ docker run \
   -data-folder /gmapsdata
 ```
 
-Set variabel berikut di Vercel:
+Untuk mengganti sumber default dengan backend Google Maps milikmu, set variabel berikut di Vercel:
 
 ```env
 MAPS_API_BASE_URL=https://alamat-backend-kamu.example
@@ -44,16 +48,16 @@ MAPS_API_KEY=api-key-kamu
 
 ## Endpoint frontend
 
-- `GET /api/config` — status konfigurasi backend
-- `POST /api/scrape` — membuat job scrape
+- `GET /api/config` — sumber API yang sedang aktif
+- `POST /api/scrape` — mencari langsung via Nominatim atau membuat job backend
 - `GET /api/jobs/:id` — membaca status dan hasil job
 - `GET /api/jobs/:id/download` — meneruskan unduhan CSV pada mode web
 
 ## Deploy ke Vercel
 
 1. Import repositori ini di Vercel.
-2. Tambahkan environment variables sesuai mode backend.
-3. Deploy. Build command dan output Next.js terdeteksi otomatis.
+2. Deploy. Build command dan output Next.js terdeteksi otomatis.
+3. Environment backend Google Maps bersifat opsional.
 
 ## Verifikasi
 

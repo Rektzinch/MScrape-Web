@@ -4,6 +4,7 @@ import {
   getBackendConfig,
   readBackendJson,
 } from "@/lib/backend";
+import { searchNominatim } from "@/lib/nominatim";
 
 type ScrapeInput = {
   keyword?: unknown;
@@ -20,13 +21,6 @@ function cleanText(value: unknown, maxLength: number) {
 
 export async function POST(request: Request) {
   const config = getBackendConfig();
-
-  if (!config) {
-    return Response.json(
-      { message: "Backend API belum dikonfigurasi." },
-      { status: 503 },
-    );
-  }
 
   let body: ScrapeInput;
   try {
@@ -57,6 +51,39 @@ export async function POST(request: Request) {
   }
 
   const query = `${keyword} in ${city}, ${country}`;
+
+  if (!config) {
+    try {
+      const results = await searchNominatim({
+        keyword,
+        city,
+        country,
+        lang,
+        depth,
+        includeEmail: email,
+      });
+
+      return Response.json({
+        jobId: `osm-${crypto.randomUUID()}`,
+        status: "completed",
+        mode: "osm",
+        resultCount: results.length,
+        results,
+        downloadReady: false,
+      });
+    } catch (error) {
+      return Response.json(
+        {
+          message:
+            error instanceof Error
+              ? error.message
+              : "Nominatim tidak dapat dijangkau.",
+        },
+        { status: 502 },
+      );
+    }
+  }
+
   const path = config.mode === "queue" ? "/api/v1/scrape" : "/api/v1/jobs";
   const payload =
     config.mode === "queue"

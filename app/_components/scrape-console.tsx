@@ -7,7 +7,7 @@ type ApiState = {
   checked: boolean;
   configured: boolean;
   reachable: boolean;
-  mode: "web" | "queue" | null;
+  mode: "web" | "queue" | "osm" | null;
 };
 
 type JobState = {
@@ -157,6 +157,9 @@ export function ScrapeConsole() {
       const data = (await response.json()) as {
         jobId?: string;
         status?: JobState["status"];
+        resultCount?: number | null;
+        results?: LeadRow[];
+        downloadReady?: boolean;
         message?: string;
       };
 
@@ -166,10 +169,15 @@ export function ScrapeConsole() {
 
       setJob({
         id: data.jobId,
-        status: data.status === "running" ? "running" : "pending",
-        resultCount: null,
-        rows: [],
-        downloadReady: false,
+        status:
+          data.status === "completed"
+            ? "completed"
+            : data.status === "running"
+              ? "running"
+              : "pending",
+        resultCount: data.resultCount ?? null,
+        rows: Array.isArray(data.results) ? data.results : [],
+        downloadReady: data.downloadReady === true,
       });
     } catch (submitError) {
       setError(
@@ -238,8 +246,8 @@ export function ScrapeConsole() {
           <label className="check-field field--wide">
             <input name="email" type="checkbox" />
             <span>
-              Cari email dari situs bisnis
-              <small>Waktu proses mengikuti respons backend.</small>
+              Sertakan email yang tersedia
+              <small>Hanya alamat yang memang tersedia di sumber data.</small>
             </span>
           </label>
           <button
