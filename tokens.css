@@ -1,0 +1,60 @@
+:root {
+  --color-paper: oklch(99% 0.003 255);
+  --color-paper-2: oklch(97.2% 0.006 255);
+  --color-paper-3: oklch(94.5% 0.009 255);
+  --color-ink: oklch(16% 0.01 255);
+  --color-muted: oklch(42% 0.018 255);
+  --color-rule: oklch(87% 0.01 255);
+  --color-rule-strong: oklch(34% 0.02 255);
+  --color-accent: oklch(45% 0.19 264);
+  --color-accent-ink: oklch(99% 0.003 255);
+  --color-focus: var(--color-ink);
+  --color-focus-inner: var(--color-paper);
+  --color-success: oklch(51% 0.12 154);
+  --color-error: oklch(52% 0.2 28);
+  --color-warning: oklch(65% 0.14 84);
+  --color-transparent: oklch(0% 0 0 / 0);
+
+  --font-display: "Archivo Variable", "Arial Narrow", sans-serif;
+  --font-body: "Archivo Variable", Arial, sans-serif;
+  --font-mono: "Archivo Variable", Arial, sans-serif;
+
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --space-4xl: 6rem;
+  --space-5xl: 8rem;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.25rem;
+  --text-lg: 1.5625rem;
+  --text-xl: 1.953rem;
+  --text-2xl: 2.441rem;
+  --text-3xl: 3.052rem;
+  --text-display-s: clamp(2.75rem, 7vw, 5.25rem);
+  --text-display: clamp(3.25rem, 10.5vw, 8.5rem);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 120ms;
+  --dur-base: 190ms;
+  --dur-slow: 360ms;
+
+  --rule-hair: 1px;
+  --rule-strong: 2px;
+  --radius-control: 0;
+  --radius-card: 0;
+
+  --page-max: 80rem;
+  --page-gutter: clamp(1rem, 4vw, 3rem);
+  --nav-height: 4.5rem;
+  --control-height: 3rem;
+}

@@ -1,0 +1,8 @@
+{
+  "date": "2026-08-13",
+  "framework": "Next.js 16 App Router",
+  "font": "Archivo Variable",
+  "palette": "Grid / ultramarine",
+  "motion": "CSS-only restrained interactions",
+  "spacing": "4px semantic scale"
+}
