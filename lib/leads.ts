@@ -5,6 +5,9 @@ export type LeadRow = {
   website: string;
   email: string;
   rating: string;
+  category: string;
+  coordinates: string;
+  source: string;
 };
 
 function asText(value: unknown): string {
@@ -40,6 +43,9 @@ export function normalizeLead(value: unknown): LeadRow | null {
     website: pick(source, ["website", "Website"]),
     email: pick(source, ["email", "emails", "Emails"]),
     rating: pick(source, ["review_rating", "rating", "Rating"]),
+    category: pick(source, ["category", "categories", "type", "Category"]),
+    coordinates: pick(source, ["coordinates", "Coordinates"]),
+    source: pick(source, ["google_maps_url", "link", "url", "Source"]),
   };
 
   return Object.values(row).some(Boolean) ? row : null;

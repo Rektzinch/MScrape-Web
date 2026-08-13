@@ -7,7 +7,7 @@ export async function GET() {
     return Response.json({
       configured: true,
       reachable: true,
-      mode: "osm",
+      mode: "photon",
     });
   }
 

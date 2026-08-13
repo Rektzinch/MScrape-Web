@@ -574,7 +574,7 @@ h3 {
 
 table {
   width: 100%;
-  min-width: 58rem;
+  min-width: 82rem;
   border-collapse: collapse;
   font-size: var(--text-sm);
 }
@@ -593,6 +593,12 @@ th {
   font-size: var(--text-xs);
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+td a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
 }
 
 .section-head {

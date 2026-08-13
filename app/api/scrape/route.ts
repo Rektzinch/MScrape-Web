@@ -4,14 +4,14 @@ import {
   getBackendConfig,
   readBackendJson,
 } from "@/lib/backend";
-import { searchNominatim } from "@/lib/nominatim";
+import { searchPhoton } from "@/lib/photon";
 
 type ScrapeInput = {
   keyword?: unknown;
   city?: unknown;
   country?: unknown;
   lang?: unknown;
-  depth?: unknown;
+  limit?: unknown;
   email?: unknown;
 };
 
@@ -20,6 +20,7 @@ function cleanText(value: unknown, maxLength: number) {
 }
 
 export async function POST(request: Request) {
+  const startedAt = Date.now();
   const config = getBackendConfig();
 
   let body: ScrapeInput;
@@ -33,7 +34,8 @@ export async function POST(request: Request) {
   const city = cleanText(body.city, 100);
   const country = cleanText(body.country, 100);
   const lang = cleanText(body.lang, 2).toLowerCase() || "en";
-  const depth = Math.min(Math.max(Number(body.depth) || 1, 1), 10);
+  const limit = Math.min(Math.max(Number(body.limit) || 50, 30), 50);
+  const backendDepth = Math.min(Math.max(Math.ceil(limit / 10), 1), 10);
   const email = body.email === true;
 
   if (!keyword || !city || !country) {
@@ -52,32 +54,50 @@ export async function POST(request: Request) {
 
   const query = `${keyword} in ${city}, ${country}`;
 
+  console.info("[api/scrape] request", {
+    provider: config ? `google-maps-${config.mode}` : "photon",
+    keyword,
+    city,
+    country,
+    limit,
+  });
+
   if (!config) {
     try {
-      const results = await searchNominatim({
+      const results = await searchPhoton({
         keyword,
         city,
         country,
-        lang,
-        depth,
-        includeEmail: email,
+        limit,
+      });
+
+      console.info("[api/scrape] success", {
+        provider: "photon",
+        count: results.length,
+        durationMs: Date.now() - startedAt,
       });
 
       return Response.json({
-        jobId: `osm-${crypto.randomUUID()}`,
+        jobId: `photon-${crypto.randomUUID()}`,
         status: "completed",
-        mode: "osm",
+        mode: "photon",
         resultCount: results.length,
         results,
         downloadReady: false,
       });
     } catch (error) {
+      console.error("[api/scrape] failed", {
+        provider: "photon",
+        message: error instanceof Error ? error.message : String(error),
+        durationMs: Date.now() - startedAt,
+      });
+
       return Response.json(
         {
           message:
             error instanceof Error
               ? error.message
-              : "Nominatim tidak dapat dijangkau.",
+              : "Photon tidak dapat dijangkau.",
         },
         { status: 502 },
       );
@@ -90,7 +110,7 @@ export async function POST(request: Request) {
       ? {
           keyword: query,
           lang,
-          max_depth: depth,
+          max_depth: backendDepth,
           email,
           timeout: 300,
         }
@@ -98,7 +118,7 @@ export async function POST(request: Request) {
           name: query,
           keywords: [query],
           lang,
-          depth,
+          depth: backendDepth,
           email,
           max_time: 300,
         };

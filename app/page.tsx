@@ -1,7 +1,7 @@
 import { ScrapeConsole } from "./_components/scrape-console";
 
 const workflow = [
-  ["Atur", "Masukkan niche, kota, negara, bahasa, dan kedalaman pencarian."],
+  ["Atur", "Masukkan niche, kota, negara, bahasa, dan jumlah hasil."],
   ["Kirim", "Route server mencari bisnis lewat API publik yang benar-benar aktif."],
   ["Pantau", "Hasil dibaca langsung dari respons API, tanpa baris buatan."],
   ["Ekspor", "Unduh hasil asli sebagai CSV; tidak ada baris yang dibuat di browser."],
@@ -40,7 +40,7 @@ export default function Home() {
         </div>
         <div className="hero__object" aria-label="Status alur MScrape">
           <div className="object-row"><span>Input</span><strong>menunggu</strong></div>
-          <div className="object-row"><span>Sumber</span><strong>OpenStreetMap</strong></div>
+          <div className="object-row"><span>Sumber</span><strong>Photon · OSM</strong></div>
           <div className="object-row"><span>Output</span><strong>data API asli</strong></div>
         </div>
       </section>
@@ -73,16 +73,17 @@ export default function Home() {
         <div className="api-band__copy">
           <h2 id="api-title">API publik, bukan simulasi.</h2>
           <p>
-            Tanpa konfigurasi tambahan, pencarian memakai Nominatim/OpenStreetMap.
+            Tanpa konfigurasi tambahan, satu request memakai Photon/OpenStreetMap
+            dan dapat mengembalikan hingga 50 tempat.
             Backend DOM Google Maps tetap bisa dipasang melalui environment server.
           </p>
-          <a className="text-link" href="https://github.com/osm-search/Nominatim">
+          <a className="text-link" href="https://github.com/komoot/photon">
             Buka repositori API <span aria-hidden="true">↗</span>
           </a>
         </div>
         <dl className="api-spec">
-          <div><dt>Base URL</dt><dd>nominatim.openstreetmap.org</dd></div>
-          <div><dt>Mode</dt><dd>osm · siap pakai</dd></div>
+          <div><dt>Base URL</dt><dd>photon.komoot.io/api</dd></div>
+          <div><dt>Mode</dt><dd>photon · 30–50 hasil</dd></div>
           <div><dt>Credential</dt><dd>tidak diperlukan</dd></div>
           <div><dt>Fallback data</dt><dd>tidak ada</dd></div>
         </dl>
@@ -102,7 +103,7 @@ export default function Home() {
           <div className="footer__links">
             <a href="https://github.com/Indra-cahya/MScrape">Repo sumber</a>
             <a href="https://github.com/Rektzinch/MScrape-Web">Frontend</a>
-            <a href="https://github.com/osm-search/Nominatim">API</a>
+            <a href="https://github.com/komoot/photon">API</a>
             <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a>
           </div>
           <span>Open source · 2026</span>

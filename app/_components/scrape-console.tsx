@@ -1,13 +1,13 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import type { LeadRow } from "@/lib/leads";
 
 type ApiState = {
   checked: boolean;
   configured: boolean;
   reachable: boolean;
-  mode: "web" | "queue" | "osm" | null;
+  mode: "web" | "queue" | "photon" | null;
 };
 
 type JobState = {
@@ -41,6 +41,9 @@ function rowsToCsv(rows: LeadRow[]) {
     "website",
     "email",
     "rating",
+    "category",
+    "coordinates",
+    "source",
   ];
   const escape = (value: string) => `"${value.replaceAll('"', '""')}"`;
   return [fields.join(","), ...rows.map((row) => fields.map((key) => escape(row[key])).join(","))].join("\n");
@@ -122,12 +125,13 @@ export function ScrapeConsole() {
     };
   }, [job?.id, job?.status]);
 
-  const apiLabel = useMemo(() => {
-    if (!api.checked) return "memeriksa koneksi";
-    if (!api.configured) return "belum dikonfigurasi";
-    if (!api.reachable) return "tidak terjangkau";
-    return `terhubung · mode ${api.mode}`;
-  }, [api]);
+  const apiLabel = !api.checked
+    ? "memeriksa koneksi"
+    : !api.configured
+      ? "belum dikonfigurasi"
+      : !api.reachable
+        ? "tidak terjangkau"
+        : `terhubung · mode ${api.mode}`;
 
   const active = job?.status === "pending" || job?.status === "running";
   const canSubmit = api.reachable && !submitting && !active;
@@ -144,8 +148,8 @@ export function ScrapeConsole() {
       city: form.get("city"),
       country: form.get("country"),
       lang: form.get("lang"),
-      depth: form.get("depth"),
-      email: form.get("email") === "on",
+      limit: form.get("limit"),
+      email: false,
     };
 
     try {
@@ -235,20 +239,13 @@ export function ScrapeConsole() {
             <small className="field__hint">Kode ISO dua huruf.</small>
           </label>
           <label className="field">
-            <span>Kedalaman</span>
-            <select name="depth" defaultValue="1">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
+            <span>Jumlah hasil maksimal</span>
+            <select name="limit" defaultValue="50">
+              <option value="30">30</option>
+              <option value="40">40</option>
+              <option value="50">50</option>
             </select>
-            <small className="field__hint">Nilai lebih besar membutuhkan waktu lebih lama.</small>
-          </label>
-          <label className="check-field field--wide">
-            <input name="email" type="checkbox" />
-            <span>
-              Sertakan email yang tersedia
-              <small>Hanya alamat yang memang tersedia di sumber data.</small>
-            </span>
+            <small className="field__hint">API mengembalikan hingga 50 tempat dalam satu request.</small>
           </label>
           <button
             className="button button--primary field--wide"
@@ -320,22 +317,32 @@ export function ScrapeConsole() {
             <thead>
               <tr>
                 <th>Bisnis</th>
+                <th>Kategori</th>
                 <th>Alamat</th>
+                <th>Koordinat</th>
                 <th>Telepon</th>
                 <th>Website</th>
                 <th>Email</th>
                 <th>Rating</th>
+                <th>Sumber</th>
               </tr>
             </thead>
             <tbody>
               {job.rows.map((row, index) => (
                 <tr key={`${row.business}-${row.address}-${index}`}>
                   <td>{row.business || "—"}</td>
+                  <td>{row.category || "—"}</td>
                   <td>{row.address || "—"}</td>
+                  <td>{row.coordinates || "—"}</td>
                   <td>{row.phone || "—"}</td>
-                  <td>{row.website || "—"}</td>
+                  <td>
+                    {row.website ? <a href={row.website} target="_blank" rel="noreferrer">Buka ↗</a> : "—"}
+                  </td>
                   <td>{row.email || "—"}</td>
                   <td>{row.rating || "—"}</td>
+                  <td>
+                    {row.source ? <a href={row.source} target="_blank" rel="noreferrer">OSM ↗</a> : "—"}
+                  </td>
                 </tr>
               ))}
             </tbody>
