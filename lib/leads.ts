@@ -5,8 +5,11 @@ export type LeadRow = {
   website: string;
   email: string;
   rating: string;
+  reviewCount: string;
   category: string;
   coordinates: string;
+  latitude: string;
+  longitude: string;
   source: string;
 };
 
@@ -36,6 +39,13 @@ export function normalizeLead(value: unknown): LeadRow | null {
   }
 
   const source = value as Record<string, unknown>;
+  const coordinates = pick(source, ["coordinates", "Coordinates"]);
+  const [derivedLatitude = "", derivedLongitude = ""] = coordinates
+    .split(",")
+    .map((part) => part.trim());
+  const latitude = pick(source, ["latitude", "lat", "Latitude"]) || derivedLatitude;
+  const longitude = pick(source, ["longitude", "lng", "lon", "Longitude"]) || derivedLongitude;
+
   const row: LeadRow = {
     business: pick(source, ["title", "name", "Business Name", "business_name"]),
     address: pick(source, ["address", "complete_address", "Full Address"]),
@@ -43,8 +53,11 @@ export function normalizeLead(value: unknown): LeadRow | null {
     website: pick(source, ["website", "Website"]),
     email: pick(source, ["email", "emails", "Emails"]),
     rating: pick(source, ["review_rating", "rating", "Rating"]),
+    reviewCount: pick(source, ["review_count", "reviews", "Reviews"]),
     category: pick(source, ["category", "categories", "type", "Category"]),
-    coordinates: pick(source, ["coordinates", "Coordinates"]),
+    coordinates: coordinates || (latitude && longitude ? `${latitude}, ${longitude}` : ""),
+    latitude,
+    longitude,
     source: pick(source, ["google_maps_url", "link", "url", "Source"]),
   };
 

@@ -1,34 +1,35 @@
 :root {
-  --color-paper: oklch(99% 0.003 255);
-  --color-paper-2: oklch(97.2% 0.006 255);
-  --color-paper-3: oklch(94.5% 0.009 255);
-  --color-ink: oklch(16% 0.01 255);
-  --color-muted: oklch(42% 0.018 255);
-  --color-rule: oklch(87% 0.01 255);
-  --color-rule-strong: oklch(34% 0.02 255);
-  --color-accent: oklch(45% 0.19 264);
-  --color-accent-ink: oklch(99% 0.003 255);
+  --color-paper: oklch(97.5% 0.012 68);
+  --color-paper-2: oklch(94.5% 0.018 68);
+  --color-paper-3: oklch(90.5% 0.022 68);
+  --color-ink: oklch(18% 0.018 48);
+  --color-muted: oklch(39% 0.026 48);
+  --color-rule: oklch(78% 0.024 62);
+  --color-rule-strong: oklch(52% 0.03 52);
+  --color-accent: oklch(48% 0.19 32);
+  --color-accent-ink: oklch(98% 0.01 68);
   --color-focus: var(--color-ink);
   --color-focus-inner: var(--color-paper);
-  --color-success: oklch(51% 0.12 154);
-  --color-error: oklch(52% 0.2 28);
-  --color-warning: oklch(65% 0.14 84);
+  --color-success: oklch(43% 0.12 152);
+  --color-error: oklch(46% 0.18 26);
+  --color-warning: oklch(50% 0.12 78);
   --color-transparent: oklch(0% 0 0 / 0);
 
-  --font-display: "Archivo Variable", "Arial Narrow", sans-serif;
+  --font-display: "Bricolage Grotesque Variable", "Archivo Variable", sans-serif;
   --font-body: "Archivo Variable", Arial, sans-serif;
   --font-mono: "Archivo Variable", Arial, sans-serif;
 
+  --space-3xs: 0.125rem;
   --space-2xs: 0.25rem;
   --space-xs: 0.5rem;
   --space-sm: 0.75rem;
   --space-md: 1rem;
   --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 4rem;
-  --space-4xl: 6rem;
-  --space-5xl: 8rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --space-4xl: 9rem;
+  --space-5xl: 12rem;
 
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -38,23 +39,28 @@
   --text-xl: 1.953rem;
   --text-2xl: 2.441rem;
   --text-3xl: 3.052rem;
-  --text-display-s: clamp(2.75rem, 7vw, 5.25rem);
-  --text-display: clamp(3.25rem, 10.5vw, 8.5rem);
+  --text-display-s: clamp(2.5rem, 7vw, 4.25rem);
+  --text-display: clamp(2.75rem, 8vw, 5.25rem);
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --dur-fast: 120ms;
-  --dur-base: 190ms;
-  --dur-slow: 360ms;
+  --dur-base: 200ms;
+  --dur-slow: 420ms;
 
   --rule-hair: 1px;
   --rule-strong: 2px;
-  --radius-control: 0;
-  --radius-card: 0;
+  --radius-control: 0.625rem;
+  --radius-card: 1rem;
 
-  --page-max: 80rem;
-  --page-gutter: clamp(1rem, 4vw, 3rem);
-  --nav-height: 4.5rem;
+  --page-max: 88rem;
+  --page-gutter: clamp(1rem, 4vw, 3.5rem);
+  --nav-height: 4rem;
   --control-height: 3rem;
+
+  --z-base: 1;
+  --z-raised: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
 }

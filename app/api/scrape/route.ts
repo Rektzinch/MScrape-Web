@@ -42,9 +42,9 @@ export async function POST(request: Request) {
   const city = cleanText(body.city, 100);
   const country = cleanText(body.country, 100);
   const lang = cleanText(body.lang, 2).toLowerCase() || "en";
-  const limit = Math.min(Math.max(Number(body.limit) || 50, 30), 50);
+  const limit = Math.min(Math.max(Number(body.limit) || 100, 30), 100);
   const backendDepth = Math.min(Math.max(Math.ceil(limit / 10), 1), 10);
-  const email = body.email === true;
+  const email = body.email !== false;
 
   if (!keyword || !city || !country) {
     return Response.json(

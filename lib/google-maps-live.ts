@@ -25,6 +25,25 @@ function stringList(value: unknown) {
   return Array.isArray(value) ? value.map(text).filter(Boolean) : [];
 }
 
+const emailPattern = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i;
+
+function findEmail(value: unknown, depth = 0): string {
+  if (depth > 8) return "";
+
+  if (typeof value === "string") {
+    return value.match(emailPattern)?.[0] || "";
+  }
+
+  if (!Array.isArray(value)) return "";
+
+  for (const item of value) {
+    const email = findEmail(item, depth + 1);
+    if (email) return email;
+  }
+
+  return "";
+}
+
 function mapsUrl(
   business: string,
   address: string,
@@ -63,19 +82,21 @@ function toLead(value: unknown): { key: string; row: LeadRow } | null {
       address,
       phone: text(at(value, 178, 0, 0)),
       website: text(at(value, 7, 0)),
-      email: "",
-      rating:
-        rating && reviewCount ? `${rating} · ${reviewCount} ulasan` : rating,
+      email: findEmail(value),
+      rating,
+      reviewCount,
       category: stringList(at(value, 13)).join(", "),
       coordinates:
         latitude && longitude ? `${latitude}, ${longitude}` : "",
+      latitude,
+      longitude,
       source: mapsUrl(business, address, latitude, longitude, placeId),
     },
   };
 }
 
 function buildParams(input: SearchInput) {
-  const limit = Math.min(Math.max(input.limit, 30), 50);
+  const limit = Math.min(Math.max(input.limit, 30), 100);
   const params = new URLSearchParams({
     tbm: "map",
     authuser: "0",
@@ -129,7 +150,7 @@ export async function searchGoogleMapsLive(input: SearchInput) {
   const baseUrls = configuredUrl
     ? [configuredUrl]
     : ["https://maps.google.com/search", "https://www.google.com/search"];
-  const limit = Math.min(Math.max(input.limit, 30), 50);
+  const limit = Math.min(Math.max(input.limit, 30), 100);
   let lastError: unknown;
 
   for (const [index, baseUrl] of baseUrls.entries()) {

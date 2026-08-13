@@ -14,7 +14,7 @@ npm run dev
 
 ## API siap pakai
 
-Tidak ada environment variable wajib. Route `POST /api/scrape` membuat satu request server ke Google Maps dan mengembalikan 30–50 tempat nyata secara sinkron. Fetch memakai `cache: "no-store"`; route juga mengirim `Cache-Control: no-store`.
+Tidak ada environment variable wajib. Route `POST /api/scrape` membuat satu request server ke Google Maps dan dapat mengembalikan hingga 100 tempat nyata secara sinkron. Fetch memakai `cache: "no-store"`; route juga mengirim `Cache-Control: no-store`.
 
 Jika host utama Google gagal, terkena rate limit, atau mengembalikan format yang tidak dapat dibaca, route mencoba host pencarian Google cadangan di dalam request pengguna yang sama.
 

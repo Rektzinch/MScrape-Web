@@ -1,6 +1,13 @@
 [
   {
     "date": "2026-08-13",
+    "macrostructure": "Split Studio",
+    "theme": "Coral",
+    "enrichment": "none",
+    "brief": "Mobile-first lead scanner with no-website filtering and tidy CSV export"
+  },
+  {
+    "date": "2026-08-13",
     "macrostructure": "Workbench",
     "theme": "Grid",
     "enrichment": "Tier-A CSS product workspace",
