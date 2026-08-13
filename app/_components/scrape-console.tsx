@@ -1,9 +1,8 @@
 "use client";
 
 import { type FormEvent, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import type { LeadRow } from "@/lib/leads";
-import { ALL_LIMITS, ALL_RESULTS_LIMIT, NUMERIC_LIMITS, allowsResultLimit, planAccess, type PlanAccess, type ResultLimit } from "@/lib/plans";
+import { ALL_RESULTS_LIMIT, NUMERIC_LIMITS, planAccess, type PlanAccess, type ResultLimit } from "@/lib/plans";
 import { SearchableCombobox, type ComboboxOption } from "./searchable-combobox";
 
 type ApiState = {
@@ -34,8 +33,6 @@ type ActionNotice = {
   title: string;
   detail: string;
   tone: NoticeTone;
-  createdAt: string;
-  unread: boolean;
 };
 
 const ADMIN_WHATSAPP = "https://wa.me/6285111349699";
@@ -113,26 +110,15 @@ function accessLimitLabel(limit: ResultLimit) {
   return limit === ALL_RESULTS_LIMIT ? "semua hasil yang tersedia" : `hingga ${limit} hasil`;
 }
 
-function requiredTierForLimit(limit: ResultLimit) {
-  return limit === ALL_RESULTS_LIMIT || limit > 250 ? "max" : "pro";
-}
-
-function expiryLabel(expiresAt: string | null) {
-  if (!expiresAt) return "";
+function licenseDateLabel(value: string | null) {
+  if (!value) return "—";
   return new Intl.DateTimeFormat("id-ID", {
     dateStyle: "long",
-  }).format(new Date(expiresAt));
-}
-
-function noticeTime(createdAt: string) {
-  return new Intl.DateTimeFormat("id-ID", {
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(createdAt));
+    timeStyle: "short",
+  }).format(new Date(value));
 }
 
 export function ScrapeConsole() {
-  const router = useRouter();
   const [api, setApi] = useState<ApiState>(initialApiState);
   const [job, setJob] = useState<JobState | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -143,14 +129,12 @@ export function ScrapeConsole() {
   const [activationCode, setActivationCode] = useState("");
   const [activationError, setActivationError] = useState("");
   const [activating, setActivating] = useState(false);
-  const [pendingLimit, setPendingLimit] = useState<ResultLimit | null>(null);
+  const [licenseChecking, setLicenseChecking] = useState(false);
   const [now, setNow] = useState(() => Date.now());
-  const [notices, setNotices] = useState<ActionNotice[]>([]);
-  const [notificationOpen, setNotificationOpen] = useState(false);
   const [toast, setToast] = useState<ActionNotice | null>(null);
   const [resultQuery, setResultQuery] = useState("");
   const [resultPage, setResultPage] = useState(1);
-  const [manualLimit, setManualLimit] = useState("250");
+  const [manualLimit, setManualLimit] = useState("");
   const activationRef = useRef<HTMLInputElement>(null);
   const noticeId = useRef(0);
   const toastTimer = useRef<number | null>(null);
@@ -163,10 +147,7 @@ export function ScrapeConsole() {
       title,
       detail,
       tone,
-      createdAt: new Date().toISOString(),
-      unread: true,
     };
-    setNotices((current) => [next, ...current].slice(0, 8));
     setToast(next);
     if (toastTimer.current) window.clearTimeout(toastTimer.current);
     toastTimer.current = window.setTimeout(() => setToast(null), 3_200);
@@ -188,6 +169,11 @@ export function ScrapeConsole() {
       });
     return () => { alive = false; };
   }, []);
+
+  useEffect(() => {
+    setManualLimit("");
+    setLimit(api.access.tier === "max" ? ALL_RESULTS_LIMIT : 10);
+  }, [api.access.tier]);
 
   useEffect(() => {
     if (activationOpen) activationRef.current?.focus({ preventScroll: true });
@@ -252,8 +238,6 @@ export function ScrapeConsole() {
     ? Math.max(0, Math.ceil((new Date(api.access.nextAllowedAt).getTime() - now) / 1_000))
     : 0;
   const active = job?.status === "pending" || job?.status === "running";
-  const unreadCount = notices.filter((notice) => notice.unread).length;
-  const canSubmit = api.reachable && !submitting && !active && remainingSeconds === 0;
   const sourceRows = job?.rows ?? EMPTY_ROWS;
   const deferredResultQuery = useDeferredValue(resultQuery.trim().toLocaleLowerCase("id"));
   const rowStats = useMemo(() => sourceRows.reduce((stats, row) => ({
@@ -278,37 +262,29 @@ export function ScrapeConsole() {
   const currentResultPage = Math.min(resultPage, totalResultPages);
   const pageStart = (currentResultPage - 1) * RESULT_PAGE_SIZE;
   const pagedRows = visibleRows.slice(pageStart, pageStart + RESULT_PAGE_SIZE);
-  const manualLimitNumber = Number(manualLimit);
-  const manualLimitIsValid = Number.isSafeInteger(manualLimitNumber) && manualLimitNumber > 0;
-  const manualLimitIsAllowed = manualLimitIsValid && allowsResultLimit(api.access, manualLimitNumber);
-  const manualLimitAction = manualLimitIsAllowed
-    ? "Terapkan"
-    : manualLimitIsValid && manualLimitNumber > 250 ? "Buka Max" : "Buka Pro";
+  const hasManualLimit = manualLimit.trim().length > 0;
+  const manualLimitNumber = hasManualLimit ? Number(manualLimit) : null;
+  const manualLimitError = !hasManualLimit || api.access.tier === "free" ? ""
+    : !Number.isSafeInteger(manualLimitNumber) || Number(manualLimitNumber) <= 0
+      ? "Masukkan bilangan bulat lebih dari 0."
+      : api.access.tier === "pro" && Number(manualLimitNumber) > 250
+        ? "Tier Pro menerima maksimal 250 hasil."
+        : "";
+  const requestedLimit: ResultLimit = api.access.tier === "free" ? 10
+    : hasManualLimit && !manualLimitError ? Number(manualLimitNumber)
+      : api.access.tier === "max" ? ALL_RESULTS_LIMIT : limit;
+  const canSubmit = api.reachable && !submitting && !active && remainingSeconds === 0 && !manualLimitError;
 
   const limitOptions = useMemo<ComboboxOption[]>(() => {
-    const presetOptions = ALL_LIMITS.map((value) => {
-      const requiredTier = value === 10 ? "Free" : requiredTierForLimit(value) === "pro" ? "Pro" : "Max";
-      const description = value === ALL_RESULTS_LIMIT
-        ? "Max · semua bisnis cocok di area"
-        : `${requiredTier} · ${value === 10 ? "jeda 1 jam" : value <= 250 ? "jeda 1 menit" : "tanpa cooldown"}`;
-      return {
+    if (api.access.tier === "max") return [];
+    return api.access.allowedLimits
+      .filter((value): value is number => typeof value === "number" && NUMERIC_LIMITS.includes(value as (typeof NUMERIC_LIMITS)[number]))
+      .map((value) => ({
         value: String(value),
         label: resultLimitLabel(value),
-        description,
-        locked: !allowsResultLimit(api.access, value),
-      };
-    });
-    const manualSelection = typeof limit === "number"
-      && !NUMERIC_LIMITS.includes(limit as (typeof NUMERIC_LIMITS)[number])
-      ? [{
-          value: String(limit),
-          label: `${limit} hasil`,
-          description: `${limit <= 250 ? "Pro" : "Max"} · jumlah manual`,
-          locked: !allowsResultLimit(api.access, limit),
-        }]
-      : [];
-    return [...manualSelection, ...presetOptions];
-  }, [api.access, limit]);
+        description: api.access.tier === "free" ? "Free · jeda 1 jam" : "Pro · jeda 1 menit",
+      }));
+  }, [api.access.allowedLimits, api.access.tier]);
 
   const apiLabel = !api.checked ? "memeriksa koneksi" : !api.configured ? "belum dikonfigurasi"
     : !api.reachable ? "tidak terjangkau" : api.mode === "google-live"
@@ -323,56 +299,43 @@ export function ScrapeConsole() {
     : !api.reachable ? { title: "API tidak tersedia", detail: "Pencarian belum dapat dimulai. Muat ulang halaman atau periksa konfigurasi backend.", state: "error" }
     : { title: "Siap memindai", detail: `Tier ${api.access.label}: ${accessLimitLabel(api.access.maxLimit)}, ${durationLabel(api.access.cooldownSeconds)}.`, state: "idle" };
 
-  function requestActivation(option?: ComboboxOption) {
-    const requestedLimit = option
-      ? option.value === ALL_RESULTS_LIMIT ? ALL_RESULTS_LIMIT : Number(option.value) as ResultLimit
-      : null;
-    setPendingLimit(requestedLimit);
+  function toggleActivation() {
     setActivationError("");
-    setActivationOpen(true);
-    notify(
-      option ? `Batas ${option.label} masih terkunci` : "Aktivasi lisensi dibuka",
-      "Masukkan kode Pro atau Max dari admin. Masa aktif dimulai saat kode berhasil diredeem.",
-    );
-  }
-
-  function goToPricing(option: ComboboxOption | ResultLimit) {
-    const requestedLimit = typeof option === "object"
-      ? option.value === ALL_RESULTS_LIMIT ? ALL_RESULTS_LIMIT : Number(option.value) as ResultLimit
-      : option;
-    router.push(`/dashboard#pricing-${requiredTierForLimit(requestedLimit)}`);
-  }
-
-  function toggleNotifications() {
-    setNotificationOpen((open) => {
-      if (!open) setNotices((current) => current.map((notice) => ({ ...notice, unread: false })));
-      return !open;
-    });
+    setActivationOpen((open) => !open);
   }
 
   function closeActivation() {
     setActivationOpen(false);
-    notify("Aktivasi ditutup", "Tier dan batas hasil tidak berubah.");
   }
 
   function changeLimit(value: string) {
-    const nextLimit = value === ALL_RESULTS_LIMIT ? ALL_RESULTS_LIMIT : Number(value) as ResultLimit;
+    const nextLimit = Number(value) as ResultLimit;
     setLimit(nextLimit);
     notify("Batas hasil diperbarui", `Request berikutnya akan meminta ${resultLimitLabel(nextLimit).toLocaleLowerCase("id")}.`);
   }
 
-  function applyManualLimit() {
-    const nextLimit = Number(manualLimit);
-    if (!Number.isSafeInteger(nextLimit) || nextLimit <= 0) {
-      notify("Jumlah manual tidak valid", "Masukkan bilangan bulat lebih dari 0.", "error");
-      return;
+  async function checkLicense() {
+    setLicenseChecking(true);
+    setActivationError("");
+    try {
+      const response = await fetch("/api/config", { cache: "no-store" });
+      const data = (await response.json()) as Omit<ApiState, "checked"> & { message?: string };
+      if (!response.ok || !data.access) throw new Error(data.message || "Status lisensi tidak dapat dibaca.");
+      setApi({ ...data, checked: true });
+      notify(
+        `Tier ${data.access.label} terverifikasi`,
+        data.access.activatedAt
+          ? `Aktif sejak ${licenseDateLabel(data.access.activatedAt)} sampai ${licenseDateLabel(data.access.expiresAt)}.`
+          : "Belum ada kode Pro atau Max yang aktif pada browser ini.",
+        data.access.tier === "free" ? "info" : "success",
+      );
+    } catch (licenseFailure) {
+      const failure = licenseFailure instanceof Error ? licenseFailure.message : "Status lisensi tidak dapat dibaca.";
+      setActivationError(failure);
+      notify("Pemeriksaan lisensi gagal", `${failure} Coba lagi setelah koneksi tersedia.`, "error");
+    } finally {
+      setLicenseChecking(false);
     }
-    if (!allowsResultLimit(api.access, nextLimit)) {
-      goToPricing(nextLimit);
-      return;
-    }
-    setLimit(nextLimit);
-    notify("Jumlah manual diterapkan", `Request berikutnya akan meminta hingga ${nextLimit} hasil.`);
   }
 
   function changeWebsiteFilter(value: string) {
@@ -397,21 +360,10 @@ export function ScrapeConsole() {
       const data = (await response.json()) as { access?: PlanAccess; message?: string };
       if (!response.ok || !data.access) throw new Error(data.message || "Lisensi tidak dapat diaktifkan.");
       setApi((current) => ({ ...current, access: data.access! }));
-      if (pendingLimit && !allowsResultLimit(data.access, pendingLimit)) {
-        const requiredTier = pendingLimit === ALL_RESULTS_LIMIT || pendingLimit > 250 ? "Max" : "Pro";
-        const mismatch = `Tier ${data.access.label} aktif, tetapi ${resultLimitLabel(pendingLimit).toLocaleLowerCase("id")} memerlukan ${requiredTier}.`;
-        setActivationCode("");
-        setActivationError(mismatch);
-        notify("Batas tetap terkunci", mismatch, "error");
-        return;
-      }
-      if (pendingLimit) setLimit(pendingLimit);
       setActivationCode("");
-      setPendingLimit(null);
-      setActivationOpen(false);
       notify(
         `Tier ${data.access.label} aktif`,
-        `Lisensi berlaku sampai ${expiryLabel(data.access.expiresAt)}.`,
+        `Aktif ${licenseDateLabel(data.access.activatedAt)} sampai ${licenseDateLabel(data.access.expiresAt)}.`,
         "success",
       );
     } catch (activationFailure) {
@@ -425,6 +377,10 @@ export function ScrapeConsole() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (manualLimitError) {
+      notify("Jumlah hasil belum valid", manualLimitError, "error");
+      return;
+    }
     setSubmitting(true);
     setError("");
     setJob(null);
@@ -432,8 +388,8 @@ export function ScrapeConsole() {
     const form = new FormData(event.currentTarget);
     const keyword = String(form.get("keyword") || "");
     const city = String(form.get("city") || "");
-    const payload = { keyword, city, country: form.get("country"), lang: form.get("lang"), limit, email: true };
-    notify("Scan dimulai", `${keyword} di ${city} sedang dipindai dengan batas ${resultLimitLabel(limit).toLocaleLowerCase("id")}.`);
+    const payload = { keyword, city, country: form.get("country"), lang: form.get("lang"), limit: requestedLimit, email: true };
+    notify("Scan dimulai", `${keyword} di ${city} sedang dipindai dengan batas ${resultLimitLabel(requestedLimit).toLocaleLowerCase("id")}.`);
     try {
       const response = await fetch("/api/scrape", {
         method: "POST",
@@ -488,40 +444,36 @@ export function ScrapeConsole() {
 
   return (
     <section className="scanner production-console" id="scanner" aria-label="Konsol produksi">
-      <div className="scanner__console" aria-busy={submitting || active}>
-        <div className="console__bar">
-          <div className="console__identity">
-            <span>Scan baru</span>
-            <button className="license-trigger" type="button" onClick={() => requestActivation()} aria-expanded={activationOpen}>
-              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5 4 5.3v4.2c0 3.7 2.5 6.5 6 8 3.5-1.5 6-4.3 6-8V5.3L10 2.5Z" /><path d="m7.4 10 1.7 1.7 3.5-3.7" /></svg>
-              {api.access.label}
-            </button>
+      <section className="license-dock" aria-labelledby="license-dock-title">
+        <div className="license-dock__bar">
+          <div className="license-dock__identity">
+            <span id="license-dock-title">Lisensi aktif</span>
+            <strong>Tier {api.access.label}</strong>
           </div>
-          <div className="console__status">
-            <p className="api-state" data-online={api.reachable} aria-live="polite"><span className="api-state__dot" aria-hidden="true" />API {apiLabel}</p>
-            <div className="notification-center">
-              <button className="notification-trigger" type="button" onClick={toggleNotifications} aria-expanded={notificationOpen} aria-controls="notification-feed" aria-label={unreadCount ? `${unreadCount} notifikasi belum dibaca` : "Buka notifikasi"} data-busy={active || submitting}>
-                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.2 8.4a4.8 4.8 0 0 1 9.6 0v3.1l1.4 2.1H3.8l1.4-2.1V8.4Z" /><path d="M8.2 15.7a2 2 0 0 0 3.6 0" /></svg>
-                {unreadCount ? <span className="notification-badge" aria-hidden="true">{Math.min(unreadCount, 9)}</span> : null}
-              </button>
-              {notificationOpen ? (
-                <div className="notification-feed" id="notification-feed">
-                  <div className="notification-feed__head"><strong>Aktivitas</strong><span>{notices.length} terbaru</span></div>
-                  {notices.length ? <ol>{notices.map((notice) => <li key={notice.id} data-tone={notice.tone}><span className="notification-feed__signal" aria-hidden="true" /><div><strong>{notice.title}</strong><p>{notice.detail}</p><time dateTime={notice.createdAt}>{noticeTime(notice.createdAt)}</time></div></li>)}</ol> : <p className="notification-feed__empty">Belum ada aksi. Feedback scan akan dicatat di sini.</p>}
-                </div>
-              ) : null}
-            </div>
+          <dl className="license-dock__facts">
+            <div><dt>Tier</dt><dd>{api.access.label}</dd></div>
+            <div><dt>Aktivasi</dt><dd>{api.access.activatedAt ? licenseDateLabel(api.access.activatedAt) : "Belum diredeem"}</dd></div>
+            <div><dt>Berakhir</dt><dd>{api.access.expiresAt ? licenseDateLabel(api.access.expiresAt) : "—"}</dd></div>
+          </dl>
+          <div className="license-dock__actions">
+            <button className="license-dock__check" type="button" onClick={checkLicense} disabled={licenseChecking} data-state={licenseChecking ? "loading" : "default"}>
+              {licenseChecking ? "Memeriksa" : "Cek lisensi"}
+              {licenseChecking ? <span className="button__spinner" aria-hidden="true" /> : null}
+            </button>
+            <button className="license-dock__toggle" type="button" onClick={toggleActivation} aria-expanded={activationOpen} aria-controls="activation-panel">
+              {activationOpen ? "Tutup kode" : "Kode aktivasi"}
+            </button>
           </div>
         </div>
 
         {activationOpen ? (
-          <form className="activation-panel" onSubmit={handleActivation}>
+          <form className="activation-panel" id="activation-panel" onSubmit={handleActivation}>
             <div className="activation-panel__copy">
-              <p className="activation-panel__label">Aktivasi lisensi</p>
-              <h2>{pendingLimit ? `Buka batas ${resultLimitLabel(pendingLimit)}` : "Masukkan kode dari admin"}</h2>
+              <p className="activation-panel__label">Redeem lisensi</p>
+              <h2>Masukkan kode dari admin</h2>
               <p>
-                Beli lisensi Pro atau Max dari admin, lalu tempel kode aktivasi di bawah. Tidak
-                perlu membuat akun; lisensi berlaku satu bulan sejak berhasil diredeem.{" "}
+                Kode Pro atau Max berlaku satu bulan sejak berhasil diredeem. Setelah aktivasi,
+                tier dan kedua tanggal di atas diperbarui otomatis.{" "}
                 <a href={ADMIN_WHATSAPP} target="_blank" rel="noreferrer" onClick={() => notify("WhatsApp admin dibuka", "Lanjutkan pembelian lisensi pada percakapan baru.")}>Hubungi admin ↗</a>
               </p>
             </div>
@@ -531,32 +483,47 @@ export function ScrapeConsole() {
               <small id="activation-help">{activationError || (api.activationAvailable ? "Kode diverifikasi aman di server." : "Aktivasi belum dikonfigurasi oleh admin.")}</small>
             </label>
             <div className="activation-panel__actions">
-              <button className="button button--activation" type="submit" disabled={activating || !api.activationAvailable}>{activating ? "Memverifikasi" : "Aktifkan"}{activating ? <span className="button__spinner" aria-hidden="true" /> : <span aria-hidden="true">→</span>}</button>
+              <button className="button button--activation" type="submit" disabled={activating || !api.activationAvailable} data-state={activating ? "loading" : "default"}>{activating ? "Memverifikasi" : "Aktifkan lisensi"}{activating ? <span className="button__spinner" aria-hidden="true" /> : null}</button>
               <button className="activation-panel__close" type="button" onClick={closeActivation}>Tutup</button>
             </div>
           </form>
         ) : null}
+      </section>
+
+      <div className="scanner__console" aria-busy={submitting || active}>
+        <div className="console__bar">
+          <div className="console__identity">
+            <span>Scan baru</span>
+          </div>
+          <div className="console__status">
+            <p className="api-state" data-online={api.reachable} aria-live="polite"><span className="api-state__dot" aria-hidden="true" />API {apiLabel}</p>
+          </div>
+        </div>
 
         <form className="scrape-form" onSubmit={handleSubmit}>
           <label className="field field--wide"><span>Niche / kata kunci</span><input name="keyword" type="text" required maxLength={100} autoComplete="off" /><small className="field__hint">Jenis bisnis yang ingin diperiksa.</small></label>
           <label className="field"><span>Kota</span><input name="city" type="text" required maxLength={100} autoComplete="address-level2" /><small className="field__hint">Wilayah kota target.</small></label>
           <label className="field"><span>Negara</span><input name="country" type="text" defaultValue="Indonesia" required maxLength={100} autoComplete="country-name" /><small className="field__hint">Dipakai untuk memperjelas kueri.</small></label>
           <label className="field"><span>Bahasa</span><input name="lang" type="text" defaultValue="id" minLength={2} maxLength={2} required /><small className="field__hint">Kode ISO dua huruf.</small></label>
-          <div className="field">
-            <SearchableCombobox label="Batas hasil" name="limit" value={String(limit)} options={limitOptions} onChange={changeLimit} onLockedOption={goToPricing} helper={`Tier ${api.access.label} membuka ${accessLimitLabel(api.access.maxLimit)}.${api.access.expiresAt ? ` Aktif sampai ${expiryLabel(api.access.expiresAt)}.` : ""}`} searchPlaceholder="Cari batas hasil" />
-          </div>
-          <div className="field custom-limit">
-            <span>Jumlah manual · Pro / Max</span>
-            <div className="custom-limit__control"><input type="number" min="1" step="1" inputMode="numeric" value={manualLimit} onChange={(event) => setManualLimit(event.target.value)} aria-label="Jumlah hasil manual" /><button type="button" onClick={applyManualLimit}>{manualLimitAction}</button></div>
-            <small className="field__hint">Pro maksimal 250. Max tanpa batas angka atau pilih “Semua hasil”.</small>
-          </div>
+          {api.access.tier !== "max" ? (
+            <div className="field">
+              <SearchableCombobox label="Batas hasil" name="limit" value={String(limit)} options={limitOptions} onChange={changeLimit} helper={`Pilihan yang tampil hanya milik tier ${api.access.label}.`} searchPlaceholder="Cari batas hasil" />
+            </div>
+          ) : null}
+          {api.access.tier !== "free" ? (
+            <label className={`field custom-limit${api.access.tier === "max" ? " field--wide" : ""}`}>
+              <span>Jumlah hasil custom · {api.access.label}</span>
+              <input type="number" min="1" max={api.access.tier === "pro" ? 250 : undefined} step="1" inputMode="numeric" value={manualLimit} onChange={(event) => setManualLimit(event.target.value)} placeholder={api.access.tier === "pro" ? "Opsional · maksimal 250" : "Kosong = semua hasil"} aria-label={`Jumlah hasil custom untuk tier ${api.access.label}`} aria-invalid={Boolean(manualLimitError)} aria-describedby="manual-limit-help" />
+              <small className="field__hint" id="manual-limit-help">{manualLimitError || (api.access.tier === "pro" ? "Kosongkan untuk memakai preset batas hasil." : "Kosongkan untuk mengambil semua bisnis yang cocok di area.")}</small>
+            </label>
+          ) : null}
           <button className="button button--primary field--wide" type="submit" disabled={!canSubmit} data-state={submitting ? "loading" : error ? "error" : job?.status === "completed" ? "success" : "default"}>
             <span>{submitting ? "Memindai Google Maps" : active ? "Menunggu hasil" : remainingSeconds > 0 ? `Tunggu ${countdownLabel(remainingSeconds)}` : !api.reachable ? "API belum terhubung" : job?.status === "completed" ? "Pindai wilayah baru" : error ? "Coba lagi" : "Mulai scan"}</span>
             {submitting || active ? <span className="button__spinner" aria-hidden="true" /> : <span className="button__arrow" aria-hidden="true">↗</span>}
           </button>
         </form>
 
-        <div className="feedback-panel" data-state={feedback.state} aria-live="polite"><span className="feedback-panel__signal" aria-hidden="true" /><div><h2>{feedback.title}</h2><p>{feedback.detail}</p></div>{submitting || active || !api.checked ? <span className="feedback-panel__progress" aria-hidden="true" /> : null}</div>
+        <div className="feedback-panel" data-state={feedback.state} role="status" aria-live="polite" aria-atomic="true"><span className="feedback-panel__signal" aria-hidden="true" /><div><span className="feedback-panel__label">Feedback center</span><h2>{feedback.title}</h2><p>{feedback.detail}</p></div>{submitting || active || !api.checked ? <span className="feedback-panel__progress" aria-hidden="true" /> : null}</div>
       </div>
 
       <div className="results" id="results">

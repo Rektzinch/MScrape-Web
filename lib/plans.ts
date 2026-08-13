@@ -13,12 +13,13 @@ export type PlanAccess = {
   cooldownSeconds: number;
   allowsCustomLimit: boolean;
   nextAllowedAt: string | null;
+  activatedAt: string | null;
   expiresAt: string | null;
 };
 
 export const PLAN_RULES: Record<
   LicenseTier,
-  Omit<PlanAccess, "nextAllowedAt" | "expiresAt">
+  Omit<PlanAccess, "nextAllowedAt" | "activatedAt" | "expiresAt">
 > = {
   free: {
     tier: "free",
@@ -50,11 +51,13 @@ export function planAccess(
   tier: LicenseTier,
   nextAllowedAt: string | null = null,
   expiresAt: string | null = null,
+  activatedAt: string | null = null,
 ): PlanAccess {
   return {
     ...PLAN_RULES[tier],
     allowedLimits: [...PLAN_RULES[tier].allowedLimits],
     nextAllowedAt,
+    activatedAt,
     expiresAt,
   };
 }

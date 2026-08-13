@@ -79,7 +79,12 @@ export function readRateAccess(
   license: ResolvedLicense,
 ): PlanAccess {
   if (license.access.cooldownSeconds === 0) {
-    return planAccess(license.access.tier, null, license.access.expiresAt);
+    return planAccess(
+      license.access.tier,
+      null,
+      license.access.expiresAt,
+      license.access.activatedAt,
+    );
   }
 
   const now = Date.now();
@@ -90,7 +95,12 @@ export function readRateAccess(
     ? new Date(timestamp).toISOString()
     : null;
 
-  return planAccess(license.access.tier, nextAllowedAt, license.access.expiresAt);
+  return planAccess(
+    license.access.tier,
+    nextAllowedAt,
+    license.access.expiresAt,
+    license.access.activatedAt,
+  );
 }
 
 export function consumeRateLimit(
@@ -103,7 +113,12 @@ export function consumeRateLimit(
   if (license.access.cooldownSeconds === 0) {
     return {
       allowed: true,
-      access: planAccess(license.access.tier, null, license.access.expiresAt),
+      access: planAccess(
+        license.access.tier,
+        null,
+        license.access.expiresAt,
+        license.access.activatedAt,
+      ),
       retryAfter: 0,
       cookie: null,
     };
@@ -123,6 +138,7 @@ export function consumeRateLimit(
         license.access.tier,
         new Date(currentNextAllowedAt).toISOString(),
         license.access.expiresAt,
+        license.access.activatedAt,
       ),
       retryAfter,
       cookie: null,
@@ -137,6 +153,7 @@ export function consumeRateLimit(
       license.access.tier,
       new Date(nextAllowedAt).toISOString(),
       license.access.expiresAt,
+      license.access.activatedAt,
     ),
     retryAfter: 0,
     cookie: cooldownCookie(key, nextAllowedAt, license.access.cooldownSeconds),

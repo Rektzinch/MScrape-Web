@@ -6,6 +6,16 @@
     "theme": "custom",
     "theme_axes": "light / geometric-sans / warm",
     "vibe": "coordinate paper, black workbench, signal orange",
+    "enrichment": "top license disclosure + tier-scoped controls + inline feedback center",
+    "brief": "MScrape visible license history, hidden unavailable limits, and scan feedback center"
+  },
+  {
+    "date": "2026-08-13",
+    "scope": "app",
+    "macrostructure": "Workbench",
+    "theme": "custom",
+    "theme_axes": "light / geometric-sans / warm",
+    "vibe": "coordinate paper, black workbench, signal orange",
     "enrichment": "patterned result titles + circular notification control",
     "brief": "MScrape Pro 250 routing, one-hour Free cooldown, and softer alerts"
   },

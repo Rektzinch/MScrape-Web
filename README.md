@@ -14,8 +14,9 @@ npm run dev
 
 ## Tier tanpa login
 
-Pengguna tidak membuat akun. Semua sesi dimulai sebagai Free; opsi yang terkunci
-akan meminta kode aktivasi yang dibeli dari admin.
+Pengguna tidak membuat akun. Semua sesi dimulai sebagai Free. Panel lisensi di
+bagian atas Produksi menerima kode aktivasi yang dibeli dari admin dan menyediakan
+tombol untuk memeriksa ulang status sesi.
 
 | Tier | Harga | Batas hasil | Cooldown |
 | --- | --- | --- | --- |
@@ -27,7 +28,12 @@ API memvalidasi tier, tanggal kedaluwarsa, dan cooldown di server. Saat kode
 diredeem, lisensi Pro/Max disimpan sebagai sesi bertanda tangan pada cookie
 HttpOnly/SameSite=Lax dan berlaku satu bulan. Cooldown memakai identitas client
 atau lisensi serta cookie yang ditandatangani. Manipulasi combobox di browser
-tidak membuka batas yang terkunci.
+tidak membuka batas di luar tier aktif.
+
+UI hanya menampilkan batas milik tier aktif. Free hanya melihat 10 dan tidak
+melihat input custom. Pro melihat preset sampai 250 serta input custom kosong.
+Max tidak memakai menu preset; input custom kosong berarti semua hasil yang cocok.
+Panel lisensi mencatat tier, waktu aktivasi, dan waktu berakhir dari sesi server.
 
 Pembelian lisensi diarahkan ke admin melalui
 [WhatsApp 0851 1134 9699](https://wa.me/6285111349699).

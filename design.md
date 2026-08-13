@@ -49,13 +49,13 @@ warna inline di luar token.
   pencarian, ArrowUp/ArrowDown, Enter, Escape, light-dismiss, dan fokus terlihat.
 - Popover batas hasil keluar dari frame konsol, sedangkan daftar opsi memiliki
   scroll internal agar preset terakhir tetap dapat dicapai pada viewport pendek.
-- Opsi limit yang terkunci tetap terlihat dengan hatch + ikon gembok. Klik
-  mengarah ke kartu harga Pro atau Max yang relevan; lisensi tidak memerlukan login.
+- Opsi batas hasil disaring berdasarkan tier aktif: Free hanya melihat 10,
+  Pro melihat preset hingga 250, sedangkan Max memakai input custom langsung.
 - Button press bergerak 1 px selama 100–120 ms. Dropdown masuk selama 180 ms.
 - Produksi memakai spinner, progress, dropdown, dan fade singkat toast sebagai
   primitive motion. `prefers-reduced-motion` mematikan motion spasial.
-- Aksi operasional memberi feedback inline, lalu dicatat pada badge aktivitas;
-  snackbar dipakai untuk hasil async, kegagalan, aktivasi, dan ekspor.
+- Aksi operasional memberi feedback inline melalui Feedback center; snackbar
+  dipakai untuk hasil async, kegagalan, aktivasi, dan ekspor.
 - Dashboard memakai fade masuk/keluar progresif hanya pada scene utama ketika
   melewati viewport; mode reduced-motion menjadikannya statis.
 - Semua target sentuh minimal 44 px dan label klik tidak boleh membungkus.
@@ -63,10 +63,12 @@ warna inline di luar token.
 ## Model akses
 
 - Free: 10 hasil, cooldown satu jam.
-- Pro: preset 10/50/75/100/150/250 dan jumlah manual hingga 250 hasil,
+- Pro: preset 10/50/75/100/150/250 dan jumlah custom kosong secara default
+  hingga 250 hasil,
   cooldown satu menit.
-- Max: semua preset, jumlah manual tanpa batas preset, atau semua hasil cocok
-  yang tersedia di area pencarian; tanpa cooldown.
+- Max: tanpa menu preset; input custom kosong secara default. Nilai kosong
+  meminta semua hasil cocok di area, sedangkan angka positif menjadi target;
+  tanpa cooldown.
 - Kode aktivasi diverifikasi server dan disimpan dalam cookie HttpOnly,
   SameSite=Lax. Sesi Pro/Max kedaluwarsa satu bulan sejak kode diredeem.
   API tetap melakukan enforcement walaupun UI dimanipulasi.
@@ -88,11 +90,14 @@ warna inline di luar token.
   membawa konten naratifnya. Hasil scan memakai ledger padat, pencarian lokal,
   dan pagination 50 baris. Filter awal selalu “Semua bisnis”, sehingga seluruh
   baris yang diterima tetap tampil sampai pengguna memilih filter lain.
-- Limit terkunci dan tombol Buka Pro/Max mengarah langsung ke kartu harga tier
-  terkait. Kotak ringkasan dan kartu hasil mobile memakai bidang oranye berpola;
-  nomor urut hasil dibungkus badge hitam.
-- Notifikasi berada sebagai tombol bulat di pojok kanan top-bar. Toast memakai
-  permukaan kertas yang ringan dan menghilang otomatis setelah 3,2 detik.
+- Panel lisensi selalu menjadi blok pertama di Produksi. Ringkasannya mencatat
+  tier, tanggal aktivasi, tanggal berakhir, tombol Cek lisensi, dan disclosure
+  untuk input kode aktivasi.
+- Free tidak merender kontrol custom. Pro hanya merender preset miliknya dan
+  input custom kosong; Max hanya merender input custom kosong.
+- Kotak ringkasan dan kartu hasil mobile memakai bidang oranye berpola; nomor
+  urut hasil dibungkus badge hitam. Ikon notifikasi dihapus dan status scan
+  memakai Feedback center yang tetap terlihat. Toast menghilang setelah 3,2 detik.
 - Keduanya berbagi wordmark, header, tombol lintas halaman, tokens, font, focus
   ring, dan bahasa rule.
 

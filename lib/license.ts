@@ -135,7 +135,12 @@ export function resolveLicense(request: Request): ResolvedLicense {
   }
 
   return {
-    access: planAccess(session.tier, null, new Date(session.expiresAt).toISOString()),
+    access: planAccess(
+      session.tier,
+      null,
+      new Date(session.expiresAt).toISOString(),
+      new Date(session.redeemedAt).toISOString(),
+    ),
     licenseId: session.id,
   };
 }
@@ -153,7 +158,7 @@ export function redeemLicense(license: ValidLicense, redeemedAt = new Date()) {
   const maxAge = Math.max(0, Math.floor((expiresAt.getTime() - redeemedAt.getTime()) / 1_000));
 
   return {
-    access: planAccess(license.tier, null, expiresAt.toISOString()),
+    access: planAccess(license.tier, null, expiresAt.toISOString(), redeemedAt.toISOString()),
     cookie: `${LICENSE_COOKIE}=${encodeURIComponent(session)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}; Expires=${expiresAt.toUTCString()}${secure}`,
   };
 }
