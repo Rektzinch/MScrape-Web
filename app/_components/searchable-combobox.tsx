@@ -34,6 +34,7 @@ export function SearchableCombobox({
   const listboxId = `combobox-${generatedId}`;
   const rootRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -59,7 +60,14 @@ export function SearchableCombobox({
     return () => window.removeEventListener("pointerdown", closeOnOutsidePress);
   }, [open]);
 
-  useEffect(() => setActiveIndex(0), [query]);
+  useEffect(() => setActiveIndex(0), [options, query]);
+
+  useEffect(() => {
+    if (!open) return;
+    listRef.current
+      ?.querySelector<HTMLElement>('[data-active="true"]')
+      ?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex, open]);
 
   function choose(option: ComboboxOption) {
     if (option.locked) onLockedOption?.(option);
@@ -133,7 +141,7 @@ export function SearchableCombobox({
               aria-activedescendant={filtered[activeIndex] ? `${listboxId}-${filtered[activeIndex].value}` : undefined}
             />
           </div>
-          <div className="combobox__options" id={listboxId} role="listbox" aria-labelledby={`${listboxId}-label`}>
+          <div ref={listRef} className="combobox__options" id={listboxId} role="listbox" aria-labelledby={`${listboxId}-label`}>
             {filtered.length ? filtered.map((option, index) => (
               <button
                 className="combobox__option"

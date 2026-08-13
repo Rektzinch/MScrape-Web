@@ -1,6 +1,8 @@
-export const ALL_LIMITS = [10, 50, 75, 100, 150, 250, 500] as const;
+export const NUMERIC_LIMITS = [10, 50, 75, 100, 150, 250, 500] as const;
+export const ALL_RESULTS_LIMIT = "all" as const;
+export const ALL_LIMITS = [...NUMERIC_LIMITS, ALL_RESULTS_LIMIT] as const;
 
-export type ResultLimit = (typeof ALL_LIMITS)[number];
+export type ResultLimit = number | typeof ALL_RESULTS_LIMIT;
 export type LicenseTier = "free" | "pro" | "max";
 
 export type PlanAccess = {
@@ -9,6 +11,7 @@ export type PlanAccess = {
   maxLimit: ResultLimit;
   allowedLimits: ResultLimit[];
   cooldownSeconds: number;
+  allowsCustomLimit: boolean;
   nextAllowedAt: string | null;
   expiresAt: string | null;
 };
@@ -23,20 +26,23 @@ export const PLAN_RULES: Record<
     maxLimit: 10,
     allowedLimits: [10],
     cooldownSeconds: 300,
+    allowsCustomLimit: false,
   },
   pro: {
     tier: "pro",
     label: "Pro",
-    maxLimit: 100,
-    allowedLimits: [10, 50, 75, 100],
-    cooldownSeconds: 15,
+    maxLimit: 500,
+    allowedLimits: [...NUMERIC_LIMITS],
+    cooldownSeconds: 0,
+    allowsCustomLimit: true,
   },
   max: {
     tier: "max",
     label: "Max",
-    maxLimit: 500,
+    maxLimit: ALL_RESULTS_LIMIT,
     allowedLimits: [...ALL_LIMITS],
     cooldownSeconds: 0,
+    allowsCustomLimit: true,
   },
 };
 
@@ -53,6 +59,13 @@ export function planAccess(
   };
 }
 
-export function isResultLimit(value: number): value is ResultLimit {
-  return ALL_LIMITS.includes(value as ResultLimit);
+export function isResultLimit(value: unknown): value is ResultLimit {
+  return value === ALL_RESULTS_LIMIT
+    || (typeof value === "number" && Number.isSafeInteger(value) && value > 0);
+}
+
+export function allowsResultLimit(access: PlanAccess, limit: ResultLimit) {
+  if (access.allowedLimits.includes(limit)) return true;
+  if (!access.allowsCustomLimit || limit === ALL_RESULTS_LIMIT) return false;
+  return access.maxLimit === ALL_RESULTS_LIMIT || limit <= access.maxLimit;
 }

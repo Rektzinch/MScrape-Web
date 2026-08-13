@@ -1,8 +1,8 @@
 "use client";
 
-import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import type { LeadRow } from "@/lib/leads";
-import { ALL_LIMITS, planAccess, type PlanAccess, type ResultLimit } from "@/lib/plans";
+import { ALL_LIMITS, ALL_RESULTS_LIMIT, NUMERIC_LIMITS, allowsResultLimit, planAccess, type PlanAccess, type ResultLimit } from "@/lib/plans";
 import { SearchableCombobox, type ComboboxOption } from "./searchable-combobox";
 
 type ApiState = {
@@ -38,6 +38,8 @@ type ActionNotice = {
 };
 
 const ADMIN_WHATSAPP = "https://wa.me/6285111349699";
+const RESULT_PAGE_SIZE = 50;
+const EMPTY_ROWS: LeadRow[] = [];
 
 const initialApiState: ApiState = {
   checked: false,
@@ -49,9 +51,9 @@ const initialApiState: ApiState = {
 };
 
 const websiteOptions: ComboboxOption[] = [
+  { value: "all", label: "Semua bisnis", description: "Tampilkan seluruh hasil yang diterima" },
   { value: "ready", label: "Siap dihubungi", description: "Tanpa website + punya nomor" },
   { value: "missing", label: "Tanpa website", description: "Semua bisnis tanpa website" },
-  { value: "all", label: "Semua bisnis", description: "Tanpa penyaringan website" },
   { value: "present", label: "Punya website", description: "Website sudah tersedia" },
 ];
 
@@ -101,6 +103,14 @@ function countdownLabel(seconds: number) {
   return `${minutes}:${remainder}`;
 }
 
+function resultLimitLabel(limit: ResultLimit) {
+  return limit === ALL_RESULTS_LIMIT ? "Semua hasil" : `${limit} hasil`;
+}
+
+function accessLimitLabel(limit: ResultLimit) {
+  return limit === ALL_RESULTS_LIMIT ? "semua hasil yang tersedia" : `hingga ${limit} hasil`;
+}
+
 function expiryLabel(expiresAt: string | null) {
   if (!expiresAt) return "";
   return new Intl.DateTimeFormat("id-ID", {
@@ -120,7 +130,7 @@ export function ScrapeConsole() {
   const [job, setJob] = useState<JobState | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [websiteFilter, setWebsiteFilter] = useState<WebsiteFilter>("ready");
+  const [websiteFilter, setWebsiteFilter] = useState<WebsiteFilter>("all");
   const [limit, setLimit] = useState<ResultLimit>(10);
   const [activationOpen, setActivationOpen] = useState(false);
   const [activationCode, setActivationCode] = useState("");
@@ -131,6 +141,9 @@ export function ScrapeConsole() {
   const [notices, setNotices] = useState<ActionNotice[]>([]);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [toast, setToast] = useState<ActionNotice | null>(null);
+  const [resultQuery, setResultQuery] = useState("");
+  const [resultPage, setResultPage] = useState(1);
+  const [manualLimit, setManualLimit] = useState("500");
   const activationRef = useRef<HTMLInputElement>(null);
   const noticeId = useRef(0);
   const toastTimer = useRef<number | null>(null);
@@ -234,27 +247,61 @@ export function ScrapeConsole() {
   const active = job?.status === "pending" || job?.status === "running";
   const unreadCount = notices.filter((notice) => notice.unread).length;
   const canSubmit = api.reachable && !submitting && !active && remainingSeconds === 0;
-  const sourceRows = job?.rows ?? [];
-  const missingWebsiteCount = sourceRows.filter((row) => !row.website).length;
-  const emailCount = sourceRows.filter((row) => Boolean(row.email)).length;
-  const contactableWithoutWebsiteCount = sourceRows.filter((row) => !row.website && Boolean(row.phone)).length;
-  const visibleRows = sourceRows.filter((row) => {
-    if (websiteFilter === "ready") return !row.website && Boolean(row.phone);
-    if (websiteFilter === "missing") return !row.website;
-    if (websiteFilter === "present") return Boolean(row.website);
-    return true;
-  }).sort((a, b) => Number(Boolean(b.email)) - Number(Boolean(a.email)) || a.business.localeCompare(b.business, "id"));
+  const sourceRows = job?.rows ?? EMPTY_ROWS;
+  const deferredResultQuery = useDeferredValue(resultQuery.trim().toLocaleLowerCase("id"));
+  const rowStats = useMemo(() => sourceRows.reduce((stats, row) => ({
+    missingWebsite: stats.missingWebsite + Number(!row.website),
+    email: stats.email + Number(Boolean(row.email)),
+    contactableWithoutWebsite: stats.contactableWithoutWebsite + Number(!row.website && Boolean(row.phone)),
+  }), { missingWebsite: 0, email: 0, contactableWithoutWebsite: 0 }), [sourceRows]);
+  const missingWebsiteCount = rowStats.missingWebsite;
+  const emailCount = rowStats.email;
+  const contactableWithoutWebsiteCount = rowStats.contactableWithoutWebsite;
+  const visibleRows = useMemo(() => sourceRows.filter((row) => {
+    const matchesWebsite = websiteFilter === "ready" ? !row.website && Boolean(row.phone)
+      : websiteFilter === "missing" ? !row.website
+        : websiteFilter === "present" ? Boolean(row.website)
+          : true;
+    if (!matchesWebsite) return false;
+    if (!deferredResultQuery) return true;
+    return [row.business, row.category, row.address, row.phone, row.email, row.website]
+      .some((value) => value.toLocaleLowerCase("id").includes(deferredResultQuery));
+  }).toSorted((a, b) => Number(Boolean(b.email)) - Number(Boolean(a.email)) || a.business.localeCompare(b.business, "id")), [deferredResultQuery, sourceRows, websiteFilter]);
+  const totalResultPages = Math.max(1, Math.ceil(visibleRows.length / RESULT_PAGE_SIZE));
+  const currentResultPage = Math.min(resultPage, totalResultPages);
+  const pageStart = (currentResultPage - 1) * RESULT_PAGE_SIZE;
+  const pagedRows = visibleRows.slice(pageStart, pageStart + RESULT_PAGE_SIZE);
+  const manualLimitNumber = Number(manualLimit);
+  const manualLimitIsValid = Number.isSafeInteger(manualLimitNumber) && manualLimitNumber > 0;
+  const manualLimitIsAllowed = manualLimitIsValid && allowsResultLimit(api.access, manualLimitNumber);
+  const manualLimitAction = manualLimitIsAllowed
+    ? "Terapkan"
+    : manualLimitIsValid && manualLimitNumber > 500 ? "Buka Max" : "Buka Pro";
 
-  const limitOptions = useMemo<ComboboxOption[]>(() => ALL_LIMITS.map((value) => {
-    const requiredTier = value === 10 ? "Free" : value <= 100 ? "Pro" : "Max";
-    const cooldown = value === 10 ? "5 menit" : value <= 100 ? "15 detik" : "tanpa cooldown";
-    return {
-      value: String(value),
-      label: `${value} hasil`,
-      description: `${requiredTier} · ${cooldown}`,
-      locked: !api.access.allowedLimits.includes(value),
-    };
-  }), [api.access.allowedLimits]);
+  const limitOptions = useMemo<ComboboxOption[]>(() => {
+    const presetOptions = ALL_LIMITS.map((value) => {
+      const requiredTier = value === 10 ? "Free" : value === ALL_RESULTS_LIMIT ? "Max" : "Pro";
+      const description = value === ALL_RESULTS_LIMIT
+        ? "Max · semua bisnis cocok di area"
+        : `${requiredTier} · ${value === 10 ? "jeda 5 menit" : "tanpa cooldown"}`;
+      return {
+        value: String(value),
+        label: resultLimitLabel(value),
+        description,
+        locked: !allowsResultLimit(api.access, value),
+      };
+    });
+    const manualSelection = typeof limit === "number"
+      && !NUMERIC_LIMITS.includes(limit as (typeof NUMERIC_LIMITS)[number])
+      ? [{
+          value: String(limit),
+          label: `${limit} hasil`,
+          description: `${limit <= 500 ? "Pro" : "Max"} · jumlah manual`,
+          locked: !allowsResultLimit(api.access, limit),
+        }]
+      : [];
+    return [...manualSelection, ...presetOptions];
+  }, [api.access, limit]);
 
   const apiLabel = !api.checked ? "memeriksa koneksi" : !api.configured ? "belum dikonfigurasi"
     : !api.reachable ? "tidak terjangkau" : api.mode === "google-live"
@@ -267,14 +314,17 @@ export function ScrapeConsole() {
     : job?.status === "completed" ? { title: "Hasil siap diperiksa", detail: `${sourceRows.length} bisnis ditemukan → ${missingWebsiteCount} tidak punya website → ${contactableWithoutWebsiteCount} punya nomor yang bisa dihubungi.`, state: "success" }
     : !api.checked ? { title: "Memeriksa koneksi", detail: "Route server sedang diverifikasi sebelum form diaktifkan.", state: "loading" }
     : !api.reachable ? { title: "API tidak tersedia", detail: "Pencarian belum dapat dimulai. Muat ulang halaman atau periksa konfigurasi backend.", state: "error" }
-    : { title: "Siap memindai", detail: `Tier ${api.access.label}: hingga ${api.access.maxLimit} hasil, ${durationLabel(api.access.cooldownSeconds)}.`, state: "idle" };
+    : { title: "Siap memindai", detail: `Tier ${api.access.label}: ${accessLimitLabel(api.access.maxLimit)}, ${durationLabel(api.access.cooldownSeconds)}.`, state: "idle" };
 
   function requestActivation(option?: ComboboxOption) {
-    setPendingLimit(option ? Number(option.value) as ResultLimit : null);
+    const requestedLimit = option
+      ? option.value === ALL_RESULTS_LIMIT ? ALL_RESULTS_LIMIT : Number(option.value) as ResultLimit
+      : null;
+    setPendingLimit(requestedLimit);
     setActivationError("");
     setActivationOpen(true);
     notify(
-      option ? `Batas ${option.value} masih terkunci` : "Aktivasi lisensi dibuka",
+      option ? `Batas ${option.label} masih terkunci` : "Aktivasi lisensi dibuka",
       "Masukkan kode Pro atau Max dari admin. Masa aktif dimulai saat kode berhasil diredeem.",
     );
   }
@@ -292,14 +342,33 @@ export function ScrapeConsole() {
   }
 
   function changeLimit(value: string) {
-    const nextLimit = Number(value) as ResultLimit;
+    const nextLimit = value === ALL_RESULTS_LIMIT ? ALL_RESULTS_LIMIT : Number(value) as ResultLimit;
     setLimit(nextLimit);
-    notify("Batas hasil diperbarui", `Request berikutnya akan meminta maksimal ${nextLimit} data.`);
+    notify("Batas hasil diperbarui", `Request berikutnya akan meminta ${resultLimitLabel(nextLimit).toLocaleLowerCase("id")}.`);
+  }
+
+  function applyManualLimit() {
+    const nextLimit = Number(manualLimit);
+    if (!Number.isSafeInteger(nextLimit) || nextLimit <= 0) {
+      notify("Jumlah manual tidak valid", "Masukkan bilangan bulat lebih dari 0.", "error");
+      return;
+    }
+    if (!allowsResultLimit(api.access, nextLimit)) {
+      requestActivation({
+        value: String(nextLimit),
+        label: `${nextLimit} hasil`,
+        description: `${nextLimit > 500 ? "Max" : "Pro"} · jumlah manual`,
+      });
+      return;
+    }
+    setLimit(nextLimit);
+    notify("Jumlah manual diterapkan", `Request berikutnya akan meminta hingga ${nextLimit} hasil.`);
   }
 
   function changeWebsiteFilter(value: string) {
     const nextFilter = value as WebsiteFilter;
     setWebsiteFilter(nextFilter);
+    setResultPage(1);
     const selected = websiteOptions.find((option) => option.value === nextFilter);
     notify("Filter hasil diperbarui", selected?.description || "Tabel hasil sudah disaring ulang.");
   }
@@ -318,7 +387,15 @@ export function ScrapeConsole() {
       const data = (await response.json()) as { access?: PlanAccess; message?: string };
       if (!response.ok || !data.access) throw new Error(data.message || "Lisensi tidak dapat diaktifkan.");
       setApi((current) => ({ ...current, access: data.access! }));
-      if (pendingLimit && data.access.allowedLimits.includes(pendingLimit)) setLimit(pendingLimit);
+      if (pendingLimit && !allowsResultLimit(data.access, pendingLimit)) {
+        const requiredTier = pendingLimit === ALL_RESULTS_LIMIT || pendingLimit > 500 ? "Max" : "Pro";
+        const mismatch = `Tier ${data.access.label} aktif, tetapi ${resultLimitLabel(pendingLimit).toLocaleLowerCase("id")} memerlukan ${requiredTier}.`;
+        setActivationCode("");
+        setActivationError(mismatch);
+        notify("Batas tetap terkunci", mismatch, "error");
+        return;
+      }
+      if (pendingLimit) setLimit(pendingLimit);
       setActivationCode("");
       setPendingLimit(null);
       setActivationOpen(false);
@@ -341,11 +418,12 @@ export function ScrapeConsole() {
     setSubmitting(true);
     setError("");
     setJob(null);
+    setResultPage(1);
     const form = new FormData(event.currentTarget);
     const keyword = String(form.get("keyword") || "");
     const city = String(form.get("city") || "");
     const payload = { keyword, city, country: form.get("country"), lang: form.get("lang"), limit, email: true };
-    notify("Scan dimulai", `${keyword} di ${city} sedang dipindai dengan batas ${limit} hasil.`);
+    notify("Scan dimulai", `${keyword} di ${city} sedang dipindai dengan batas ${resultLimitLabel(limit).toLocaleLowerCase("id")}.`);
     try {
       const response = await fetch("/api/scrape", {
         method: "POST",
@@ -430,10 +508,10 @@ export function ScrapeConsole() {
           <form className="activation-panel" onSubmit={handleActivation}>
             <div className="activation-panel__copy">
               <p className="activation-panel__label">Aktivasi lisensi</p>
-              <h2>{pendingLimit ? `Buka batas ${pendingLimit} hasil` : "Masukkan kode dari admin"}</h2>
+              <h2>{pendingLimit ? `Buka batas ${resultLimitLabel(pendingLimit)}` : "Masukkan kode dari admin"}</h2>
               <p>
                 Beli lisensi Pro atau Max dari admin, lalu tempel kode aktivasi di bawah. Tidak
-                perlu membuat akun; lisensi berlaku tiga bulan sejak berhasil diredeem.{" "}
+                perlu membuat akun; lisensi berlaku satu bulan sejak berhasil diredeem.{" "}
                 <a href={ADMIN_WHATSAPP} target="_blank" rel="noreferrer" onClick={() => notify("WhatsApp admin dibuka", "Lanjutkan pembelian lisensi pada percakapan baru.")}>Hubungi admin ↗</a>
               </p>
             </div>
@@ -455,7 +533,12 @@ export function ScrapeConsole() {
           <label className="field"><span>Negara</span><input name="country" type="text" defaultValue="Indonesia" required maxLength={100} autoComplete="country-name" /><small className="field__hint">Dipakai untuk memperjelas kueri.</small></label>
           <label className="field"><span>Bahasa</span><input name="lang" type="text" defaultValue="id" minLength={2} maxLength={2} required /><small className="field__hint">Kode ISO dua huruf.</small></label>
           <div className="field">
-            <SearchableCombobox label="Batas hasil" name="limit" value={String(limit)} options={limitOptions} onChange={changeLimit} onLockedOption={requestActivation} helper={`Tier ${api.access.label} membuka hingga ${api.access.maxLimit} hasil.${api.access.expiresAt ? ` Aktif sampai ${expiryLabel(api.access.expiresAt)}.` : ""}`} searchPlaceholder="Cari batas hasil" />
+            <SearchableCombobox label="Batas hasil" name="limit" value={String(limit)} options={limitOptions} onChange={changeLimit} onLockedOption={requestActivation} helper={`Tier ${api.access.label} membuka ${accessLimitLabel(api.access.maxLimit)}.${api.access.expiresAt ? ` Aktif sampai ${expiryLabel(api.access.expiresAt)}.` : ""}`} searchPlaceholder="Cari batas hasil" />
+          </div>
+          <div className="field custom-limit">
+            <span>Jumlah manual · Pro / Max</span>
+            <div className="custom-limit__control"><input type="number" min="1" step="1" inputMode="numeric" value={manualLimit} onChange={(event) => setManualLimit(event.target.value)} aria-label="Jumlah hasil manual" /><button type="button" onClick={applyManualLimit}>{manualLimitAction}</button></div>
+            <small className="field__hint">Pro maksimal 500. Max tanpa batas angka atau pilih “Semua hasil”.</small>
           </div>
           <button className="button button--primary field--wide" type="submit" disabled={!canSubmit} data-state={submitting ? "loading" : error ? "error" : job?.status === "completed" ? "success" : "default"}>
             <span>{submitting ? "Memindai Google Maps" : active ? "Menunggu hasil" : remainingSeconds > 0 ? `Tunggu ${countdownLabel(remainingSeconds)}` : !api.reachable ? "API belum terhubung" : job?.status === "completed" ? "Pindai wilayah baru" : error ? "Coba lagi" : "Mulai scan"}</span>
@@ -469,7 +552,11 @@ export function ScrapeConsole() {
       <div className="results" id="results">
         <div className="results__head">
           <div><h2>Lead hasil scan</h2><p>{sourceRows.length ? `${sourceRows.length} ${job?.keyword || "bisnis"} ditemukan → ${missingWebsiteCount} tidak punya website → ${contactableWithoutWebsiteCount} punya nomor yang bisa dihubungi.` : "Hasil nyata akan muncul di sini setelah scan selesai."}</p></div>
-          <div className="results__actions"><SearchableCombobox label="Filter website" value={websiteFilter} options={websiteOptions} onChange={changeWebsiteFilter} searchPlaceholder="Cari filter" /><button className="button button--secondary" type="button" onClick={downloadQueueCsv} disabled={visibleRows.length === 0}>Unduh CSV <span aria-hidden="true">↓</span></button></div>
+          <div className="results__actions">
+            <label className="results-search"><span>Cari hasil</span><input type="search" value={resultQuery} onChange={(event) => { setResultQuery(event.target.value); setResultPage(1); }} placeholder="Nama, alamat, atau kontak" /></label>
+            <SearchableCombobox label="Filter website" value={websiteFilter} options={websiteOptions} onChange={changeWebsiteFilter} searchPlaceholder="Cari filter" />
+            <button className="button button--secondary" type="button" onClick={downloadQueueCsv} disabled={visibleRows.length === 0}>Unduh CSV <span aria-hidden="true">↓</span></button>
+          </div>
         </div>
 
         <dl className="result-facts" aria-label="Ringkasan hasil"><div><dt>Diterima</dt><dd>{sourceRows.length || "—"}</dd></div><div><dt>Tanpa website</dt><dd>{sourceRows.length ? missingWebsiteCount : "—"}</dd></div><div><dt>Punya nomor</dt><dd>{sourceRows.length ? contactableWithoutWebsiteCount : "—"}</dd></div></dl>
@@ -478,10 +565,11 @@ export function ScrapeConsole() {
         {sourceRows.length > 0 && visibleRows.length === 0 ? <div className="results-empty"><h3>Tidak ada bisnis pada filter ini.</h3><p>Ganti filter website untuk melihat baris lain dari request yang sama.</p></div> : null}
 
         {visibleRows.length > 0 ? (
-          <div className="results-table-wrap"><table className="results-table"><caption className="sr-only">Daftar bisnis dari respons Google Maps</caption><thead><tr><th>No</th><th>Bisnis</th><th>Alamat</th><th>Kontak</th><th>Website</th><th>Rating</th><th>Koordinat</th><th>Sumber</th></tr></thead><tbody>{visibleRows.map((row, index) => (
-            <tr key={`${row.business}-${row.address}-${index}`}><td data-label="No">{index + 1}</td><td data-label="Bisnis"><strong>{row.business || "Nama tidak tersedia"}</strong><span>{row.category || "Kategori tidak tersedia"}</span></td><td data-label="Alamat">{row.address || "—"}</td><td data-label="Kontak" className="contact-cell"><span>{row.phone || "Telepon tidak tersedia"}</span>{row.email ? <a href={`mailto:${row.email}`}>{row.email}</a> : <span>Email tidak tersedia</span>}</td><td data-label="Website">{row.website ? <a href={row.website} target="_blank" rel="noreferrer">Buka website ↗</a> : <span className="status-tag">Belum ada</span>}</td><td data-label="Rating">{row.rating || "—"}{row.reviewCount ? <span className="cell-note">{row.reviewCount} ulasan</span> : null}</td><td data-label="Koordinat" className="numeric-cell">{row.coordinates || "—"}</td><td data-label="Sumber">{row.source ? <a href={row.source} target="_blank" rel="noreferrer">Google Maps ↗</a> : "—"}</td></tr>
+          <div className="results-table-wrap"><table className="results-table"><caption className="sr-only">Daftar bisnis dari respons Google Maps</caption><thead><tr><th>No</th><th>Bisnis</th><th>Alamat</th><th>Kontak</th><th>Website</th><th>Rating</th><th>Koordinat</th><th>Sumber</th></tr></thead><tbody>{pagedRows.map((row, index) => (
+            <tr key={`${row.business}-${row.address}-${pageStart + index}`}><td data-label="No">{pageStart + index + 1}</td><td data-label="Bisnis"><strong>{row.business || "Nama tidak tersedia"}</strong><span>{row.category || "Kategori tidak tersedia"}</span></td><td data-label="Alamat">{row.address || "—"}</td><td data-label="Kontak" className="contact-cell"><span>{row.phone || "Telepon tidak tersedia"}</span>{row.email ? <a href={`mailto:${row.email}`}>{row.email}</a> : <span>Email tidak tersedia</span>}</td><td data-label="Website">{row.website ? <a href={row.website} target="_blank" rel="noreferrer">Buka website ↗</a> : <span className="status-tag">Belum ada</span>}</td><td data-label="Rating">{row.rating || "—"}{row.reviewCount ? <span className="cell-note">{row.reviewCount} ulasan</span> : null}</td><td data-label="Koordinat" className="numeric-cell">{row.coordinates || "—"}</td><td data-label="Sumber">{row.source ? <a href={row.source} target="_blank" rel="noreferrer">Google Maps ↗</a> : "—"}</td></tr>
           ))}</tbody></table></div>
         ) : null}
+        {visibleRows.length > RESULT_PAGE_SIZE ? <nav className="results-pagination" aria-label="Halaman hasil"><p aria-live="polite"><strong>{pageStart + 1}—{Math.min(pageStart + RESULT_PAGE_SIZE, visibleRows.length)}</strong> dari {visibleRows.length}</p><div><button type="button" onClick={() => setResultPage((page) => Math.max(1, page - 1))} disabled={currentResultPage === 1}>Sebelumnya</button><span>{currentResultPage} / {totalResultPages}</span><button type="button" onClick={() => setResultPage((page) => Math.min(totalResultPages, page + 1))} disabled={currentResultPage === totalResultPages}>Berikutnya</button></div></nav> : null}
         {job?.downloadReady && sourceRows.length === 0 ? <a className="text-link" href={`/api/jobs/${job.id}/download`}>Unduh file mentah dari backend <span aria-hidden="true">↓</span></a> : null}
       </div>
       {toast ? <div className="action-toast" data-tone={toast.tone} role={toast.tone === "error" ? "alert" : "status"} aria-live={toast.tone === "error" ? "assertive" : "polite"}><span className="action-toast__signal" aria-hidden="true" /><div><strong>{toast.title}</strong><p>{toast.detail}</p></div><button type="button" onClick={() => setToast(null)} aria-label="Tutup feedback">×</button></div> : null}

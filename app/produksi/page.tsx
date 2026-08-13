@@ -12,15 +12,17 @@ export default function ProduksiPage() {
     <>
       <AppHeader current="production" />
       <main className="production-page">
-        <section className="production-heading wb-shell" aria-labelledby="production-title">
-          <div>
-            <p>Workspace langsung</p>
-            <h1 id="production-title">Produksi</h1>
+        <section className="production-masthead" aria-labelledby="production-title">
+          <div className="production-heading wb-shell">
+            <div>
+              <p>Workspace langsung · Google Maps live</p>
+              <h1 id="production-title">Produksi</h1>
+            </div>
+            <p>
+              Tentukan niche dan wilayah. Pro menerima jumlah manual hingga 500; Max menerima
+              angka tanpa batas preset atau seluruh hasil yang tersedia dari sumber.
+            </p>
           </div>
-          <p>
-            Tentukan niche dan wilayah, pilih batas hingga 500 hasil sesuai lisensi, lalu periksa
-            hanya data yang benar-benar dikembalikan oleh sumber.
-          </p>
         </section>
         <section className="production-workspace wb-shell" aria-label="Workspace scraping">
           <ScrapeConsole />

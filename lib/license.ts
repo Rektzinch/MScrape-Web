@@ -2,7 +2,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { planAccess, type LicenseTier, type PlanAccess } from "@/lib/plans";
 
 export const LICENSE_COOKIE = "mscrape_license";
-export const LICENSE_TERM_MONTHS = 3;
+export const LICENSE_TERM_MONTHS = 1;
 
 type ValidLicense = {
   code: string;

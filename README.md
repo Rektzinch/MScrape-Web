@@ -20,12 +20,12 @@ akan meminta kode aktivasi yang dibeli dari admin.
 | Tier | Harga | Batas hasil | Cooldown |
 | --- | --- | --- | --- |
 | Free | Rp0 | 10 | 5 menit |
-| Pro | Rp27.000 / 3 bulan | 10, 50, 75, 100 | 15 detik |
-| Max | Rp55.000 / 3 bulan | 10, 50, 75, 100, 150, 250, 500 | Tanpa cooldown |
+| Pro | Rp55.000 / bulan | Preset sampai 500 + input manual maksimal 500 | Tanpa cooldown |
+| Max | Rp175.000 / bulan | Semua hasil tersedia + input manual tanpa batas preset | Tanpa cooldown |
 
 API memvalidasi tier, tanggal kedaluwarsa, dan cooldown di server. Saat kode
 diredeem, lisensi Pro/Max disimpan sebagai sesi bertanda tangan pada cookie
-HttpOnly/SameSite=Lax dan berlaku tiga bulan. Cooldown memakai identitas client
+HttpOnly/SameSite=Lax dan berlaku satu bulan. Cooldown memakai identitas client
 atau lisensi serta cookie yang ditandatangani. Manipulasi combobox di browser
 tidak membuka batas yang terkunci.
 
@@ -50,9 +50,11 @@ hanya menerima kode `MSC1-PRO-…` atau `MSC1-MAX-…` yang dihasilkan.
 
 ## API siap pakai
 
-Route `POST /api/scrape` membuat satu request server ke Google Maps dan menerima
-batas sampai 500 tempat sesuai tier. Fetch memakai `cache: "no-store"`; route
-juga mengirim `Cache-Control: no-store`.
+Route `POST /api/scrape` mencari Google Maps sesuai tier. Pro menerima batas
+manual sampai 500. Max menerima jumlah manual lebih besar atau mode `all`, yang
+meminta halaman lanjutan sampai target tercapai, sumber tidak memberi hasil baru,
+atau anggaran request server habis. Fetch memakai `cache: "no-store"`; route juga
+mengirim `Cache-Control: no-store`.
 
 Jika host utama Google gagal, terkena rate limit, atau mengembalikan format yang tidak dapat dibaca, route mencoba host pencarian Google cadangan di dalam request pengguna yang sama.
 

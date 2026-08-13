@@ -14,7 +14,7 @@ const principles = [
   },
   {
     term: "Prioritas",
-    detail: "Filter awal mendahulukan bisnis tanpa website yang memiliki nomor untuk ditindaklanjuti.",
+    detail: "Tampilan awal mempertahankan semua bisnis; filter tanpa website hanya diterapkan saat dipilih.",
   },
   {
     term: "Ekspor",
@@ -24,9 +24,9 @@ const principles = [
 
 const specifications = [
   ["Pengambilan", "Live request", "Cache-Control: no-store"],
-  ["Cakupan", "10 hingga 500 tempat", "Bergantung tier"],
-  ["Akses", "Kode aktivasi", "Tanpa login · aktif 3 bulan sejak redeem"],
-  ["Jeda", "5 menit / 15 detik / tanpa cooldown", "Free / Pro / Max"],
+  ["Cakupan", "10 hingga semua hasil tersedia", "Bergantung tier"],
+  ["Akses", "Kode aktivasi", "Tanpa login · aktif 1 bulan sejak redeem"],
+  ["Jeda", "5 menit / tanpa cooldown / tanpa cooldown", "Free / Pro / Max"],
   ["Kolom kosong", "Dipertahankan kosong", "Tidak ditebak"],
   ["Mode backend", "Google live / web / queue", "Bergantung konfigurasi"],
 ];
@@ -69,23 +69,23 @@ const pricing = [
   {
     code: "02 / PRO",
     tier: "Pro",
-    price: "Rp27.000",
-    term: "/ 3 bulan",
-    capacity: "Hingga 100 hasil",
-    cooldown: "Jeda 15 detik / request",
+    price: "Rp55.000",
+    term: "/ bulan",
+    capacity: "Manual hingga 500 hasil",
+    cooldown: "Tanpa cooldown",
     cta: "Beli Pro via WhatsApp ↗",
-    href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Pro 3 bulan seharga Rp27.000.")}`,
+    href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Pro 1 bulan seharga Rp55.000.")}`,
     external: true,
   },
   {
     code: "03 / MAX",
     tier: "Max",
-    price: "Rp55.000",
-    term: "/ 3 bulan",
-    capacity: "Hingga 500 hasil",
+    price: "Rp175.000",
+    term: "/ bulan",
+    capacity: "Semua hasil / jumlah manual",
     cooldown: "Tanpa cooldown",
     cta: "Beli Max via WhatsApp ↗",
-    href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Max 3 bulan seharga Rp55.000.")}`,
+    href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Max 1 bulan seharga Rp175.000.")}`,
     external: true,
   },
 ] as const;
@@ -116,7 +116,7 @@ export default function DashboardPage() {
             <dl className="hero-facts" aria-label="Karakteristik utama">
               <div><dt>Data contoh</dt><dd>Tidak digunakan</dd></div>
               <div><dt>Cache pencarian</dt><dd>Dimatikan</dd></div>
-              <div><dt>Rentang hasil</dt><dd>10—500 / request</dd></div>
+              <div><dt>Rentang hasil</dt><dd>10—semua tersedia</dd></div>
             </dl>
           </div>
 
@@ -161,7 +161,7 @@ export default function DashboardPage() {
           <div className="dashboard-pricing__inner wb-shell dashboard-scroll-scene">
             <header className="dashboard-pricing__head">
               <div>
-                <p className="dashboard-pricing__kicker">Harga akses · Pro/Max aktif 3 bulan</p>
+                <p className="dashboard-pricing__kicker">Harga akses · Pro/Max aktif 1 bulan</p>
                 <h2 id="pricing-title">Pilih kapasitas sebelum mulai scan.</h2>
               </div>
               <div className="dashboard-pricing__intro">

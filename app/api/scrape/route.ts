@@ -6,7 +6,7 @@ import {
 } from "@/lib/backend";
 import { searchGoogleMapsLive } from "@/lib/google-maps-live";
 import { resolveLicense } from "@/lib/license";
-import { isResultLimit } from "@/lib/plans";
+import { ALL_RESULTS_LIMIT, allowsResultLimit, isResultLimit } from "@/lib/plans";
 import { consumeRateLimit, readRateAccess } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
   const city = cleanText(body.city, 100);
   const country = cleanText(body.country, 100);
   const lang = cleanText(body.lang, 2).toLowerCase() || "en";
-  const limit = Number(body.limit);
+  const limit = body.limit === ALL_RESULTS_LIMIT ? ALL_RESULTS_LIMIT : Number(body.limit);
   const email = body.email !== false;
 
   if (!keyword || !city || !country) {
@@ -63,18 +63,19 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!Number.isInteger(limit) || !isResultLimit(limit)) {
+  if (!isResultLimit(limit)) {
     return Response.json(
-      { message: "Batas hasil harus dipilih dari 10, 50, 75, 100, 150, 250, atau 500." },
+      { message: "Batas hasil harus berupa bilangan bulat positif atau Semua hasil." },
       { status: 400, headers: noStoreHeaders },
     );
   }
 
-  if (!license.access.allowedLimits.includes(limit)) {
-    const requiredTier = limit <= 100 ? "Pro" : "Max";
+  if (!allowsResultLimit(license.access, limit)) {
+    const requiredTier = limit === ALL_RESULTS_LIMIT || limit > 500 ? "Max" : "Pro";
+    const limitLabel = limit === ALL_RESULTS_LIMIT ? "Semua hasil" : String(limit);
     return Response.json(
       {
-        message: `Batas ${limit} memerlukan lisensi ${requiredTier}. Masukkan kode aktivasi dari admin.`,
+        message: `Batas ${limitLabel} memerlukan lisensi ${requiredTier}. Masukkan kode aktivasi dari admin.`,
         requiredTier: requiredTier.toLowerCase(),
         access: readRateAccess(request, license),
       },
@@ -97,7 +98,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const backendDepth = Math.min(Math.max(Math.ceil(limit / 10), 1), 50);
+  const backendDepth = limit === ALL_RESULTS_LIMIT
+    ? 100
+    : Math.min(Math.max(Math.ceil(limit / 10), 1), 100);
   const rateHeaders = rate.cookie
     ? { ...noStoreHeaders, "Set-Cookie": rate.cookie }
     : noStoreHeaders;
@@ -109,7 +112,7 @@ export async function POST(request: Request) {
     keyword,
     city,
     country,
-    limit,
+    limit: limit === ALL_RESULTS_LIMIT ? "all" : limit,
   });
 
   if (!config) {

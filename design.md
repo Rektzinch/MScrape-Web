@@ -46,6 +46,8 @@ cobalt, gradient hero, atau warna inline di luar token.
 
 - Combobox dibangun khusus dan menggantikan native select. Kontraknya mencakup
   pencarian, ArrowUp/ArrowDown, Enter, Escape, light-dismiss, dan fokus terlihat.
+- Popover batas hasil keluar dari frame konsol, sedangkan daftar opsi memiliki
+  scroll internal agar preset terakhir tetap dapat dicapai pada viewport pendek.
 - Opsi limit yang terkunci tetap terlihat dengan hatch + ikon gembok. Klik
   membuka aktivasi inline; lisensi tidak memerlukan login.
 - Button press bergerak 1 px selama 100–120 ms. Dropdown masuk selama 180 ms.
@@ -60,12 +62,14 @@ cobalt, gradient hero, atau warna inline di luar token.
 ## Model akses
 
 - Free: 10 hasil, cooldown 300 detik.
-- Pro: 10/50/75/100 hasil, cooldown 15 detik.
-- Max: 10/50/75/100/150/250/500 hasil, tanpa cooldown.
+- Pro: preset 10/50/75/100/150/250/500 dan jumlah manual hingga 500 hasil,
+  tanpa cooldown.
+- Max: semua preset, jumlah manual tanpa batas preset, atau semua hasil cocok
+  yang tersedia di area pencarian; tanpa cooldown.
 - Kode aktivasi diverifikasi server dan disimpan dalam cookie HttpOnly,
-  SameSite=Lax. Sesi Pro/Max kedaluwarsa tiga bulan sejak kode diredeem.
+  SameSite=Lax. Sesi Pro/Max kedaluwarsa satu bulan sejak kode diredeem.
   API tetap melakukan enforcement walaupun UI dimanipulasi.
-- Harga Dashboard: Free Rp0; Pro Rp27.000 / 3 bulan; Max Rp55.000 / 3 bulan.
+- Harga Dashboard: Free Rp0; Pro Rp55.000 / bulan; Max Rp175.000 / bulan.
 - Harga ditempatkan langsung setelah hero sebagai rail kartu horizontal dengan
   scroll-snap; kartu berikutnya tetap terlihat sebagian di mobile dan setiap
   tier memiliki CTA yang jelas.
@@ -79,6 +83,10 @@ cobalt, gradient hero, atau warna inline di luar token.
   survey-grid koordinat, ikon garis custom, satu entrance animation, dan scene
   fade berbasis scroll.
 - Produksi tidak boleh memuat gambar/video Dashboard atau footer statement.
+- Produksi mewarisi survey-grid dan masthead hitam-oranye Dashboard tanpa
+  membawa konten naratifnya. Hasil scan memakai ledger padat, pencarian lokal,
+  dan pagination 50 baris. Filter awal selalu “Semua bisnis”, sehingga seluruh
+  baris yang diterima tetap tampil sampai pengguna memilih filter lain.
 - Keduanya berbagi wordmark, header, tombol lintas halaman, tokens, font, focus
   ring, dan bahasa rule.
 

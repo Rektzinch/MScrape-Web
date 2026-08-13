@@ -1,12 +1,16 @@
 import type { LeadRow } from "@/lib/leads";
+import { ALL_RESULTS_LIMIT, type ResultLimit } from "@/lib/plans";
 
 type SearchInput = {
   keyword: string;
   city: string;
   country: string;
   lang: string;
-  limit: number;
+  limit: ResultLimit;
 };
+
+const PAGE_SIZE = 500;
+const SEARCH_BUDGET_MS = 48_000;
 
 function at(value: unknown, ...indexes: number[]): unknown {
   return indexes.reduce<unknown>(
@@ -95,8 +99,7 @@ function toLead(value: unknown): { key: string; row: LeadRow } | null {
   };
 }
 
-function buildParams(input: SearchInput) {
-  const limit = Math.min(Math.max(input.limit, 10), 500);
+function buildParams(input: SearchInput, limit: number, offset: number) {
   const params = new URLSearchParams({
     tbm: "map",
     authuser: "0",
@@ -109,7 +112,7 @@ function buildParams(input: SearchInput) {
   params.set(
     "pb",
     `!4m12!1m3!1d3826.902183192154!2d0.0000!3d0.0000` +
-      `!2m3!1f0!2f0!3f0!3m2!1i600!2i800!4f13.0!7i${limit}!8i0` +
+      `!2m3!1f0!2f0!3f0!3m2!1i600!2i800!4f13.0!7i${limit}!8i${offset}` +
       "!10b1!12m22!1m3!18b1!30b1!34e1!2m3!5m1!6e2!20e3!4b0" +
       "!10b1!12b1!13b1!16b1!17m1!3e1!20m3!5e2!6b1!14b1!46m1!1b0" +
       "!96b1!19m4!2m3!1i360!2i120!4i8",
@@ -118,7 +121,7 @@ function buildParams(input: SearchInput) {
   return params;
 }
 
-function parseGoogleResponse(raw: string, limit: number) {
+function parseGoogleResponse(raw: string) {
   const firstNewline = raw.indexOf("\n");
   const json = raw.startsWith(")]}'")
     ? raw.slice(firstNewline >= 0 ? firstNewline + 1 : 4)
@@ -131,18 +134,17 @@ function parseGoogleResponse(raw: string, limit: number) {
   }
 
   const seen = new Set<string>();
-  const results: LeadRow[] = [];
+  const results: Array<{ key: string; row: LeadRow }> = [];
 
   for (const item of items.slice(1)) {
     const parsed = toLead(at(item, 14));
     if (!parsed || seen.has(parsed.key)) continue;
 
     seen.add(parsed.key);
-    results.push(parsed.row);
-    if (results.length >= limit) break;
+    results.push(parsed);
   }
 
-  return results;
+  return { results, candidateCount: Math.max(0, items.length - 1) };
 }
 
 export async function searchGoogleMapsLive(input: SearchInput) {
@@ -150,36 +152,59 @@ export async function searchGoogleMapsLive(input: SearchInput) {
   const baseUrls = configuredUrl
     ? [configuredUrl]
     : ["https://maps.google.com/search", "https://www.google.com/search"];
-  const limit = Math.min(Math.max(input.limit, 10), 500);
+  const requestedLimit = input.limit === ALL_RESULTS_LIMIT
+    ? ALL_RESULTS_LIMIT
+    : Math.max(input.limit, 1);
+  const searchStartedAt = Date.now();
   let lastError: unknown;
 
   for (const [index, baseUrl] of baseUrls.entries()) {
     try {
-      const response = await fetch(`${baseUrl}?${buildParams(input)}`, {
-        cache: "no-store",
-        headers: {
-          Accept: "application/json, text/plain, */*",
-          "Accept-Language": `${input.lang},en;q=0.8`,
-          Referer: "https://www.google.com/maps/",
-          "User-Agent":
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 " +
-            "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        },
-        signal: AbortSignal.timeout(20_000),
-      });
+      const collected = new Map<string, LeadRow>();
+      let offset = 0;
 
-      if (!response.ok) {
-        throw new Error(`Google Maps merespons dengan status ${response.status}.`);
+      while (Date.now() - searchStartedAt < SEARCH_BUDGET_MS) {
+        const batchSize = requestedLimit === ALL_RESULTS_LIMIT
+          ? PAGE_SIZE
+          : Math.min(PAGE_SIZE, requestedLimit - collected.size);
+        if (batchSize <= 0) break;
+        const remainingBudget = SEARCH_BUDGET_MS - (Date.now() - searchStartedAt);
+        const response = await fetch(`${baseUrl}?${buildParams(input, batchSize, offset)}`, {
+          cache: "no-store",
+          headers: {
+            Accept: "application/json, text/plain, */*",
+            "Accept-Language": `${input.lang},en;q=0.8`,
+            Referer: "https://www.google.com/maps/",
+            "User-Agent":
+              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 " +
+              "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+          },
+          signal: AbortSignal.timeout(Math.max(1_000, Math.min(20_000, remainingBudget))),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Google Maps merespons dengan status ${response.status}.`);
+        }
+
+        const page = parseGoogleResponse(await response.text());
+        const previousSize = collected.size;
+        for (const result of page.results) collected.set(result.key, result.row);
+
+        if (requestedLimit !== ALL_RESULTS_LIMIT && collected.size >= requestedLimit) break;
+        if (page.candidateCount === 0 || collected.size === previousSize) break;
+        offset += page.candidateCount;
       }
 
-      const results = parseGoogleResponse(await response.text(), limit);
+      const results = [...collected.values()];
       if (results.length === 0) {
         throw new Error(
           "Google Maps tidak mengembalikan tempat untuk pencarian ini.",
         );
       }
 
-      return results;
+      return requestedLimit === ALL_RESULTS_LIMIT
+        ? results
+        : results.slice(0, requestedLimit);
     } catch (error) {
       lastError = error;
       if (index < baseUrls.length - 1) {
