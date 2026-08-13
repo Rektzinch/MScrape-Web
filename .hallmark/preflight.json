@@ -1,8 +1,9 @@
 {
   "date": "2026-08-13",
+  "font_stack": "Bricolage Grotesque Variable + Archivo Variable",
+  "palette": "OKLCH custom properties in tokens.css",
+  "motion": "CSS only; no motion library",
+  "spacing": "4-point named scale",
   "framework": "Next.js 16 App Router",
-  "font": "Archivo Variable",
-  "palette": "Grid / ultramarine",
-  "motion": "CSS-only restrained interactions",
-  "spacing": "4px semantic scale"
+  "preserve": ["framework", "API routes", "scrape state", "CSV export", "font families"]
 }

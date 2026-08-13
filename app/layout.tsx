@@ -2,9 +2,13 @@ import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/archivo";
 import "@fontsource-variable/bricolage-grotesque";
 import "./globals.css";
+import "./workbench.css";
 
 export const metadata: Metadata = {
-  title: "MScrape — Temukan bisnis tanpa website",
+  title: {
+    default: "MScrape — Temukan bisnis tanpa website",
+    template: "%s — MScrape",
+  },
   description:
     "Pindai Google Maps secara live, saring bisnis tanpa website, dan ekspor lead yang rapi ke CSV.",
 };

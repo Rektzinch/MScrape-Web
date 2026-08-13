@@ -1,14 +1,16 @@
 :root {
-  --color-paper: oklch(97.5% 0.012 68);
-  --color-paper-2: oklch(94.5% 0.018 68);
-  --color-paper-3: oklch(90.5% 0.022 68);
-  --color-ink: oklch(18% 0.018 48);
-  --color-muted: oklch(39% 0.026 48);
-  --color-rule: oklch(78% 0.024 62);
-  --color-rule-strong: oklch(52% 0.03 52);
-  --color-accent: oklch(48% 0.19 32);
-  --color-accent-ink: oklch(98% 0.01 68);
-  --color-focus: var(--color-ink);
+  --color-paper: oklch(96.5% 0.015 74);
+  --color-paper-2: oklch(93.5% 0.018 72);
+  --color-paper-3: oklch(89.5% 0.022 70);
+  --color-ink: oklch(17% 0.018 54);
+  --color-ink-2: oklch(29% 0.022 54);
+  --color-muted: oklch(40% 0.024 54);
+  --color-rule: oklch(78% 0.024 68);
+  --color-rule-strong: oklch(51% 0.028 62);
+  --color-accent: oklch(48% 0.19 258);
+  --color-accent-warm: oklch(52% 0.17 34);
+  --color-accent-ink: oklch(97% 0.012 74);
+  --color-focus: oklch(55% 0.21 258);
   --color-focus-inner: var(--color-paper);
   --color-success: oklch(43% 0.12 152);
   --color-error: oklch(46% 0.18 26);
@@ -39,8 +41,8 @@
   --text-xl: 1.953rem;
   --text-2xl: 2.441rem;
   --text-3xl: 3.052rem;
-  --text-display-s: clamp(2.5rem, 7vw, 4.25rem);
-  --text-display: clamp(2.75rem, 8vw, 5.25rem);
+  --text-display-s: clamp(2.5rem, 6vw, 4.25rem);
+  --text-display: clamp(3rem, 7vw, 5.25rem);
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
@@ -51,8 +53,8 @@
 
   --rule-hair: 1px;
   --rule-strong: 2px;
-  --radius-control: 0.625rem;
-  --radius-card: 1rem;
+  --radius-control: 0.375rem;
+  --radius-card: 0.5rem;
 
   --page-max: 88rem;
   --page-gutter: clamp(1rem, 4vw, 3.5rem);

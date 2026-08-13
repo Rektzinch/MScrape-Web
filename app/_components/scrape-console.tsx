@@ -333,22 +333,8 @@ export function ScrapeConsole() {
   }
 
   return (
-    <section className="scanner" id="scanner" aria-labelledby="scanner-title">
-      <div className="scanner__intro reveal" style={{ "--i": 0 } as React.CSSProperties}>
-        <h1 id="scanner-title">Bisnis tanpa website. Siap ditindaklanjuti.</h1>
-        <p className="scanner__lede">
-          Pindai Google Maps saat request dikirim, saring bisnis yang belum punya website,
-          lalu bawa kontak yang tersedia ke CSV yang sudah tertata.
-        </p>
-        <ul className="scanner__facts" aria-label="Karakteristik pencarian">
-          <li>Google Maps live</li>
-          <li>tanpa cache</li>
-          <li>tanpa data demo</li>
-        </ul>
-        <a className="text-link" href="#results">Lihat format hasil <span aria-hidden="true">↓</span></a>
-      </div>
-
-      <div className="scanner__console reveal" style={{ "--i": 1 } as React.CSSProperties} aria-busy={submitting || active}>
+    <section className="scanner production-console" id="scanner" aria-label="Konsol produksi">
+      <div className="scanner__console" aria-busy={submitting || active}>
         <div className="console__bar">
           <span>Scan baru</span>
           <p className="api-state" data-online={api.reachable} aria-live="polite">

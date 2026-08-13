@@ -1,16 +1,12 @@
 [
   {
     "date": "2026-08-13",
-    "macrostructure": "Split Studio",
-    "theme": "Coral",
-    "enrichment": "none",
-    "brief": "Mobile-first lead scanner with no-website filtering and tidy CSV export"
-  },
-  {
-    "date": "2026-08-13",
+    "scope": "app",
     "macrostructure": "Workbench",
-    "theme": "Grid",
-    "enrichment": "Tier-A CSS product workspace",
-    "brief": "Vercel-ready MScrape frontend connected to a real Google Maps scraper API"
+    "theme": "custom",
+    "theme_axes": "light / geometric-sans / cool",
+    "vibe": "editorial utility, paper warmth, electric precision",
+    "enrichment": "E1 clipped product video + F5 product image",
+    "brief": "MScrape dashboard and production split"
   }
 ]
