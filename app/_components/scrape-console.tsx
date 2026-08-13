@@ -34,7 +34,7 @@ type JobState = {
 };
 
 type WebsiteFilter = "ready" | "missing" | "all" | "present";
-type DownloadFormat = "csv" | "txt" | "xlsx" | "json" | "sheets";
+type DownloadFormat = "csv" | "txt" | "json" | "sheets";
 type NoticeTone = "info" | "success" | "error";
 
 type ExportRecord = {
@@ -83,9 +83,8 @@ const websiteOptions: ComboboxOption[] = [
 const downloadOptions: ComboboxOption[] = [
   { value: "csv", label: "CSV", description: "12 kolom data bisnis untuk spreadsheet" },
   { value: "txt", label: "TXT", description: "Ringkasan teks berurutan per bisnis" },
-  { value: "xlsx", label: "XLSX", description: "Tabel, filter, header beku, dan tautan aktif" },
   { value: "json", label: "JSON", description: "Metadata pencarian dan data bisnis terstruktur" },
-  { value: "sheets", label: "Google Sheets", description: "XLSX siap impor dengan kolom tindak lanjut" },
+  { value: "sheets", label: "Google Sheets", description: "CSV siap impor dengan kolom tindak lanjut" },
 ];
 
 function messageFrom(value: unknown, fallback: string) {
@@ -137,11 +136,27 @@ function toExportRecord(row: LeadRow, city: string): ExportRecord {
   };
 }
 
+function rowsToCsv(headers: string[], rows: Array<Array<string | number>>) {
+  return `\uFEFF${[
+    headers.map(csvCell).join(","),
+    ...rows.map((row) => row.map(csvCell).join(",")),
+  ].join("\r\n")}`;
+}
+
 function recordsToCsv(records: ExportRecord[]) {
-  const lines = records.map((record) => exportColumns
-    .map(([key]) => csvCell(record[key]))
-    .join(","));
-  return `\uFEFF${[exportHeaders.map(csvCell).join(","), ...lines].join("\r\n")}`;
+  return rowsToCsv(
+    exportHeaders,
+    records.map((record) => exportColumns.map(([key]) => record[key])),
+  );
+}
+
+function recordsToSheetsCsv(records: ExportRecord[]) {
+  const headers = [...exportHeaders, "Status Prospek", "Terakhir Dihubungi", "Follow-up", "Catatan"];
+  const rows = records.map((record) => [
+    ...exportColumns.map(([key]) => record[key]),
+    "", "", "", "",
+  ]);
+  return rowsToCsv(headers, rows);
 }
 
 function recordsToText(records: ExportRecord[]) {
@@ -572,46 +587,10 @@ export function ScrapeConsole() {
       } else if (downloadFormat === "json") {
         triggerDownload(recordsToJson(records, job, websiteFilter), "application/json;charset=utf-8", `${filename}.json`);
       } else {
-        const ExcelJS = await import("exceljs");
-        const isSheetsImport = downloadFormat === "sheets";
-        const headers = isSheetsImport
-          ? [...exportHeaders, "Status Prospek", "Terakhir Dihubungi", "Follow-up", "Catatan"]
-          : exportHeaders;
-        const rows = records.map((record) => [
-          ...exportColumns.map(([key]) => record[key]),
-          ...(isSheetsImport ? ["", "", "", ""] : []),
-        ]);
-        const workbook = new ExcelJS.Workbook();
-        workbook.creator = "MScrape";
-        workbook.created = new Date();
-        const worksheet = workbook.addWorksheet(isSheetsImport ? "Google Sheets" : "Data Bisnis", {
-          views: [{ state: "frozen", ySplit: 1, topLeftCell: "A2" }],
-        });
-        worksheet.addTable({
-          name: isSheetsImport ? "DataGoogleSheets" : "DataBisnis",
-          ref: "A1",
-          headerRow: true,
-          totalsRow: false,
-          columns: headers.map((name) => ({ name, filterButton: true })),
-          rows,
-          style: { theme: "TableStyleMedium2", showRowStripes: true },
-        });
-        headers.forEach((header, index) => {
-          const widest = Math.max(header.length, ...rows.map((row) => String(row[index] || "").length));
-          worksheet.getColumn(index + 1).width = Math.min(Math.max(widest + 2, 14), 42);
-        });
-        records.forEach((record, index) => {
-          const rowNumber = index + 2;
-          const websiteCell = worksheet.getCell(rowNumber, exportHeaders.indexOf("Website") + 1);
-          const mapsCell = worksheet.getCell(rowNumber, exportHeaders.indexOf("Google Maps") + 1);
-          if (record.website) websiteCell.value = { text: record.website, hyperlink: record.website };
-          if (record.googleMaps) mapsCell.value = { text: record.googleMaps, hyperlink: record.googleMaps };
-        });
-        const buffer = await workbook.xlsx.writeBuffer();
         triggerDownload(
-          buffer as ArrayBuffer,
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          `${filename}${isSheetsImport ? "-google-sheets" : ""}.xlsx`,
+          recordsToSheetsCsv(records),
+          "text/csv;charset=utf-8",
+          `${filename}-google-sheets.csv`,
         );
       }
       notify(`${format} diunduh`, `${records.length} baris dari filter aktif dimasukkan ke file.`, "success");
