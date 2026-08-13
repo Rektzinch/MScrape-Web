@@ -1818,7 +1818,7 @@
   }
 
   .pricing-rail {
-    grid-auto-columns: minmax(19rem, 54%);
+    grid-auto-columns: min(28rem, 74vw);
   }
 
   .capture-legend {
@@ -1910,7 +1910,7 @@
   }
 
   .pricing-rail {
-    grid-auto-columns: minmax(21rem, 38%);
+    grid-auto-columns: min(31rem, 76vw);
     gap: var(--space-lg);
   }
 
