@@ -71,7 +71,7 @@ export async function POST(request: Request) {
   }
 
   if (!allowsResultLimit(license.access, limit)) {
-    const requiredTier = limit === ALL_RESULTS_LIMIT || limit > 500 ? "Max" : "Pro";
+    const requiredTier = limit === ALL_RESULTS_LIMIT || limit > 250 ? "Max" : "Pro";
     const limitLabel = limit === ALL_RESULTS_LIMIT ? "Semua hasil" : String(limit);
     return Response.json(
       {

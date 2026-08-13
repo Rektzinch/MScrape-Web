@@ -19,7 +19,7 @@ export default function ProduksiPage() {
               <h1 id="production-title">Produksi</h1>
             </div>
             <p>
-              Tentukan niche dan wilayah. Pro menerima jumlah manual hingga 500; Max menerima
+              Tentukan niche dan wilayah. Pro menerima jumlah manual hingga 250; Max menerima
               angka tanpa batas preset atau seluruh hasil yang tersedia dari sumber.
             </p>
           </div>

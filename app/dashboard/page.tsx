@@ -26,7 +26,7 @@ const specifications = [
   ["Pengambilan", "Live request", "Cache-Control: no-store"],
   ["Cakupan", "10 hingga semua hasil tersedia", "Bergantung tier"],
   ["Akses", "Kode aktivasi", "Tanpa login · aktif 1 bulan sejak redeem"],
-  ["Jeda", "5 menit / tanpa cooldown / tanpa cooldown", "Free / Pro / Max"],
+  ["Jeda", "1 jam / 1 menit / tanpa cooldown", "Free / Pro / Max"],
   ["Kolom kosong", "Dipertahankan kosong", "Tidak ditebak"],
   ["Mode backend", "Google live / web / queue", "Bergantung konfigurasi"],
 ];
@@ -61,7 +61,7 @@ const pricing = [
     price: "Rp0",
     term: "selamanya",
     capacity: "10 hasil",
-    cooldown: "Jeda 5 menit / request",
+    cooldown: "Jeda 1 jam / request",
     cta: "Mulai Free →",
     href: "/produksi",
     external: false,
@@ -69,12 +69,12 @@ const pricing = [
   {
     code: "02 / PRO",
     tier: "Pro",
-    price: "Rp55.000",
+    price: "Rp35.000",
     term: "/ bulan",
-    capacity: "Manual hingga 500 hasil",
-    cooldown: "Tanpa cooldown",
+    capacity: "Manual hingga 250 hasil",
+    cooldown: "Jeda 1 menit / request",
     cta: "Beli Pro via WhatsApp ↗",
-    href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Pro 1 bulan seharga Rp55.000.")}`,
+    href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Pro 1 bulan seharga Rp35.000.")}`,
     external: true,
   },
   {
@@ -157,7 +157,7 @@ export default function DashboardPage() {
           </figure>
         </section>
 
-        <section className="dashboard-pricing" aria-labelledby="pricing-title">
+        <section className="dashboard-pricing" id="pricing" aria-labelledby="pricing-title">
           <div className="dashboard-pricing__inner wb-shell dashboard-scroll-scene">
             <header className="dashboard-pricing__head">
               <div>
@@ -175,7 +175,7 @@ export default function DashboardPage() {
 
             <div className="pricing-rail" aria-label="Harga lisensi MScrape" tabIndex={0}>
               {pricing.map((plan) => (
-                <article className="pricing-card" data-tier={plan.tier.toLowerCase()} key={plan.tier}>
+                <article className="pricing-card" id={`pricing-${plan.tier.toLowerCase()}`} data-tier={plan.tier.toLowerCase()} key={plan.tier}>
                   <header className="pricing-card__head">
                     <span>{plan.code}</span>
                     <span>{plan.term}</span>

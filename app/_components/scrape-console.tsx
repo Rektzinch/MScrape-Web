@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { LeadRow } from "@/lib/leads";
 import { ALL_LIMITS, ALL_RESULTS_LIMIT, NUMERIC_LIMITS, allowsResultLimit, planAccess, type PlanAccess, type ResultLimit } from "@/lib/plans";
 import { SearchableCombobox, type ComboboxOption } from "./searchable-combobox";
@@ -93,6 +94,7 @@ function safeFilenamePart(value: string) {
 
 function durationLabel(seconds: number) {
   if (seconds <= 0) return "tanpa cooldown";
+  if (seconds >= 3_600) return `${Math.ceil(seconds / 3_600)} jam / request`;
   if (seconds >= 60) return `${Math.ceil(seconds / 60)} menit / request`;
   return `${seconds} detik / request`;
 }
@@ -111,6 +113,10 @@ function accessLimitLabel(limit: ResultLimit) {
   return limit === ALL_RESULTS_LIMIT ? "semua hasil yang tersedia" : `hingga ${limit} hasil`;
 }
 
+function requiredTierForLimit(limit: ResultLimit) {
+  return limit === ALL_RESULTS_LIMIT || limit > 250 ? "max" : "pro";
+}
+
 function expiryLabel(expiresAt: string | null) {
   if (!expiresAt) return "";
   return new Intl.DateTimeFormat("id-ID", {
@@ -126,6 +132,7 @@ function noticeTime(createdAt: string) {
 }
 
 export function ScrapeConsole() {
+  const router = useRouter();
   const [api, setApi] = useState<ApiState>(initialApiState);
   const [job, setJob] = useState<JobState | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -143,7 +150,7 @@ export function ScrapeConsole() {
   const [toast, setToast] = useState<ActionNotice | null>(null);
   const [resultQuery, setResultQuery] = useState("");
   const [resultPage, setResultPage] = useState(1);
-  const [manualLimit, setManualLimit] = useState("500");
+  const [manualLimit, setManualLimit] = useState("250");
   const activationRef = useRef<HTMLInputElement>(null);
   const noticeId = useRef(0);
   const toastTimer = useRef<number | null>(null);
@@ -162,7 +169,7 @@ export function ScrapeConsole() {
     setNotices((current) => [next, ...current].slice(0, 8));
     setToast(next);
     if (toastTimer.current) window.clearTimeout(toastTimer.current);
-    toastTimer.current = window.setTimeout(() => setToast(null), 5_000);
+    toastTimer.current = window.setTimeout(() => setToast(null), 3_200);
   }, []);
 
   useEffect(() => () => {
@@ -276,14 +283,14 @@ export function ScrapeConsole() {
   const manualLimitIsAllowed = manualLimitIsValid && allowsResultLimit(api.access, manualLimitNumber);
   const manualLimitAction = manualLimitIsAllowed
     ? "Terapkan"
-    : manualLimitIsValid && manualLimitNumber > 500 ? "Buka Max" : "Buka Pro";
+    : manualLimitIsValid && manualLimitNumber > 250 ? "Buka Max" : "Buka Pro";
 
   const limitOptions = useMemo<ComboboxOption[]>(() => {
     const presetOptions = ALL_LIMITS.map((value) => {
-      const requiredTier = value === 10 ? "Free" : value === ALL_RESULTS_LIMIT ? "Max" : "Pro";
+      const requiredTier = value === 10 ? "Free" : requiredTierForLimit(value) === "pro" ? "Pro" : "Max";
       const description = value === ALL_RESULTS_LIMIT
         ? "Max · semua bisnis cocok di area"
-        : `${requiredTier} · ${value === 10 ? "jeda 5 menit" : "tanpa cooldown"}`;
+        : `${requiredTier} · ${value === 10 ? "jeda 1 jam" : value <= 250 ? "jeda 1 menit" : "tanpa cooldown"}`;
       return {
         value: String(value),
         label: resultLimitLabel(value),
@@ -296,7 +303,7 @@ export function ScrapeConsole() {
       ? [{
           value: String(limit),
           label: `${limit} hasil`,
-          description: `${limit <= 500 ? "Pro" : "Max"} · jumlah manual`,
+          description: `${limit <= 250 ? "Pro" : "Max"} · jumlah manual`,
           locked: !allowsResultLimit(api.access, limit),
         }]
       : [];
@@ -329,6 +336,13 @@ export function ScrapeConsole() {
     );
   }
 
+  function goToPricing(option: ComboboxOption | ResultLimit) {
+    const requestedLimit = typeof option === "object"
+      ? option.value === ALL_RESULTS_LIMIT ? ALL_RESULTS_LIMIT : Number(option.value) as ResultLimit
+      : option;
+    router.push(`/dashboard#pricing-${requiredTierForLimit(requestedLimit)}`);
+  }
+
   function toggleNotifications() {
     setNotificationOpen((open) => {
       if (!open) setNotices((current) => current.map((notice) => ({ ...notice, unread: false })));
@@ -354,11 +368,7 @@ export function ScrapeConsole() {
       return;
     }
     if (!allowsResultLimit(api.access, nextLimit)) {
-      requestActivation({
-        value: String(nextLimit),
-        label: `${nextLimit} hasil`,
-        description: `${nextLimit > 500 ? "Max" : "Pro"} · jumlah manual`,
-      });
+      goToPricing(nextLimit);
       return;
     }
     setLimit(nextLimit);
@@ -388,7 +398,7 @@ export function ScrapeConsole() {
       if (!response.ok || !data.access) throw new Error(data.message || "Lisensi tidak dapat diaktifkan.");
       setApi((current) => ({ ...current, access: data.access! }));
       if (pendingLimit && !allowsResultLimit(data.access, pendingLimit)) {
-        const requiredTier = pendingLimit === ALL_RESULTS_LIMIT || pendingLimit > 500 ? "Max" : "Pro";
+        const requiredTier = pendingLimit === ALL_RESULTS_LIMIT || pendingLimit > 250 ? "Max" : "Pro";
         const mismatch = `Tier ${data.access.label} aktif, tetapi ${resultLimitLabel(pendingLimit).toLocaleLowerCase("id")} memerlukan ${requiredTier}.`;
         setActivationCode("");
         setActivationError(mismatch);
@@ -533,12 +543,12 @@ export function ScrapeConsole() {
           <label className="field"><span>Negara</span><input name="country" type="text" defaultValue="Indonesia" required maxLength={100} autoComplete="country-name" /><small className="field__hint">Dipakai untuk memperjelas kueri.</small></label>
           <label className="field"><span>Bahasa</span><input name="lang" type="text" defaultValue="id" minLength={2} maxLength={2} required /><small className="field__hint">Kode ISO dua huruf.</small></label>
           <div className="field">
-            <SearchableCombobox label="Batas hasil" name="limit" value={String(limit)} options={limitOptions} onChange={changeLimit} onLockedOption={requestActivation} helper={`Tier ${api.access.label} membuka ${accessLimitLabel(api.access.maxLimit)}.${api.access.expiresAt ? ` Aktif sampai ${expiryLabel(api.access.expiresAt)}.` : ""}`} searchPlaceholder="Cari batas hasil" />
+            <SearchableCombobox label="Batas hasil" name="limit" value={String(limit)} options={limitOptions} onChange={changeLimit} onLockedOption={goToPricing} helper={`Tier ${api.access.label} membuka ${accessLimitLabel(api.access.maxLimit)}.${api.access.expiresAt ? ` Aktif sampai ${expiryLabel(api.access.expiresAt)}.` : ""}`} searchPlaceholder="Cari batas hasil" />
           </div>
           <div className="field custom-limit">
             <span>Jumlah manual · Pro / Max</span>
             <div className="custom-limit__control"><input type="number" min="1" step="1" inputMode="numeric" value={manualLimit} onChange={(event) => setManualLimit(event.target.value)} aria-label="Jumlah hasil manual" /><button type="button" onClick={applyManualLimit}>{manualLimitAction}</button></div>
-            <small className="field__hint">Pro maksimal 500. Max tanpa batas angka atau pilih “Semua hasil”.</small>
+            <small className="field__hint">Pro maksimal 250. Max tanpa batas angka atau pilih “Semua hasil”.</small>
           </div>
           <button className="button button--primary field--wide" type="submit" disabled={!canSubmit} data-state={submitting ? "loading" : error ? "error" : job?.status === "completed" ? "success" : "default"}>
             <span>{submitting ? "Memindai Google Maps" : active ? "Menunggu hasil" : remainingSeconds > 0 ? `Tunggu ${countdownLabel(remainingSeconds)}` : !api.reachable ? "API belum terhubung" : job?.status === "completed" ? "Pindai wilayah baru" : error ? "Coba lagi" : "Mulai scan"}</span>
@@ -566,7 +576,7 @@ export function ScrapeConsole() {
 
         {visibleRows.length > 0 ? (
           <div className="results-table-wrap"><table className="results-table"><caption className="sr-only">Daftar bisnis dari respons Google Maps</caption><thead><tr><th>No</th><th>Bisnis</th><th>Alamat</th><th>Kontak</th><th>Website</th><th>Rating</th><th>Koordinat</th><th>Sumber</th></tr></thead><tbody>{pagedRows.map((row, index) => (
-            <tr key={`${row.business}-${row.address}-${pageStart + index}`}><td data-label="No">{pageStart + index + 1}</td><td data-label="Bisnis"><strong>{row.business || "Nama tidak tersedia"}</strong><span>{row.category || "Kategori tidak tersedia"}</span></td><td data-label="Alamat">{row.address || "—"}</td><td data-label="Kontak" className="contact-cell"><span>{row.phone || "Telepon tidak tersedia"}</span>{row.email ? <a href={`mailto:${row.email}`}>{row.email}</a> : <span>Email tidak tersedia</span>}</td><td data-label="Website">{row.website ? <a href={row.website} target="_blank" rel="noreferrer">Buka website ↗</a> : <span className="status-tag">Belum ada</span>}</td><td data-label="Rating">{row.rating || "—"}{row.reviewCount ? <span className="cell-note">{row.reviewCount} ulasan</span> : null}</td><td data-label="Koordinat" className="numeric-cell">{row.coordinates || "—"}</td><td data-label="Sumber">{row.source ? <a href={row.source} target="_blank" rel="noreferrer">Google Maps ↗</a> : "—"}</td></tr>
+            <tr key={`${row.business}-${row.address}-${pageStart + index}`}><td data-label="No"><span className="result-index">{pageStart + index + 1}</span></td><td data-label="Bisnis"><strong>{row.business || "Nama tidak tersedia"}</strong><span>{row.category || "Kategori tidak tersedia"}</span></td><td data-label="Alamat">{row.address || "—"}</td><td data-label="Kontak" className="contact-cell"><span>{row.phone || "Telepon tidak tersedia"}</span>{row.email ? <a href={`mailto:${row.email}`}>{row.email}</a> : <span>Email tidak tersedia</span>}</td><td data-label="Website">{row.website ? <a href={row.website} target="_blank" rel="noreferrer">Buka website ↗</a> : <span className="status-tag">Belum ada</span>}</td><td data-label="Rating">{row.rating || "—"}{row.reviewCount ? <span className="cell-note">{row.reviewCount} ulasan</span> : null}</td><td data-label="Koordinat" className="numeric-cell">{row.coordinates || "—"}</td><td data-label="Sumber">{row.source ? <a href={row.source} target="_blank" rel="noreferrer">Google Maps ↗</a> : "—"}</td></tr>
           ))}</tbody></table></div>
         ) : null}
         {visibleRows.length > RESULT_PAGE_SIZE ? <nav className="results-pagination" aria-label="Halaman hasil"><p aria-live="polite"><strong>{pageStart + 1}—{Math.min(pageStart + RESULT_PAGE_SIZE, visibleRows.length)}</strong> dari {visibleRows.length}</p><div><button type="button" onClick={() => setResultPage((page) => Math.max(1, page - 1))} disabled={currentResultPage === 1}>Sebelumnya</button><span>{currentResultPage} / {totalResultPages}</span><button type="button" onClick={() => setResultPage((page) => Math.min(totalResultPages, page + 1))} disabled={currentResultPage === totalResultPages}>Berikutnya</button></div></nav> : null}

@@ -31,8 +31,9 @@ tombol pada header.
 - `--color-focus` oklch(39% 0.17 32)
 
 Hitam hangat adalah permukaan kerja dan oranye gelap adalah warna aksi. Oranye
-terang hanya untuk ikon, jalur, dan penanda di atas permukaan hitam. Tidak ada
-cobalt, gradient hero, atau warna inline di luar token.
+terang dipakai untuk ikon, jalur, penanda di atas permukaan hitam, serta campuran
+tipis pada kotak ringkasan dan judul hasil. Tidak ada cobalt, gradient hero, atau
+warna inline di luar token.
 
 ## Tipografi, ruang, dan bentuk
 
@@ -49,10 +50,10 @@ cobalt, gradient hero, atau warna inline di luar token.
 - Popover batas hasil keluar dari frame konsol, sedangkan daftar opsi memiliki
   scroll internal agar preset terakhir tetap dapat dicapai pada viewport pendek.
 - Opsi limit yang terkunci tetap terlihat dengan hatch + ikon gembok. Klik
-  membuka aktivasi inline; lisensi tidak memerlukan login.
+  mengarah ke kartu harga Pro atau Max yang relevan; lisensi tidak memerlukan login.
 - Button press bergerak 1 px selama 100–120 ms. Dropdown masuk selama 180 ms.
-- Produksi hanya memakai spinner, progress, dan dropdown sebagai tiga primitive
-  motion. `prefers-reduced-motion` mematikan motion spasial.
+- Produksi memakai spinner, progress, dropdown, dan fade singkat toast sebagai
+  primitive motion. `prefers-reduced-motion` mematikan motion spasial.
 - Aksi operasional memberi feedback inline, lalu dicatat pada badge aktivitas;
   snackbar dipakai untuk hasil async, kegagalan, aktivasi, dan ekspor.
 - Dashboard memakai fade masuk/keluar progresif hanya pada scene utama ketika
@@ -61,15 +62,15 @@ cobalt, gradient hero, atau warna inline di luar token.
 
 ## Model akses
 
-- Free: 10 hasil, cooldown 300 detik.
-- Pro: preset 10/50/75/100/150/250/500 dan jumlah manual hingga 500 hasil,
-  tanpa cooldown.
+- Free: 10 hasil, cooldown satu jam.
+- Pro: preset 10/50/75/100/150/250 dan jumlah manual hingga 250 hasil,
+  cooldown satu menit.
 - Max: semua preset, jumlah manual tanpa batas preset, atau semua hasil cocok
   yang tersedia di area pencarian; tanpa cooldown.
 - Kode aktivasi diverifikasi server dan disimpan dalam cookie HttpOnly,
   SameSite=Lax. Sesi Pro/Max kedaluwarsa satu bulan sejak kode diredeem.
   API tetap melakukan enforcement walaupun UI dimanipulasi.
-- Harga Dashboard: Free Rp0; Pro Rp55.000 / bulan; Max Rp175.000 / bulan.
+- Harga Dashboard: Free Rp0; Pro Rp35.000 / bulan; Max Rp175.000 / bulan.
 - Harga ditempatkan langsung setelah hero sebagai rail kartu horizontal dengan
   scroll-snap; kartu berikutnya tetap terlihat sebagian di mobile dan setiap
   tier memiliki CTA yang jelas.
@@ -87,6 +88,11 @@ cobalt, gradient hero, atau warna inline di luar token.
   membawa konten naratifnya. Hasil scan memakai ledger padat, pencarian lokal,
   dan pagination 50 baris. Filter awal selalu “Semua bisnis”, sehingga seluruh
   baris yang diterima tetap tampil sampai pengguna memilih filter lain.
+- Limit terkunci dan tombol Buka Pro/Max mengarah langsung ke kartu harga tier
+  terkait. Kotak ringkasan dan kartu hasil mobile memakai bidang oranye berpola;
+  nomor urut hasil dibungkus badge hitam.
+- Notifikasi berada sebagai tombol bulat di pojok kanan top-bar. Toast memakai
+  permukaan kertas yang ringan dan menghilang otomatis setelah 3,2 detik.
 - Keduanya berbagi wordmark, header, tombol lintas halaman, tokens, font, focus
   ring, dan bahasa rule.
 

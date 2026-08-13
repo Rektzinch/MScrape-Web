@@ -19,8 +19,8 @@ akan meminta kode aktivasi yang dibeli dari admin.
 
 | Tier | Harga | Batas hasil | Cooldown |
 | --- | --- | --- | --- |
-| Free | Rp0 | 10 | 5 menit |
-| Pro | Rp55.000 / bulan | Preset sampai 500 + input manual maksimal 500 | Tanpa cooldown |
+| Free | Rp0 | 10 | 1 jam |
+| Pro | Rp35.000 / bulan | Preset sampai 250 + input manual maksimal 250 | 1 menit |
 | Max | Rp175.000 / bulan | Semua hasil tersedia + input manual tanpa batas preset | Tanpa cooldown |
 
 API memvalidasi tier, tanggal kedaluwarsa, dan cooldown di server. Saat kode
@@ -51,7 +51,7 @@ hanya menerima kode `MSC1-PRO-…` atau `MSC1-MAX-…` yang dihasilkan.
 ## API siap pakai
 
 Route `POST /api/scrape` mencari Google Maps sesuai tier. Pro menerima batas
-manual sampai 500. Max menerima jumlah manual lebih besar atau mode `all`, yang
+manual sampai 250. Max menerima jumlah manual lebih besar atau mode `all`, yang
 meminta halaman lanjutan sampai target tercapai, sumber tidak memberi hasil baru,
 atau anggaran request server habis. Fetch memakai `cache: "no-store"`; route juga
 mengirim `Cache-Control: no-store`.
