@@ -2050,9 +2050,12 @@
     min-width: 0;
     display: block;
     overflow: clip;
-    border: var(--rule-hair) solid color-mix(in oklch, var(--color-rule-strong) 82%, transparent);
+    border: var(--rule-hair) solid var(--color-accent-warm);
     border-radius: var(--radius-control);
-    background: color-mix(in oklch, var(--color-paper) 84%, transparent);
+    background-color: var(--color-ink);
+    background-image: radial-gradient(circle at 100% 0%, color-mix(in oklch, var(--color-accent-warm) 34%, transparent), transparent 48%);
+    color: var(--color-paper);
+    box-shadow: 0 var(--space-sm) 0 color-mix(in oklch, var(--color-accent-warm) 62%, var(--color-transparent));
   }
 
   .production-page .results-table td {
@@ -2060,7 +2063,7 @@
     display: block;
     padding: var(--space-sm);
     border: 0;
-    border-bottom: var(--rule-hair) solid color-mix(in oklch, var(--color-rule) 82%, transparent);
+    border-bottom: var(--rule-hair) solid color-mix(in oklch, var(--color-paper) 22%, transparent);
     overflow-wrap: anywhere;
     line-height: 1.4;
   }
@@ -2073,15 +2076,28 @@
     content: attr(data-label);
     margin-block-end: var(--space-2xs);
     display: block;
-    color: var(--color-muted);
+    color: var(--color-paper-2);
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     font-weight: 700;
     text-transform: uppercase;
   }
 
-  .production-page .results-table .business-cell strong {
+  .production-page .results-table .business-cell strong,
+  .production-page .results-table .rating-cell strong {
+    color: var(--color-paper);
     font-size: var(--text-sm);
+  }
+
+  .production-page .results-table .business-cell span,
+  .production-page .results-table .cell-note,
+  .production-page .results-table .address-cell {
+    color: var(--color-paper-2);
+  }
+
+  .production-page .results-table .status-tag[data-status="missing"] {
+    border-color: color-mix(in oklch, var(--color-paper) 42%, transparent);
+    color: var(--color-paper-2);
   }
 
   .production-page .results-table .result-index {
