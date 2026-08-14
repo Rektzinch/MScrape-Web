@@ -53,7 +53,7 @@ export function TierCheckLink({ className, href, children }: TierCheckLinkProps)
         <div className="tier-check-overlay" role="status" aria-live="polite" aria-label={`Memeriksa status tier ${tier || "Anda"}`}>
           <Image
             className="tier-check-overlay__visual"
-            src="/media/mscrape-tier-check.png"
+            src="/media/mscrape-tier-check-status.png"
             alt="Maskot MScrape sedang memeriksa status tier"
             width={1230}
             height={1278}
