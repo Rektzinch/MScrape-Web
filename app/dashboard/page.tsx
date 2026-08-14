@@ -161,6 +161,20 @@ export default function DashboardPage() {
               Lihat bagaimana MScrape membantu mengubah niche dan wilayah menjadi daftar prospek lokal yang bisa ditindaklanjuti.
             </figcaption>
           </figure>
+
+          <figure className="dashboard-hero__banner wb-reveal" style={{ "--reveal-index": 2 } as React.CSSProperties}>
+            <Image
+              src="/media/mscrape-hero-banner.png"
+              alt="Ilustrasi MScrape yang menampilkan peta lokasi bisnis, hasil scan, ekspor data, dan indikator keberhasilan"
+              width={1672}
+              height={941}
+              sizes="(min-width: 60rem) 72rem, 100vw"
+              loading="lazy"
+            />
+            <figcaption>
+              Dari peta pencarian hingga data siap ekspor—satu alur untuk membantu Anda bergerak lebih cepat.
+            </figcaption>
+          </figure>
         </section>
 
         <section className="dashboard-pricing" id="pricing" aria-labelledby="pricing-title">

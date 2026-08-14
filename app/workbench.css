@@ -184,12 +184,29 @@
 }
 
 .dashboard-hero__media figcaption,
+.dashboard-hero__banner figcaption,
 .product-capture figcaption {
   margin-block-start: var(--space-sm);
   color: var(--color-muted);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   line-height: 1.55;
+}
+
+.dashboard-hero__banner {
+  grid-column: 1 / -1;
+  width: min(100%, 72rem);
+  margin: 0;
+  justify-self: end;
+}
+
+.dashboard-hero__banner img {
+  width: 100%;
+  height: auto;
+  border: var(--rule-hair) solid var(--color-rule-strong);
+  border-radius: var(--radius-card);
+  display: block;
+  background: var(--color-paper-2);
 }
 
 .dashboard-essay,
