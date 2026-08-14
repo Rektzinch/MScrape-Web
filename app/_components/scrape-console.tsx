@@ -2,6 +2,7 @@
 
 import { type FormEvent, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import type { LeadRow } from "@/lib/leads";
+import { whatsappLink, whatsappStatus } from "@/lib/whatsapp";
 import { ALL_RESULTS_LIMIT, NUMERIC_LIMITS, planAccess, type PlanAccess, type ResultLimit } from "@/lib/plans";
 import { SearchableCombobox, type ComboboxOption } from "./searchable-combobox";
 import { Turnstile } from "./turnstile";
@@ -42,6 +43,7 @@ type ExportRecord = {
   category: string;
   phone: string;
   whatsapp: string;
+  whatsappStatus: string;
   email: string;
   address: string;
   cityProvince: string;
@@ -81,7 +83,7 @@ const websiteOptions: ComboboxOption[] = [
 ];
 
 const downloadOptions: ComboboxOption[] = [
-  { value: "csv", label: "CSV", description: "12 kolom data bisnis untuk spreadsheet" },
+  { value: "csv", label: "CSV", description: "13 kolom data bisnis untuk spreadsheet" },
   { value: "txt", label: "TXT", description: "Ringkasan teks berurutan per bisnis" },
   { value: "json", label: "JSON", description: "Metadata pencarian dan data bisnis terstruktur" },
   { value: "sheets", label: "Google Sheets", description: "CSV siap impor dengan kolom tindak lanjut" },
@@ -105,7 +107,8 @@ const exportColumns = [
   ["business", "Nama Bisnis"],
   ["category", "Kategori"],
   ["phone", "Telepon"],
-  ["whatsapp", "WhatsApp"],
+  ["whatsapp", "Tautan WhatsApp"],
+  ["whatsappStatus", "Status WhatsApp"],
   ["email", "Email"],
   ["address", "Alamat"],
   ["cityProvince", "Kota/Provinsi"],
@@ -119,12 +122,14 @@ const exportColumns = [
 const exportHeaders = exportColumns.map(([, label]) => label);
 
 function toExportRecord(row: LeadRow, city: string): ExportRecord {
+  const link = whatsappLink(row.phone);
+  const status = whatsappStatus(row.phone);
   return {
     business: row.business,
     category: row.category,
     phone: row.phone,
-    // WhatsApp tidak ditebak dari nomor telepon; kosong bila sumber tidak menyediakannya.
-    whatsapp: "",
+    whatsapp: link || "",
+    whatsappStatus: status === "unverified" ? "Belum terverifikasi · buka tautan untuk cek" : "Nomor tidak dapat ditautkan",
     email: row.email,
     address: row.address,
     cityProvince: city,
@@ -165,6 +170,7 @@ function recordsToText(records: ExportRecord[]) {
     `Nama Bisnis: ${record.business}`,
     `Kategori: ${record.category}`,
     `Kontak: ${record.phone}`,
+    `WhatsApp: ${record.whatsappStatus}${record.whatsapp ? ` · ${record.whatsapp}` : ""}`,
     `Email: ${record.email}`,
     `Alamat: ${record.address}`,
     `Rating/Ulasan: ${[record.rating, record.reviews && `${record.reviews} ulasan`].filter(Boolean).join(" · ")}`,
@@ -186,7 +192,7 @@ function recordsToJson(records: ExportRecord[], job: JobState, websiteFilter: We
     bisnis: records.map((record) => ({
       nama: record.business,
       kategori: record.category,
-      kontak: { telepon: record.phone, whatsapp: record.whatsapp, email: record.email },
+      kontak: { telepon: record.phone, whatsapp: record.whatsapp, statusWhatsApp: record.whatsappStatus, email: record.email },
       lokasi: { alamat: record.address, kotaProvinsi: record.cityProvince },
       ratingUlasan: { rating: record.rating, ulasan: record.reviews },
       website: { status: record.websiteStatus, url: record.website },
@@ -743,8 +749,8 @@ export function ScrapeConsole() {
         {sourceRows.length > 0 && visibleRows.length === 0 ? <div className="results-empty"><h3>Tidak ada bisnis pada filter ini.</h3><p>Ganti filter website untuk melihat baris lain dari request yang sama.</p></div> : null}
 
         {visibleRows.length > 0 ? (
-          <div className="results-table-wrap"><table className="results-table"><caption className="sr-only">Daftar bisnis dari respons Google Maps</caption><thead><tr><th>No</th><th>Bisnis</th><th>Alamat</th><th>Kontak</th><th>Website</th><th>Rating</th><th>Koordinat</th><th>Sumber</th></tr></thead><tbody>{pagedRows.map((row, index) => (
-            <tr key={`${row.business}-${row.address}-${pageStart + index}`}><td data-label="No"><span className="result-index">{pageStart + index + 1}</span></td><td data-label="Bisnis"><strong>{row.business || "Nama tidak tersedia"}</strong><span>{row.category || "Kategori tidak tersedia"}</span></td><td data-label="Alamat">{row.address || "—"}</td><td data-label="Kontak" className="contact-cell"><span>{row.phone || "Telepon tidak tersedia"}</span>{row.email ? <a href={`mailto:${row.email}`}>{row.email}</a> : <span>Email tidak tersedia</span>}</td><td data-label="Website">{row.website ? <a href={row.website} target="_blank" rel="noreferrer">Buka website ↗</a> : <span className="status-tag">Belum ada</span>}</td><td data-label="Rating">{row.rating || "—"}{row.reviewCount ? <span className="cell-note">{row.reviewCount} ulasan</span> : null}</td><td data-label="Koordinat" className="numeric-cell">{row.coordinates || "—"}</td><td data-label="Sumber">{row.source ? <a href={row.source} target="_blank" rel="noreferrer">Google Maps ↗</a> : "—"}</td></tr>
+          <div className="results-table-wrap"><table className="results-table"><caption className="sr-only">Daftar bisnis dari respons Google Maps</caption><thead><tr><th>No</th><th>Bisnis</th><th>Alamat</th><th>Kontak</th><th>WhatsApp</th><th>Website</th><th>Rating</th><th>Koordinat</th><th>Sumber</th></tr></thead><tbody>{pagedRows.map((row, index) => (
+            <tr key={`${row.business}-${row.address}-${pageStart + index}`}><td data-label="No"><span className="result-index">{pageStart + index + 1}</span></td><td data-label="Bisnis"><strong>{row.business || "Nama tidak tersedia"}</strong><span>{row.category || "Kategori tidak tersedia"}</span></td><td data-label="Alamat">{row.address || "—"}</td><td data-label="Kontak" className="contact-cell"><span>{row.phone || "Telepon tidak tersedia"}</span>{row.email ? <a href={`mailto:${row.email}`}>{row.email}</a> : <span>Email tidak tersedia</span>}</td><td data-label="WhatsApp" className="contact-cell">{whatsappLink(row.phone) ? <><span className="status-tag">Belum terverifikasi</span><a href={whatsappLink(row.phone) || undefined} target="_blank" rel="noreferrer">Buka WhatsApp ↗</a></> : <span className="status-tag">Tidak dapat ditautkan</span>}</td><td data-label="Website">{row.website ? <a href={row.website} target="_blank" rel="noreferrer">Buka website ↗</a> : <span className="status-tag">Belum ada</span>}</td><td data-label="Rating">{row.rating || "—"}{row.reviewCount ? <span className="cell-note">{row.reviewCount} ulasan</span> : null}</td><td data-label="Koordinat" className="numeric-cell">{row.coordinates || "—"}</td><td data-label="Sumber">{row.source ? <a href={row.source} target="_blank" rel="noreferrer">Google Maps ↗</a> : "—"}</td></tr>
           ))}</tbody></table></div>
         ) : null}
         {visibleRows.length > RESULT_PAGE_SIZE ? <nav className="results-pagination" aria-label="Halaman hasil"><p aria-live="polite"><strong>{pageStart + 1}—{Math.min(pageStart + RESULT_PAGE_SIZE, visibleRows.length)}</strong> dari {visibleRows.length}</p><div><button type="button" onClick={() => setResultPage((page) => Math.max(1, page - 1))} disabled={currentResultPage === 1}>Sebelumnya</button><span>{currentResultPage} / {totalResultPages}</span><button type="button" onClick={() => setResultPage((page) => Math.min(totalResultPages, page + 1))} disabled={currentResultPage === totalResultPages}>Berikutnya</button></div></nav> : null}
