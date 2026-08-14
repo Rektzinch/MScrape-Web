@@ -48,6 +48,8 @@ test("header dan challenge browser diproteksi dari konfigurasi Next dan API", as
   ]);
   assert.match(config, /Content-Security-Policy/);
   assert.match(config, /X-Content-Type-Options/);
+  assert.match(config, /www\.mscrape\.web\.id/);
+  assert.match(config, /https:\/\/mscrape\.web\.id\/:path\*/);
   assert.match(scrape, /verifyTurnstile/);
 });
 
