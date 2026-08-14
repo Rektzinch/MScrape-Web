@@ -51,14 +51,21 @@ export function TierCheckLink({ className, href, children }: TierCheckLinkProps)
       </Link>
       {checking && typeof document !== "undefined" ? createPortal(
         <div className="tier-check-overlay" role="status" aria-live="polite" aria-label={`Memeriksa status tier ${tier || "Anda"}`}>
-          <Image
-            className="tier-check-overlay__visual"
-            src="/media/mscrape-tier-check-status.png"
-            alt="Maskot MScrape sedang memeriksa status tier"
-            width={1230}
-            height={1278}
-            priority
-          />
+          <div className="tier-check-overlay__content">
+            <Image
+              className="tier-check-overlay__logo"
+              src="/media/mscrape-logo.png"
+              alt="MScrape"
+              width={2172}
+              height={724}
+              priority
+            />
+            <div className="tier-check-overlay__notice">
+              <p>Menyiapkan workspace Produksi</p>
+              <span>Memeriksa akses {tier || "Anda"} dan kapasitas pencarian Anda.</span>
+            </div>
+            <span className="tier-check-overlay__progress" aria-hidden="true" />
+          </div>
         </div>,
         document.body,
       ) : null}
