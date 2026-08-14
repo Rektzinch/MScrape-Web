@@ -414,6 +414,16 @@ export function ScrapeConsole() {
   const challengeRequired = api.access.tier === "free" && Boolean(api.turnstileSiteKey);
   const canSubmit = api.reachable && !submitting && !active && remainingSeconds === 0 && !manualLimitError && (!challengeRequired || Boolean(turnstileToken));
 
+  const areaOptions = useMemo<ComboboxOption[]>(() => [
+    { value: "city", label: "Kota / kabupaten", description: "Cakupan standar semua tier" },
+    {
+      value: "subdistrict",
+      label: "Kecamatan",
+      description: "Mempersempit pencarian ke satu kecamatan",
+      locked: !api.access.allowsSubdistrict,
+    },
+  ], [api.access.allowsSubdistrict]);
+
   const limitOptions = useMemo<ComboboxOption[]>(() => {
     if (api.access.tier === "max") return [];
     return api.access.allowedLimits
@@ -451,6 +461,21 @@ export function ScrapeConsole() {
     const nextLimit = Number(value) as ResultLimit;
     setLimit(nextLimit);
     notify("Batas hasil diperbarui", `Request berikutnya akan meminta ${resultLimitLabel(nextLimit).toLocaleLowerCase("id")}.`);
+  }
+
+  function changeAreaLevel(value: string) {
+    const nextAreaLevel = value as "city" | "subdistrict";
+    setAreaLevel(nextAreaLevel);
+    notify(
+      "Cakupan pencarian diperbarui",
+      nextAreaLevel === "subdistrict"
+        ? "Masukkan kecamatan dan kota/kabupaten untuk mempersempit pencarian."
+        : "Request berikutnya menggunakan cakupan kota atau kabupaten.",
+    );
+  }
+
+  function handleLockedArea(option: ComboboxOption) {
+    notify(`${option.label} terkunci`, "Aktifkan lisensi Pro atau Max untuk pencarian hingga kecamatan.", "info");
   }
 
   async function checkLicense() {
@@ -667,7 +692,7 @@ export function ScrapeConsole() {
         <form className="scrape-form" onSubmit={handleSubmit}>
           <label className="field field--wide"><span>Niche / kata kunci</span><input name="keyword" type="text" required maxLength={100} autoComplete="off" /><small className="field__hint">Jenis bisnis yang ingin diperiksa.</small></label>
           <label className="field"><span>Kota / kabupaten</span><input name="city" type="text" required maxLength={100} autoComplete="address-level2" /><small className="field__hint">Wilayah induk target.</small></label>
-          <label className="field"><span>Cakupan pencarian</span><select value={areaLevel} onChange={(event) => setAreaLevel(event.target.value as "city" | "subdistrict")}><option value="city">Kota / kabupaten</option><option value="subdistrict" disabled={!api.access.allowsSubdistrict}>Kecamatan · Pro/Max</option></select><small className="field__hint">{api.access.allowsSubdistrict ? "Pro dan Max dapat mempersempit pencarian hingga kecamatan." : "Aktifkan Pro atau Max untuk pencarian hingga kecamatan."}</small></label>
+          <div className="field"><SearchableCombobox label="Cakupan pencarian" name="areaLevel" value={areaLevel} options={areaOptions} onChange={changeAreaLevel} onLockedOption={handleLockedArea} helper={api.access.allowsSubdistrict ? "Pro dan Max dapat mempersempit pencarian hingga kecamatan." : "Aktifkan Pro atau Max untuk pencarian hingga kecamatan."} searchPlaceholder="Cari cakupan" /></div>
           {areaLevel === "subdistrict" ? <label className="field field--wide"><span>Kecamatan</span><input name="subdistrict" type="text" required maxLength={100} autoComplete="address-level3" /><small className="field__hint">Masukkan nama kecamatan, lalu pastikan kota/kabupaten di atas sesuai.</small></label> : null}
           <label className="field"><span>Negara</span><input name="country" type="text" defaultValue="Indonesia" required maxLength={100} autoComplete="country-name" /><small className="field__hint">Dipakai untuk memperjelas kueri.</small></label>
           <label className="field"><span>Bahasa</span><input name="lang" type="text" defaultValue="id" minLength={2} maxLength={2} required /><small className="field__hint">Kode ISO dua huruf.</small></label>
