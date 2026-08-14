@@ -1,9 +1,11 @@
 import { backendFetch, getBackendConfig } from "@/lib/backend";
+import { readCreditAccess } from "@/lib/credits";
 import { durableStoreConfigured } from "@/lib/durable-store";
 import { activationIsConfigured, resolveLicense } from "@/lib/license";
 import { planAccess } from "@/lib/plans";
 import { readRateAccess } from "@/lib/rate-limit";
 import { turnstileConfigured } from "@/lib/turnstile";
+import { visitorSession } from "@/lib/visitor-session";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -25,10 +27,19 @@ export async function GET(request: Request) {
     }, { status: 503, headers: noStoreHeaders });
   }
 
+  const visitor = visitorSession(request);
+  const responseHeaders = visitor.cookie
+    ? { ...noStoreHeaders, "Set-Cookie": visitor.cookie }
+    : noStoreHeaders;
+
   let access;
   try {
     const license = await resolveLicense(request);
-    access = await readRateAccess(request, license);
+    access = await readCreditAccess(
+      license,
+      visitor.id,
+      await readRateAccess(request, license),
+    );
   } catch {
     return Response.json({
       configured: false,
@@ -37,7 +48,7 @@ export async function GET(request: Request) {
       access: planAccess("free"),
       activationAvailable: false,
       message: "Storage keamanan sementara tidak tersedia.",
-    }, { status: 503, headers: noStoreHeaders });
+    }, { status: 503, headers: responseHeaders });
   }
   const activationAvailable = activationIsConfigured();
   const turnstileSiteKey = turnstileConfigured()
@@ -54,7 +65,7 @@ export async function GET(request: Request) {
         activationAvailable,
         turnstileSiteKey,
       },
-      { headers: noStoreHeaders },
+      { headers: responseHeaders },
     );
   }
 
@@ -69,7 +80,7 @@ export async function GET(request: Request) {
       mode: config.mode,
       access,
       activationAvailable,
-    }, { headers: noStoreHeaders });
+    }, { headers: responseHeaders });
   } catch {
     return Response.json({
       configured: true,
@@ -77,6 +88,6 @@ export async function GET(request: Request) {
       mode: config.mode,
       access,
       activationAvailable,
-    }, { headers: noStoreHeaders });
+    }, { headers: responseHeaders });
   }
 }

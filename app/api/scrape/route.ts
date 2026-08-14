@@ -1,3 +1,4 @@
+import { readCreditAccess, consumeCredit } from "@/lib/credits";
 import {
   backendErrorMessage,
   backendFetch,
@@ -91,7 +92,11 @@ export async function POST(request: Request) {
       {
         message: "Pencarian hingga kecamatan memerlukan lisensi Pro atau Max.",
         requiredTier: "pro",
-        access: await readRateAccess(request, license),
+        access: await readCreditAccess(
+          license,
+          visitor.id,
+          await readRateAccess(request, license),
+        ),
       },
       { status: 403, headers: noStoreHeaders },
     );
@@ -111,7 +116,11 @@ export async function POST(request: Request) {
       {
         message: `Batas ${limitLabel} memerlukan lisensi ${requiredTier}. Masukkan kode aktivasi dari admin.`,
         requiredTier: requiredTier.toLowerCase(),
-        access: await readRateAccess(request, license),
+        access: await readCreditAccess(
+          license,
+          visitor.id,
+          await readRateAccess(request, license),
+        ),
       },
       { status: 403, headers: noStoreHeaders },
     );
@@ -141,12 +150,31 @@ export async function POST(request: Request) {
       {
         message: `Tier ${rate.access.label} masih dalam cooldown. Coba lagi dalam ${rate.retryAfter} detik.`,
         retryAfter: rate.retryAfter,
-        access: rate.access,
+        access: await readCreditAccess(license, visitor.id, rate.access),
       },
       {
         status: 429,
         headers: { ...noStoreHeaders, "Retry-After": String(rate.retryAfter) },
       },
+    );
+  }
+
+  let credit: Awaited<ReturnType<typeof consumeCredit>>;
+  try {
+    credit = await consumeCredit(license, visitor.id, rate.access);
+  } catch {
+    return Response.json(
+      { message: "Ledger kredit sementara tidak tersedia." },
+      { status: 503, headers: noStoreHeaders },
+    );
+  }
+  if (!credit.allowed) {
+    return Response.json(
+      {
+        message: `Kredit Tier ${credit.access.label} habis. Aktifkan atau perbarui lisensi untuk melanjutkan scan.`,
+        access: credit.access,
+      },
+      { status: 429, headers: noStoreHeaders },
     );
   }
 
@@ -197,7 +225,7 @@ export async function POST(request: Request) {
           results,
           completion,
           downloadReady: false,
-          access: rate.access,
+          access: credit.access,
         },
         { headers: responseHeaders },
       );
@@ -214,7 +242,7 @@ export async function POST(request: Request) {
             error instanceof Error
               ? error.message
               : "Google Maps tidak dapat dijangkau.",
-          access: rate.access,
+          access: credit.access,
         },
         { status: 502, headers: responseHeaders },
       );
@@ -254,7 +282,7 @@ export async function POST(request: Request) {
             data,
             `Backend menolak permintaan (${response.status}).`,
           ),
-          access: rate.access,
+          access: credit.access,
         },
         { status: 502, headers: responseHeaders },
       );
@@ -280,7 +308,7 @@ export async function POST(request: Request) {
         jobId,
         status: typeof data.status === "string" ? data.status : "pending",
         mode: config.mode,
-        access: rate.access,
+        access: credit.access,
       },
       { status: 202, headers: responseHeaders },
     );
@@ -289,7 +317,7 @@ export async function POST(request: Request) {
       ? "Kontrol akses job sementara tidak tersedia."
       : "Backend tidak dapat dijangkau.";
     return Response.json(
-      { message, access: rate.access },
+      { message, access: credit.access },
       { status: error instanceof DurableStoreError ? 503 : 502, headers: responseHeaders },
     );
   }

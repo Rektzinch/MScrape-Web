@@ -11,9 +11,6 @@ type AppMenuProps = {
 
 export function AppMenu({ current }: AppMenuProps) {
   const [open, setOpen] = useState(false);
-  const onDashboard = current === "dashboard";
-  const destination = onDashboard ? "/produksi" : "/dashboard";
-  const destinationLabel = onDashboard ? "Produksi" : "Dashboard";
 
   useEffect(() => {
     if (!open) return;
@@ -56,14 +53,20 @@ export function AppMenu({ current }: AppMenuProps) {
             </div>
 
             <nav className="app-side-menu__nav" aria-label="Navigasi utama">
-              {onDashboard ? (
-                <TierCheckLink className="app-side-menu__nav-link" href={destination}>
-                  {destinationLabel} <span aria-hidden="true">↗</span>
-                </TierCheckLink>
+              <Link className="app-side-menu__nav-link" href="/" onClick={closeMenu}>
+                Homepage <span aria-hidden="true">↖</span>
+              </Link>
+              <Link className="app-side-menu__nav-link" href="/dashboard" onClick={closeMenu} aria-current={current === "dashboard" ? "page" : undefined}>
+                Dashboard <span aria-hidden="true">↗</span>
+              </Link>
+              {current === "production" ? (
+                <span className="app-side-menu__nav-link app-side-menu__nav-link--current" aria-current="page">
+                  Produksi <span aria-hidden="true">●</span>
+                </span>
               ) : (
-                <Link className="app-side-menu__nav-link" href={destination} onClick={closeMenu}>
-                  {destinationLabel} <span aria-hidden="true">↙</span>
-                </Link>
+                <TierCheckLink className="app-side-menu__nav-link" href="/produksi">
+                  Produksi <span aria-hidden="true">↗</span>
+                </TierCheckLink>
               )}
               <Link className="app-side-menu__nav-link" href="/tentang-mscrape" onClick={closeMenu}>Tentang MScrape</Link>
               <Link className="app-side-menu__nav-link" href="/syarat-ketentuan" onClick={closeMenu}>Syarat &amp; Ketentuan</Link>

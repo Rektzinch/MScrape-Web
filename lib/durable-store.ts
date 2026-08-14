@@ -68,6 +68,10 @@ export async function reserveStoreKey(key: string, value: string, ttlSeconds: nu
   return result === "OK";
 }
 
+export async function evalStore<T>(script: string, keys: string[], args: string[]) {
+  return command<T>("EVAL", script, String(keys.length), ...keys, ...args);
+}
+
 export async function deleteStore(key: string) {
   return command<number>("DEL", key);
 }

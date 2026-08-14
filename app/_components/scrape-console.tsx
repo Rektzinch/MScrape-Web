@@ -236,6 +236,10 @@ function accessLimitLabel(limit: ResultLimit) {
   return limit === ALL_RESULTS_LIMIT ? "semua hasil yang tersedia" : `hingga ${limit} hasil`;
 }
 
+function creditLabel(value: number) {
+  return new Intl.NumberFormat("id-ID").format(value);
+}
+
 function completionLabel(completion: SearchCompletion | null) {
   if (!completion) return "Kelengkapan hasil akan dilaporkan oleh backend bila tersedia.";
   if (completion.stoppedReason === "source-exhausted") return "Sumber tidak mengembalikan halaman tambahan; hasil saat ini lengkap menurut sumber.";
@@ -377,6 +381,8 @@ export function ScrapeConsole() {
   const remainingSeconds = api.access.nextAllowedAt
     ? Math.max(0, Math.ceil((new Date(api.access.nextAllowedAt).getTime() - now) / 1_000))
     : 0;
+  const creditPercent = Math.round((api.access.creditRemaining / api.access.creditTotal) * 100);
+  const hasCredit = api.access.creditRemaining > 0;
   const active = job?.status === "pending" || job?.status === "running";
   const sourceRows = job?.rows ?? EMPTY_ROWS;
   const deferredResultQuery = useDeferredValue(resultQuery.trim().toLocaleLowerCase("id"));
@@ -416,7 +422,7 @@ export function ScrapeConsole() {
     : hasManualLimit && !manualLimitError ? Number(manualLimitNumber)
       : api.access.tier === "max" ? api.access.maxLimit : limit;
   const challengeRequired = api.access.tier === "free" && Boolean(api.turnstileSiteKey);
-  const canSubmit = api.reachable && !submitting && !active && remainingSeconds === 0 && !manualLimitError && (!challengeRequired || Boolean(turnstileToken));
+  const canSubmit = api.reachable && hasCredit && !submitting && !active && remainingSeconds === 0 && !manualLimitError && (!challengeRequired || Boolean(turnstileToken));
 
   const areaOptions = useMemo<ComboboxOption[]>(() => [
     { value: "city", label: "Kota / kabupaten", description: "Cakupan standar semua tier" },
@@ -446,11 +452,12 @@ export function ScrapeConsole() {
   const feedback = error ? { title: "Scan berhenti", detail: error, state: "error" }
     : submitting ? { title: "Request sedang berjalan", detail: "Server sedang meminta hasil baru dari Google Maps. Data lama tidak dipakai.", state: "loading" }
     : active ? { title: "Job backend diproses", detail: "Status dibaca ulang setiap empat detik sampai backend selesai.", state: "loading" }
+    : !hasCredit ? { title: "Kredit habis", detail: `Tier ${api.access.label} telah memakai seluruh ${creditLabel(api.access.creditTotal)} kredit. Aktifkan atau perbarui lisensi untuk melanjutkan scan.`, state: "locked" }
     : remainingSeconds > 0 ? { title: "Cooldown aktif", detail: `Tier ${api.access.label} dapat mengirim request berikutnya dalam ${countdownLabel(remainingSeconds)}.`, state: "locked" }
     : job?.status === "completed" ? { title: "Hasil siap diperiksa", detail: `${sourceRows.length} bisnis ditemukan → ${missingWebsiteCount} tidak punya website → ${contactableWithoutWebsiteCount} punya nomor yang bisa dihubungi.`, state: "success" }
     : !api.checked ? { title: "Memeriksa koneksi", detail: "Route server sedang diverifikasi sebelum form diaktifkan.", state: "loading" }
     : !api.reachable ? { title: "API tidak tersedia", detail: "Pencarian belum dapat dimulai. Muat ulang halaman atau periksa konfigurasi backend.", state: "error" }
-    : { title: "Siap memindai", detail: `Tier ${api.access.label}: ${accessLimitLabel(api.access.maxLimit)}, ${durationLabel(api.access.cooldownSeconds)}.`, state: "idle" };
+    : { title: "Siap memindai", detail: `Tier ${api.access.label}: ${creditLabel(api.access.creditRemaining)} dari ${creditLabel(api.access.creditTotal)} kredit tersedia, ${durationLabel(api.access.cooldownSeconds)}.`, state: "idle" };
 
   function toggleActivation() {
     setActivationError("");
@@ -493,8 +500,8 @@ export function ScrapeConsole() {
       notify(
         `Tier ${data.access.label} terverifikasi`,
         data.access.activatedAt
-          ? `Aktif sejak ${licenseDateLabel(data.access.activatedAt)} sampai ${licenseDateLabel(data.access.expiresAt)}.`
-          : "Belum ada kode Pro atau Max yang aktif pada browser ini.",
+          ? `Aktif sejak ${licenseDateLabel(data.access.activatedAt)} sampai ${licenseDateLabel(data.access.expiresAt)}. Saldo ${creditLabel(data.access.creditRemaining)}/${creditLabel(data.access.creditTotal)} kredit.`
+          : `Belum ada kode Pro atau Max yang aktif pada browser ini. Saldo Free ${creditLabel(data.access.creditRemaining)}/${creditLabel(data.access.creditTotal)} kredit.`,
         data.access.tier === "free" ? "info" : "success",
       );
     } catch (licenseFailure) {
@@ -531,7 +538,7 @@ export function ScrapeConsole() {
       setActivationCode("");
       notify(
         `Tier ${data.access.label} aktif`,
-        `Aktif ${licenseDateLabel(data.access.activatedAt)} sampai ${licenseDateLabel(data.access.expiresAt)}.`,
+        `Aktif ${licenseDateLabel(data.access.activatedAt)} sampai ${licenseDateLabel(data.access.expiresAt)} dengan ${creditLabel(data.access.creditRemaining)} kredit tersedia.`,
         "success",
       );
     } catch (activationFailure) {
@@ -559,7 +566,7 @@ export function ScrapeConsole() {
     const subdistrict = areaLevel === "subdistrict" ? String(form.get("subdistrict") || "") : "";
     const areaLabel = [subdistrict, city].filter(Boolean).join(", ");
     const payload = { keyword, city, subdistrict, country: form.get("country"), lang: form.get("lang"), limit: requestedLimit, email: true, turnstileToken };
-    notify("Scan dimulai", `${keyword} di ${areaLabel} sedang dipindai dengan batas ${resultLimitLabel(requestedLimit).toLocaleLowerCase("id")}.`);
+    notify("Scan dimulai", `${keyword} di ${areaLabel} sedang dipindai dengan batas ${resultLimitLabel(requestedLimit).toLocaleLowerCase("id")}. Satu kredit akan digunakan.`);
     try {
       const response = await fetch("/api/scrape", {
         method: "POST",
@@ -647,7 +654,15 @@ export function ScrapeConsole() {
             <div><dt>Tier</dt><dd>{api.access.label}</dd></div>
             <div><dt>Aktivasi</dt><dd>{api.access.activatedAt ? licenseDateLabel(api.access.activatedAt) : "Belum diredeem"}</dd></div>
             <div><dt>Berakhir</dt><dd>{api.access.expiresAt ? licenseDateLabel(api.access.expiresAt) : "—"}</dd></div>
+            <div><dt>Kredit</dt><dd>{creditLabel(api.access.creditRemaining)} / {creditLabel(api.access.creditTotal)}</dd></div>
           </dl>
+          <div className="license-dock__credit">
+            <div><span>Saldo kredit</span><strong>{creditPercent}%</strong></div>
+            <div className="license-dock__credit-track" role="progressbar" aria-label="Saldo kredit tersisa" aria-valuemin={0} aria-valuemax={100} aria-valuenow={creditPercent}>
+              <span style={{ "--credit-progress": `${creditPercent}%` } as React.CSSProperties} />
+            </div>
+            <p>1 kredit digunakan untuk setiap scan.</p>
+          </div>
           <div className="license-dock__actions">
             <button className="license-dock__check" type="button" onClick={checkLicense} disabled={licenseChecking} data-state={licenseChecking ? "loading" : "default"}>
               {licenseChecking ? "Memeriksa" : "Cek lisensi"}
@@ -665,7 +680,7 @@ export function ScrapeConsole() {
               <p className="activation-panel__label">Redeem lisensi</p>
               <h2>Masukkan kode dari admin</h2>
               <p>
-                Kode Pro atau Max berlaku satu bulan sejak berhasil diredeem. Setelah aktivasi,
+                Kode Pro atau Max berlaku dua bulan sejak berhasil diredeem. Setelah aktivasi,
                 tier dan kedua tanggal di atas diperbarui otomatis.{" "}
                 <a href={ADMIN_WHATSAPP} target="_blank" rel="noreferrer" onClick={() => notify("WhatsApp admin dibuka", "Lanjutkan pembelian lisensi pada percakapan baru.")}>Hubungi admin ↗</a>
               </p>
@@ -720,7 +735,7 @@ export function ScrapeConsole() {
             </div>
           ) : null}
           <button className="button button--primary field--wide" type="submit" disabled={!canSubmit} data-state={submitting ? "loading" : error ? "error" : job?.status === "completed" ? "success" : "default"}>
-            <span>{submitting ? "Memindai Google Maps" : active ? "Menunggu hasil" : remainingSeconds > 0 ? `Tunggu ${countdownLabel(remainingSeconds)}` : !api.reachable ? "API belum terhubung" : job?.status === "completed" ? "Pindai wilayah baru" : error ? "Coba lagi" : "Mulai scan"}</span>
+            <span>{submitting ? "Memindai Google Maps" : active ? "Menunggu hasil" : !hasCredit ? "Kredit habis" : remainingSeconds > 0 ? `Tunggu ${countdownLabel(remainingSeconds)}` : !api.reachable ? "API belum terhubung" : job?.status === "completed" ? "Pindai wilayah baru" : error ? "Coba lagi" : "Mulai scan"}</span>
             {submitting || active ? <span className="button__spinner" aria-hidden="true" /> : <span className="button__arrow" aria-hidden="true">↗</span>}
           </button>
         </form>

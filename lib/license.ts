@@ -8,7 +8,7 @@ import {
 import { planAccess, type LicenseTier, type PlanAccess } from "@/lib/plans";
 
 export const LICENSE_COOKIE = "mscrape_license";
-export const LICENSE_TERM_MONTHS = 1;
+export const LICENSE_TERM_MONTHS = 2;
 
 type ValidLicense = {
   id: string;

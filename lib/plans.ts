@@ -11,6 +11,8 @@ export type PlanAccess = {
   maxLimit: ResultLimit;
   allowedLimits: ResultLimit[];
   cooldownSeconds: number;
+  creditTotal: number;
+  creditRemaining: number;
   allowsCustomLimit: boolean;
   allowsSubdistrict: boolean;
   nextAllowedAt: string | null;
@@ -20,7 +22,7 @@ export type PlanAccess = {
 
 export const PLAN_RULES: Record<
   LicenseTier,
-  Omit<PlanAccess, "nextAllowedAt" | "activatedAt" | "expiresAt">
+  Omit<PlanAccess, "nextAllowedAt" | "activatedAt" | "expiresAt" | "creditRemaining">
 > = {
   free: {
     tier: "free",
@@ -28,6 +30,7 @@ export const PLAN_RULES: Record<
     maxLimit: 10,
     allowedLimits: [10],
     cooldownSeconds: 3_600,
+    creditTotal: 10,
     allowsCustomLimit: false,
     allowsSubdistrict: false,
   },
@@ -36,7 +39,8 @@ export const PLAN_RULES: Record<
     label: "Pro",
     maxLimit: 250,
     allowedLimits: NUMERIC_LIMITS.filter((limit) => limit <= 250),
-    cooldownSeconds: 60,
+    cooldownSeconds: 0,
+    creditTotal: 500,
     allowsCustomLimit: true,
     allowsSubdistrict: true,
   },
@@ -46,6 +50,7 @@ export const PLAN_RULES: Record<
     maxLimit: 500,
     allowedLimits: [...NUMERIC_LIMITS],
     cooldownSeconds: 0,
+    creditTotal: 1_500,
     allowsCustomLimit: true,
     allowsSubdistrict: true,
   },
@@ -56,10 +61,13 @@ export function planAccess(
   nextAllowedAt: string | null = null,
   expiresAt: string | null = null,
   activatedAt: string | null = null,
+  creditRemaining = PLAN_RULES[tier].creditTotal,
 ): PlanAccess {
+  const creditTotal = PLAN_RULES[tier].creditTotal;
   return {
     ...PLAN_RULES[tier],
     allowedLimits: [...PLAN_RULES[tier].allowedLimits],
+    creditRemaining: Math.min(creditTotal, Math.max(0, Math.floor(creditRemaining))),
     nextAllowedAt,
     activatedAt,
     expiresAt,

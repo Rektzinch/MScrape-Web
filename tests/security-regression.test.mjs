@@ -64,3 +64,21 @@ test("pencarian kecamatan hanya tersedia untuk Pro dan Max serta diperiksa oleh 
   assert.match(scrape, /subdistrict && !license\.access\.allowsSubdistrict/);
   assert.match(scrape, /Pencarian hingga kecamatan memerlukan lisensi Pro atau Max/);
 });
+
+
+test("kredit paket dikurangi atomik satu kali per scan dan masa lisensi mengikuti dua bulan", async () => {
+  const [plans, credits, scrape, license] = await Promise.all([
+    source("lib/plans.ts"),
+    source("lib/credits.ts"),
+    source("app/api/scrape/route.ts"),
+    source("lib/license.ts"),
+  ]);
+  assert.match(plans, /creditTotal: 10/);
+  assert.match(plans, /creditTotal: 500/);
+  assert.match(plans, /creditTotal: 1_500/);
+  assert.match(plans, /pro:[\s\S]*cooldownSeconds: 0/);
+  assert.match(credits, /evalStore/);
+  assert.match(credits, /consumeOneCredit/);
+  assert.match(scrape, /consumeCredit\(license, visitor\.id, rate\.access\)/);
+  assert.match(license, /LICENSE_TERM_MONTHS = 2/);
+});
