@@ -18,6 +18,7 @@ type SearchableComboboxProps = {
   name?: string;
   helper?: string;
   searchPlaceholder?: string;
+  className?: string;
 };
 
 export function SearchableCombobox({
@@ -29,6 +30,7 @@ export function SearchableCombobox({
   name,
   helper,
   searchPlaceholder = "Cari pilihan",
+  className,
 }: SearchableComboboxProps) {
   const generatedId = useId().replaceAll(":", "");
   const listboxId = `combobox-${generatedId}`;
@@ -98,7 +100,7 @@ export function SearchableCombobox({
   }
 
   return (
-    <div className="combobox" ref={rootRef}>
+    <div className={`combobox${className ? ` ${className}` : ""}`} ref={rootRef}>
       <span className="combobox__label" id={`${listboxId}-label`}>{label}</span>
       {name ? <input type="hidden" name={name} value={value} /> : null}
       <button

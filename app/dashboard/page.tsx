@@ -70,6 +70,7 @@ const pricing = [
     tier: "Free",
     price: "Rp0",
     term: "selamanya",
+    badge: null,
     capacity: "10 hasil",
     cooldown: "Jeda 1 jam / request",
     cta: "Mulai Free →",
@@ -79,23 +80,25 @@ const pricing = [
   {
     code: "02 / PRO",
     tier: "Pro",
-    price: "Rp35.000",
-    term: "/ bulan",
+    price: "Rp24.999",
+    term: "/ 2 bulan",
+    badge: "Paling laris",
     capacity: "Hingga 250 hasil · kecamatan",
     cooldown: "Jeda 1 menit / request",
     cta: "Beli Pro via WhatsApp ↗",
-    href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Pro 1 bulan seharga Rp35.000.")}`,
+    href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Pro 2 bulan seharga Rp24.999.")}`,
     external: true,
   },
   {
     code: "03 / MAX",
     tier: "Max",
-    price: "Rp175.000",
-    term: "/ bulan",
+    price: "Rp149.000",
+    term: "/ 2 bulan",
+    badge: null,
     capacity: "Hingga 500 hasil · kecamatan",
     cooldown: "Tanpa cooldown",
     cta: "Beli Max via WhatsApp ↗",
-    href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Max 1 bulan seharga Rp175.000.")}`,
+    href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Max 2 bulan seharga Rp149.000.")}`,
     external: true,
   },
 ] as const;
@@ -176,7 +179,7 @@ export default function DashboardPage() {
           <div className="dashboard-pricing__inner wb-shell dashboard-scroll-scene">
             <header className="dashboard-pricing__head dashboard-scroll-copy">
               <div>
-                <p className="dashboard-pricing__kicker">Harga akses · Pro/Max aktif 1 bulan</p>
+                <p className="dashboard-pricing__kicker">Harga akses · Pro/Max aktif 2 bulan</p>
                 <h2 id="pricing-title">Pilih akses yang mendukung ritme penjualan Anda.</h2>
               </div>
               <div className="dashboard-pricing__intro">
@@ -193,7 +196,7 @@ export default function DashboardPage() {
                 <article className="pricing-card" id={`pricing-${plan.tier.toLowerCase()}`} data-tier={plan.tier.toLowerCase()} key={plan.tier}>
                   <header className="pricing-card__head">
                     <span>{plan.code}</span>
-                    <span>{plan.term}</span>
+                    {plan.badge ? <span className="pricing-card__badge">{plan.badge}</span> : <span>{plan.term}</span>}
                   </header>
                   <div className="pricing-card__title">
                     <h3>{plan.tier}</h3>

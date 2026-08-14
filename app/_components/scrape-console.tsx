@@ -86,6 +86,14 @@ const downloadOptions: ComboboxOption[] = [
   { value: "sheets", label: "Google Sheets", description: "CSV siap impor dengan kolom tindak lanjut" },
 ];
 
+function DownloadIcon() {
+  return (
+    <svg className="button__icon" viewBox="0 0 20 20" aria-hidden="true">
+      <path d="M10 3v9m0 0 3.5-3.5M10 12 6.5 8.5M4 14.5v2h12v-2" />
+    </svg>
+  );
+}
+
 function messageFrom(value: unknown, fallback: string) {
   if (value && typeof value === "object" && "message" in value) {
     const message = (value as { message?: unknown }).message;
@@ -726,9 +734,10 @@ export function ScrapeConsole() {
           <div className="results__actions">
             <label className="results-search"><span>Cari hasil</span><input type="search" value={resultQuery} onChange={(event) => { setResultQuery(event.target.value); setResultPage(1); }} placeholder="Nama, alamat, atau kontak" /></label>
             <SearchableCombobox label="Filter website" value={websiteFilter} options={websiteOptions} onChange={changeWebsiteFilter} searchPlaceholder="Cari filter" />
-            <SearchableCombobox label="Format unduhan" value={downloadFormat} options={downloadOptions} onChange={(value) => setDownloadFormat(value as DownloadFormat)} searchPlaceholder="Cari format" />
-            <button className="button button--secondary" type="button" onClick={downloadResults} disabled={visibleRows.length === 0 || downloading} data-state={downloading ? "loading" : "default"}>
-              {downloading ? "Membuat file" : `Unduh ${downloadOptions.find((option) => option.value === downloadFormat)?.label || "file"}`} <span aria-hidden="true">↓</span>
+            <SearchableCombobox className="results-download-format" label="Format unduhan" value={downloadFormat} options={downloadOptions} onChange={(value) => setDownloadFormat(value as DownloadFormat)} searchPlaceholder="Cari format" />
+            <button className="button button--secondary button--export" type="button" onClick={downloadResults} disabled={visibleRows.length === 0 || downloading} data-state={downloading ? "loading" : "default"}>
+              <span>{downloading ? "Membuat file" : `Unduh ${downloadOptions.find((option) => option.value === downloadFormat)?.label || "file"}`}</span>
+              {downloading ? <span className="button__spinner" aria-hidden="true" /> : <DownloadIcon />}
             </button>
           </div>
         </div>

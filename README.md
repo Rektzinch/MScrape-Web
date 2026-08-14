@@ -25,8 +25,8 @@ npm run build
 | Tier | Harga | Batas hasil per scan | Cooldown |
 | --- | --- | ---: | --- |
 | Free | Rp0 | 10 | 1 jam |
-| Pro | Rp35.000 / bulan | Hingga 250 | 1 menit |
-| Max | Rp175.000 / bulan | Hingga 500 | Tanpa cooldown |
+| Pro | Rp24.999 / 2 bulan | Hingga 250 | 1 menit |
+| Max | Rp149.000 / 2 bulan | Hingga 500 | Tanpa cooldown |
 
 Semua limit divalidasi oleh server. Mode `all` tidak diberikan kepada pelanggan karena hasil tak terbatas tidak dapat dijamin oleh provider dalam satu request. Respons scan mengirim metadata kelengkapan: `limit-reached`, `source-exhausted`, atau `time-budget`. UI menampilkan status tersebut agar hasil parsial tidak dianggap lengkap.
 
