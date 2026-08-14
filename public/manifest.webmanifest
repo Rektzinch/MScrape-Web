@@ -1,8 +1,8 @@
 {
-  "name": "MScrape — Cari Prospek Bisnis Lokal",
+  "name": "MScrape — Google Maps Scraper & Data Bisnis Indonesia",
   "short_name": "MScrape",
-  "description": "Temukan bisnis lokal dan siapkan daftar prospek untuk riset, analisis, serta tindak lanjut.",
-  "start_url": "/dashboard",
+  "description": "Cari dan kumpulkan data bisnis dari Google Maps, lalu ekspor hasil terpilih ke CSV.",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#fffaf1",
   "theme_color": "#ff6a00",

@@ -15,6 +15,10 @@ export const metadata: Metadata = {
   openGraph: {
     url: "/dashboard",
   },
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 const principles = [

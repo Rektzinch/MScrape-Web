@@ -36,7 +36,7 @@ const structuredData = {
       url: siteUrl?.origin,
       inLanguage: "id-ID",
       description:
-        "Aplikasi untuk menemukan bisnis lokal tanpa website dari Google Maps dan menyiapkan daftar prospek ke CSV.",
+        "Aplikasi untuk mencari dan mengumpulkan data bisnis dari Google Maps berdasarkan kata kunci serta wilayah, lalu mengekspor hasil pilihan ke CSV.",
       image: brandLogo,
       publisher: {
         "@type": "Organization",
@@ -50,11 +50,11 @@ const structuredData = {
 export const metadata: Metadata = {
   metadataBase: siteUrl,
   title: {
-    default: "MScrape | Cari Prospek Bisnis Lokal Tanpa Website",
+    default: "MScrape — Google Maps Scraper & Pencari Data Bisnis Indonesia",
     template: "%s | MScrape",
   },
   description:
-    "MScrape membantu agen web, freelancer, tim sales, dan konsultan digital menemukan bisnis lokal tanpa website dari Google Maps, lalu menyiapkan daftar prospek ke CSV.",
+    "Cari dan kumpulkan data bisnis dari Google Maps dengan MScrape. Temukan nama bisnis, alamat, telepon, website, email bila tersedia, lalu ekspor hasil ke CSV.",
   applicationName: "MScrape",
   manifest: "/manifest.webmanifest",
   icons: {
@@ -63,13 +63,17 @@ export const metadata: Metadata = {
     apple: [{ url: "/media/mscrape-logo.png", type: "image/png", sizes: "2172x724" }],
   },
   keywords: [
+    "google maps scraper indonesia",
+    "scraper google maps",
+    "ambil data google maps",
+    "cari data bisnis",
+    "database bisnis indonesia",
+    "lead generation indonesia",
+    "export google maps ke csv",
     "cari bisnis tanpa website",
+    "data bisnis lokal",
     "prospek bisnis lokal",
-    "Google Maps scraper Indonesia",
-    "calon klien jasa website",
-    "lead generation Indonesia",
-    "ekspor lead CSV",
-    "prospek layanan digital",
+    "pencari data bisnis",
   ],
   robots: {
     index: true,
@@ -85,27 +89,27 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "id_ID",
-    url: "/dashboard",
+    url: "/",
     siteName: "MScrape",
-    title: "MScrape | Cari Prospek Bisnis Lokal Tanpa Website",
+    title: "MScrape — Google Maps Scraper & Pencari Data Bisnis Indonesia",
     description:
-      "Temukan bisnis lokal tanpa website, pilih akses MScrape yang sesuai, lalu siapkan daftar prospek untuk layanan digital Anda.",
+      "Cari dan kumpulkan data bisnis dari Google Maps dengan MScrape. Temukan nama bisnis, alamat, telepon, website, email bila tersedia, lalu ekspor hasil ke CSV.",
     images: socialImage
       ? [
           {
             url: socialImage,
             width: 1600,
             height: 1000,
-            alt: "Workspace Produksi MScrape untuk pencarian prospek bisnis lokal",
+            alt: "Workspace MScrape untuk pencarian dan ekspor data bisnis dari Google Maps",
           },
         ]
       : undefined,
   },
   twitter: {
     card: "summary_large_image",
-    title: "MScrape | Cari Prospek Bisnis Lokal Tanpa Website",
+    title: "MScrape — Google Maps Scraper & Pencari Data Bisnis Indonesia",
     description:
-      "Temukan bisnis lokal tanpa website, pilih akses MScrape yang sesuai, lalu siapkan daftar prospek untuk layanan digital Anda.",
+      "Cari dan kumpulkan data bisnis dari Google Maps dengan MScrape. Temukan nama bisnis, alamat, telepon, website, email bila tersedia, lalu ekspor hasil ke CSV.",
     images: socialImage ? [socialImage] : undefined,
   },
   category: "business",

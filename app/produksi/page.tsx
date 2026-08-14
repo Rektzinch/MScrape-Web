@@ -12,6 +12,10 @@ export const metadata: Metadata = {
   openGraph: {
     url: "/produksi",
   },
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function ProduksiPage() {
