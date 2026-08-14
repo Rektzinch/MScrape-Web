@@ -1,0 +1,17 @@
+{
+  "name": "MScrape — Cari Prospek Bisnis Lokal",
+  "short_name": "MScrape",
+  "description": "Temukan bisnis lokal dan siapkan daftar prospek untuk riset, analisis, serta tindak lanjut.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#fffaf1",
+  "theme_color": "#ff6a00",
+  "icons": [
+    {
+      "src": "/media/mscrape-logo.png",
+      "sizes": "2172x724",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

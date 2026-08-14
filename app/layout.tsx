@@ -8,10 +8,20 @@ import "./workbench.css";
 const socialImage = siteUrl
   ? new URL("/media/production-console.webp", siteUrl).toString()
   : undefined;
+const brandLogo = siteUrl
+  ? new URL("/media/mscrape-logo.png", siteUrl).toString()
+  : "/media/mscrape-logo.png";
 
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
+    {
+      "@type": "Organization",
+      name: "MScrape",
+      url: siteUrl?.origin,
+      logo: brandLogo,
+      image: brandLogo,
+    },
     {
       "@type": "WebSite",
       name: "MScrape",
@@ -27,6 +37,12 @@ const structuredData = {
       inLanguage: "id-ID",
       description:
         "Aplikasi untuk menemukan bisnis lokal tanpa website dari Google Maps dan menyiapkan daftar prospek ke CSV.",
+      image: brandLogo,
+      publisher: {
+        "@type": "Organization",
+        name: "MScrape",
+        logo: brandLogo,
+      },
     },
   ],
 };
@@ -40,6 +56,12 @@ export const metadata: Metadata = {
   description:
     "MScrape membantu agen web, freelancer, tim sales, dan konsultan digital menemukan bisnis lokal tanpa website dari Google Maps, lalu menyiapkan daftar prospek ke CSV.",
   applicationName: "MScrape",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [{ url: "/media/mscrape-logo.png", type: "image/png", sizes: "2172x724" }],
+    shortcut: ["/media/mscrape-logo.png"],
+    apple: [{ url: "/media/mscrape-logo.png", type: "image/png", sizes: "2172x724" }],
+  },
   keywords: [
     "cari bisnis tanpa website",
     "prospek bisnis lokal",
