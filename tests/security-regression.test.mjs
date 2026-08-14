@@ -50,3 +50,15 @@ test("header dan challenge browser diproteksi dari konfigurasi Next dan API", as
   assert.match(config, /X-Content-Type-Options/);
   assert.match(scrape, /verifyTurnstile/);
 });
+
+test("pencarian kecamatan hanya tersedia untuk Pro dan Max serta diperiksa oleh server", async () => {
+  const [plans, scrape] = await Promise.all([
+    source("lib/plans.ts"),
+    source("app/api/scrape/route.ts"),
+  ]);
+  assert.match(plans, /free:[\s\S]*allowsSubdistrict: false/);
+  assert.match(plans, /pro:[\s\S]*allowsSubdistrict: true/);
+  assert.match(plans, /max:[\s\S]*allowsSubdistrict: true/);
+  assert.match(scrape, /subdistrict && !license\.access\.allowsSubdistrict/);
+  assert.match(scrape, /Pencarian hingga kecamatan memerlukan lisensi Pro atau Max/);
+});

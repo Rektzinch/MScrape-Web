@@ -266,6 +266,7 @@ export function ScrapeConsole() {
   const [resultQuery, setResultQuery] = useState("");
   const [resultPage, setResultPage] = useState(1);
   const [manualLimit, setManualLimit] = useState("");
+  const [areaLevel, setAreaLevel] = useState<"city" | "subdistrict">("city");
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileNonce, setTurnstileNonce] = useState(0);
   const activationRef = useRef<HTMLInputElement>(null);
@@ -306,7 +307,8 @@ export function ScrapeConsole() {
   useEffect(() => {
     setManualLimit("");
     setLimit(api.access.tier === "max" ? api.access.maxLimit : 10);
-  }, [api.access.tier]);
+    if (!api.access.allowsSubdistrict) setAreaLevel("city");
+  }, [api.access.allowsSubdistrict, api.access.maxLimit, api.access.tier]);
 
   useEffect(() => {
     if (activationOpen) activationRef.current?.focus({ preventScroll: true });
@@ -525,8 +527,10 @@ export function ScrapeConsole() {
     const form = new FormData(event.currentTarget);
     const keyword = String(form.get("keyword") || "");
     const city = String(form.get("city") || "");
-    const payload = { keyword, city, country: form.get("country"), lang: form.get("lang"), limit: requestedLimit, email: true, turnstileToken };
-    notify("Scan dimulai", `${keyword} di ${city} sedang dipindai dengan batas ${resultLimitLabel(requestedLimit).toLocaleLowerCase("id")}.`);
+    const subdistrict = areaLevel === "subdistrict" ? String(form.get("subdistrict") || "") : "";
+    const areaLabel = [subdistrict, city].filter(Boolean).join(", ");
+    const payload = { keyword, city, subdistrict, country: form.get("country"), lang: form.get("lang"), limit: requestedLimit, email: true, turnstileToken };
+    notify("Scan dimulai", `${keyword} di ${areaLabel} sedang dipindai dengan batas ${resultLimitLabel(requestedLimit).toLocaleLowerCase("id")}.`);
     try {
       const response = await fetch("/api/scrape", {
         method: "POST",
@@ -548,7 +552,7 @@ export function ScrapeConsole() {
         downloadReady: data.downloadReady === true,
         fetchedAt: data.fetchedAt || null,
         keyword,
-        city,
+        city: areaLabel,
       } satisfies JobState;
       setJob(nextJob);
       if (nextJob.status === "completed") {
@@ -662,7 +666,9 @@ export function ScrapeConsole() {
 
         <form className="scrape-form" onSubmit={handleSubmit}>
           <label className="field field--wide"><span>Niche / kata kunci</span><input name="keyword" type="text" required maxLength={100} autoComplete="off" /><small className="field__hint">Jenis bisnis yang ingin diperiksa.</small></label>
-          <label className="field"><span>Kota</span><input name="city" type="text" required maxLength={100} autoComplete="address-level2" /><small className="field__hint">Wilayah kota target.</small></label>
+          <label className="field"><span>Kota / kabupaten</span><input name="city" type="text" required maxLength={100} autoComplete="address-level2" /><small className="field__hint">Wilayah induk target.</small></label>
+          <label className="field"><span>Cakupan pencarian</span><select value={areaLevel} onChange={(event) => setAreaLevel(event.target.value as "city" | "subdistrict")}><option value="city">Kota / kabupaten</option><option value="subdistrict" disabled={!api.access.allowsSubdistrict}>Kecamatan · Pro/Max</option></select><small className="field__hint">{api.access.allowsSubdistrict ? "Pro dan Max dapat mempersempit pencarian hingga kecamatan." : "Aktifkan Pro atau Max untuk pencarian hingga kecamatan."}</small></label>
+          {areaLevel === "subdistrict" ? <label className="field field--wide"><span>Kecamatan</span><input name="subdistrict" type="text" required maxLength={100} autoComplete="address-level3" /><small className="field__hint">Masukkan nama kecamatan, lalu pastikan kota/kabupaten di atas sesuai.</small></label> : null}
           <label className="field"><span>Negara</span><input name="country" type="text" defaultValue="Indonesia" required maxLength={100} autoComplete="country-name" /><small className="field__hint">Dipakai untuk memperjelas kueri.</small></label>
           <label className="field"><span>Bahasa</span><input name="lang" type="text" defaultValue="id" minLength={2} maxLength={2} required /><small className="field__hint">Kode ISO dua huruf.</small></label>
           {api.access.tier !== "max" ? (

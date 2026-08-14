@@ -1860,6 +1860,50 @@
     animation-range: entry 0% exit 100%;
     animation-timeline: view(block);
   }
+
+  .dashboard-scroll-copy,
+  .dashboard-scroll-list li {
+    animation: dashboard-side-reveal linear both;
+    animation-range: entry 8% cover 42%;
+    animation-timeline: view(block);
+  }
+}
+
+.dashboard-typewriter {
+  margin: 0 0 var(--space-lg);
+  color: var(--color-ink-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.dashboard-typewriter > span:first-child {
+  color: var(--color-muted);
+}
+
+.dashboard-typewriter__caret {
+  width: 0.56em;
+  height: 1.05em;
+  margin-inline-start: 0.18em;
+  display: inline-block;
+  vertical-align: -0.19em;
+  background: var(--color-accent);
+  animation: dashboard-typewriter-caret 800ms step-end infinite;
+}
+
+@keyframes dashboard-side-reveal {
+  from {
+    opacity: 0;
+    transform: translateX(calc(-1 * var(--space-xl)));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes dashboard-typewriter-caret {
+  50% { opacity: 0; }
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -2207,7 +2251,13 @@
     transition-duration: 150ms;
   }
 
-  .dashboard-scroll-scene {
+  .dashboard-scroll-scene,
+  .dashboard-scroll-copy,
+  .dashboard-scroll-list li {
+    animation: none;
+  }
+
+  .dashboard-typewriter__caret {
     animation: none;
   }
 

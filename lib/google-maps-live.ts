@@ -3,7 +3,7 @@ import { ALL_RESULTS_LIMIT, type ResultLimit } from "@/lib/plans";
 
 type SearchInput = {
   keyword: string;
-  city: string;
+  area: string;
   country: string;
   lang: string;
   limit: ResultLimit;
@@ -114,11 +114,11 @@ function buildParams(input: SearchInput, limit: number, offset: number) {
     tbm: "map",
     authuser: "0",
     hl: input.lang,
-    q: `${input.keyword} in ${input.city}, ${input.country}`,
+    q: `${input.keyword} in ${input.area}, ${input.country}`,
   });
 
   // Request format used by gosom/google-maps-scraper fast mode. The center is
-  // intentionally neutral: the explicit city/country query determines the area.
+  // intentionally neutral: the explicit area/country query determines the area.
   params.set(
     "pb",
     `!4m12!1m3!1d3826.902183192154!2d0.0000!3d0.0000` +

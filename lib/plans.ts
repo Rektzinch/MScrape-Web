@@ -12,6 +12,7 @@ export type PlanAccess = {
   allowedLimits: ResultLimit[];
   cooldownSeconds: number;
   allowsCustomLimit: boolean;
+  allowsSubdistrict: boolean;
   nextAllowedAt: string | null;
   activatedAt: string | null;
   expiresAt: string | null;
@@ -28,6 +29,7 @@ export const PLAN_RULES: Record<
     allowedLimits: [10],
     cooldownSeconds: 3_600,
     allowsCustomLimit: false,
+    allowsSubdistrict: false,
   },
   pro: {
     tier: "pro",
@@ -36,6 +38,7 @@ export const PLAN_RULES: Record<
     allowedLimits: NUMERIC_LIMITS.filter((limit) => limit <= 250),
     cooldownSeconds: 60,
     allowsCustomLimit: true,
+    allowsSubdistrict: true,
   },
   max: {
     tier: "max",
@@ -44,6 +47,7 @@ export const PLAN_RULES: Record<
     allowedLimits: [...NUMERIC_LIMITS],
     cooldownSeconds: 0,
     allowsCustomLimit: true,
+    allowsSubdistrict: true,
   },
 };
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { AppFooter } from "../_components/app-footer";
 import { AppHeader } from "../_components/app-header";
+import { TypewriterText } from "../_components/typewriter-text";
 
 export const metadata: Metadata = {
   title: "Cari Prospek Bisnis Lokal",
@@ -73,7 +74,7 @@ const pricing = [
     tier: "Pro",
     price: "Rp35.000",
     term: "/ bulan",
-    capacity: "Manual hingga 250 hasil",
+    capacity: "Hingga 250 hasil · kecamatan",
     cooldown: "Jeda 1 menit / request",
     cta: "Beli Pro via WhatsApp ↗",
     href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Pro 1 bulan seharga Rp35.000.")}`,
@@ -84,7 +85,7 @@ const pricing = [
     tier: "Max",
     price: "Rp175.000",
     term: "/ bulan",
-    capacity: "Hingga 500 hasil per scan",
+    capacity: "Hingga 500 hasil · kecamatan",
     cooldown: "Tanpa cooldown",
     cta: "Beli Max via WhatsApp ↗",
     href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Max 1 bulan seharga Rp175.000.")}`,
@@ -114,6 +115,9 @@ export default function DashboardPage() {
             <p className="dashboard-hero__lede">
               MScrape membantu Anda menemukan, mengumpulkan, dan menata data bisnis sesuai kebutuhan pencarian—
               lalu menyiapkannya untuk riset, analisis, tindak lanjut, atau ekspor.
+            </p>
+            <p className="dashboard-typewriter" aria-label="Cari kecamatan, saring peluang, mulai percakapan.">
+              <span>Ritme kerja:</span> <TypewriterText text="Cari kecamatan. Saring peluang. Mulai percakapan." />
             </p>
             <dl className="hero-facts" aria-label="Manfaat utama MScrape">
               <div><dt>Ruang lingkup</dt><dd>Kata kunci &amp; wilayah</dd></div>
@@ -161,7 +165,7 @@ export default function DashboardPage() {
 
         <section className="dashboard-pricing" id="pricing" aria-labelledby="pricing-title">
           <div className="dashboard-pricing__inner wb-shell dashboard-scroll-scene">
-            <header className="dashboard-pricing__head">
+            <header className="dashboard-pricing__head dashboard-scroll-copy">
               <div>
                 <p className="dashboard-pricing__kicker">Harga akses · Pro/Max aktif 1 bulan</p>
                 <h2 id="pricing-title">Pilih akses yang mendukung ritme penjualan Anda.</h2>
@@ -208,7 +212,7 @@ export default function DashboardPage() {
         </section>
 
         <section className="dashboard-essay wb-shell dashboard-scroll-scene" aria-labelledby="essay-title">
-          <header className="dashboard-section-head">
+          <header className="dashboard-section-head dashboard-scroll-copy">
             <h2 id="essay-title">Satu alat untuk membuka peluang sebelum percakapan dimulai.</h2>
             <p>
               MScrape menyusun titik awal pencarian prospek. Workspace Produksi tetap menjadi tempat Anda menjalankan
@@ -237,14 +241,14 @@ export default function DashboardPage() {
 
         <section className="dashboard-process" aria-labelledby="process-title">
           <div className="dashboard-process__inner wb-shell dashboard-scroll-scene">
-            <header className="dashboard-process__head">
-              <h2 id="process-title">Dari pencarian lokal ke peluang penjualan.</h2>
+                      <header className="dashboard-process__head dashboard-scroll-copy">
+            <h2 id="process-title">Dari pencarian lokal ke peluang penjualan.</h2>
               <p>
                 Tiga langkah sederhana menjaga fokus Anda: temukan bisnis yang relevan, pilah berdasarkan konteks,
                 lalu bawa daftar pilihan ke proses tindak lanjut.
               </p>
             </header>
-            <ol className="process-track">
+            <ol className="process-track dashboard-scroll-list">
               {processSteps.map((step) => (
                 <li key={step.coordinate}>
                   <span className="process-track__icon"><ProcessIcon name={step.icon} /></span>
@@ -260,7 +264,7 @@ export default function DashboardPage() {
         </section>
 
         <section className="dashboard-capture wb-shell dashboard-scroll-scene" aria-labelledby="capture-title">
-          <header className="dashboard-section-head dashboard-section-head--compact">
+          <header className="dashboard-section-head dashboard-section-head--compact dashboard-scroll-copy">
             <h2 id="capture-title">Workspace yang dibuat untuk mempercepat tindak lanjut.</h2>
             <p>
               Satu tampilan Produksi memperlihatkan alur dari konfigurasi pencarian sampai daftar prospek siap diperiksa.
@@ -291,7 +295,7 @@ export default function DashboardPage() {
         </section>
 
         <section className="dashboard-spec wb-shell dashboard-scroll-scene" aria-labelledby="spec-title">
-          <header className="dashboard-section-head dashboard-section-head--compact">
+          <header className="dashboard-section-head dashboard-section-head--compact dashboard-scroll-copy">
             <h2 id="spec-title">Nilai yang Anda bawa ke proses penjualan.</h2>
             <p>Setiap bagian dirancang untuk membantu Anda bergerak dari pencarian lokal menuju daftar prospek yang lebih terarah.</p>
           </header>

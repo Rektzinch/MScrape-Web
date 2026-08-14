@@ -24,6 +24,7 @@ const noStoreHeaders = {
 type ScrapeInput = {
   keyword?: unknown;
   city?: unknown;
+  subdistrict?: unknown;
   country?: unknown;
   lang?: unknown;
   limit?: unknown;
@@ -65,6 +66,7 @@ export async function POST(request: Request) {
 
   const keyword = cleanText(body.keyword, 100);
   const city = cleanText(body.city, 100);
+  const subdistrict = cleanText(body.subdistrict, 100);
   const country = cleanText(body.country, 100);
   const lang = cleanText(body.lang, 2).toLowerCase() || "en";
   const limit = body.limit === ALL_RESULTS_LIMIT ? ALL_RESULTS_LIMIT : Number(body.limit);
@@ -81,6 +83,17 @@ export async function POST(request: Request) {
     return Response.json(
       { message: "Kode bahasa harus terdiri dari dua huruf." },
       { status: 400, headers: noStoreHeaders },
+    );
+  }
+
+  if (subdistrict && !license.access.allowsSubdistrict) {
+    return Response.json(
+      {
+        message: "Pencarian hingga kecamatan memerlukan lisensi Pro atau Max.",
+        requiredTier: "pro",
+        access: await readRateAccess(request, license),
+      },
+      { status: 403, headers: noStoreHeaders },
     );
   }
 
@@ -144,12 +157,14 @@ export async function POST(request: Request) {
     ? { ...noStoreHeaders, "Set-Cookie": visitor.cookie }
     : noStoreHeaders;
 
-  const query = `${keyword} in ${city}, ${country}`;
+  const area = [subdistrict, city].filter(Boolean).join(", ");
+  const query = `${keyword} in ${area}, ${country}`;
 
   console.info("[api/scrape] request", {
     provider: config ? `google-maps-${config.mode}` : "google-maps-live",
     keyword,
     city,
+    subdistrict: subdistrict || null,
     country,
     limit: limit === ALL_RESULTS_LIMIT ? "all" : limit,
   });
@@ -158,7 +173,7 @@ export async function POST(request: Request) {
     try {
       const search = await searchGoogleMapsLive({
         keyword,
-        city,
+        area,
         country,
         lang,
         limit,
