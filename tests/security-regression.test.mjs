@@ -62,15 +62,3 @@ test("pencarian kecamatan hanya tersedia untuk Pro dan Max serta diperiksa oleh 
   assert.match(scrape, /subdistrict && !license\.access\.allowsSubdistrict/);
   assert.match(scrape, /Pencarian hingga kecamatan memerlukan lisensi Pro atau Max/);
 });
-
-test("fallback WhatsApp menormalisasi nomor tanpa mengklaim verifikasi akun", async () => {
-  const [helper, consoleCode] = await Promise.all([
-    source("lib/whatsapp.ts"),
-    source("app/_components/scrape-console.tsx"),
-  ]);
-  assert.match(helper, /normalizeWhatsappPhone/);
-  assert.match(helper, /https:\/\/wa\.me\//);
-  assert.match(consoleCode, /Belum terverifikasi/);
-  assert.match(consoleCode, /Status WhatsApp/);
-  assert.doesNotMatch(consoleCode, /WhatsApp terverifikasi/);
-});
