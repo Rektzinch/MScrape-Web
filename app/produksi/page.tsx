@@ -6,6 +6,12 @@ import { ScrapeConsole } from "../_components/scrape-console";
 export const metadata: Metadata = {
   title: "Produksi",
   description: "Jalankan scan Google Maps, periksa hasil, filter lead, dan ekspor CSV.",
+  alternates: {
+    canonical: "/produksi",
+  },
+  openGraph: {
+    url: "/produksi",
+  },
 };
 
 export default function ProduksiPage() {

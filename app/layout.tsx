@@ -49,9 +49,6 @@ export const metadata: Metadata = {
     "ekspor lead CSV",
     "prospek layanan digital",
   ],
-  alternates: {
-    canonical: "/",
-  },
   robots: {
     index: true,
     follow: true,
@@ -66,7 +63,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "id_ID",
-    url: "/",
+    url: "/dashboard",
     siteName: "MScrape",
     title: "MScrape | Cari Prospek Bisnis Lokal Tanpa Website",
     description:

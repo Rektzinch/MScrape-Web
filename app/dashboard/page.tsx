@@ -9,6 +9,12 @@ export const metadata: Metadata = {
   title: "Cari Prospek Bisnis Lokal",
   description:
     "Temukan bisnis lokal tanpa website, pilih akses MScrape yang sesuai, lalu siapkan daftar prospek untuk layanan digital Anda.",
+  alternates: {
+    canonical: "/dashboard",
+  },
+  openGraph: {
+    url: "/dashboard",
+  },
 };
 
 const principles = [
