@@ -12,12 +12,9 @@ type TierCheckLinkProps = {
   children: React.ReactNode;
 };
 
-type TierLabel = "Free" | "Pro" | "Max" | null;
-
 export function TierCheckLink({ className, href, children }: TierCheckLinkProps) {
   const router = useRouter();
   const [checking, setChecking] = useState(false);
-  const [tier, setTier] = useState<TierLabel>(null);
   const abortRef = useRef<AbortController | null>(null);
   const redirectRef = useRef<number | null>(null);
 
@@ -31,15 +28,12 @@ export function TierCheckLink({ className, href, children }: TierCheckLinkProps)
     if (checking) return;
 
     setChecking(true);
-    setTier(null);
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
 
     void fetch("/api/config", { cache: "no-store", signal: controller.signal })
-      .then(async (response) => response.ok ? response.json() : null)
-      .then((data: { access?: { label?: TierLabel } } | null) => setTier(data?.access?.label ?? "Free"))
-      .catch(() => setTier("Free"));
+      .catch(() => undefined);
 
     redirectRef.current = window.setTimeout(() => router.push(href), 5_000);
   }
@@ -50,11 +44,11 @@ export function TierCheckLink({ className, href, children }: TierCheckLinkProps)
         {children}
       </Link>
       {checking && typeof document !== "undefined" ? createPortal(
-        <div className="tier-check-overlay" role="status" aria-live="polite" aria-label={`Memeriksa status tier ${tier || "Anda"}`}>
+        <div className="tier-check-overlay" role="status" aria-live="polite" aria-label="Menyiapkan workspace Produksi">
           <div className="tier-check-overlay__content">
             <Image
               className="tier-check-overlay__logo"
-              src="/media/mscrape-logo.png"
+              src="/media/mscrape-logo-light.png"
               alt="MScrape"
               width={2172}
               height={724}
@@ -62,7 +56,7 @@ export function TierCheckLink({ className, href, children }: TierCheckLinkProps)
             />
             <div className="tier-check-overlay__notice">
               <p>Menyiapkan workspace Produksi</p>
-              <span>Memeriksa akses {tier || "Anda"} dan kapasitas pencarian Anda.</span>
+              <span>Memeriksa status akses dan menyiapkan ruang kerja Anda.</span>
             </div>
             <span className="tier-check-overlay__progress" aria-hidden="true" />
           </div>
