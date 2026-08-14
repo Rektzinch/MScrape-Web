@@ -184,7 +184,6 @@
 }
 
 .dashboard-hero__media figcaption,
-.dashboard-hero__banner figcaption,
 .product-capture figcaption {
   margin-block-start: var(--space-sm);
   color: var(--color-muted);
@@ -193,20 +192,66 @@
   line-height: 1.55;
 }
 
-.dashboard-hero__banner {
-  grid-column: 1 / -1;
-  width: min(100%, 72rem);
-  margin: 0;
-  justify-self: end;
+.hero-banner-carousel {
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+  background: var(--color-paper-2);
 }
 
-.dashboard-hero__banner img {
+.hero-banner-carousel__viewport {
+  width: min(100%, var(--page-max));
+  margin-inline: auto;
+  overflow: clip;
+}
+
+.hero-banner-carousel__track {
+  display: flex;
+  transition: transform 760ms var(--ease-in-out);
+  will-change: transform;
+}
+
+.hero-banner-carousel__slide {
+  min-width: 100%;
+  margin: 0;
+  padding: var(--space-sm) var(--page-gutter) 0;
+}
+
+.hero-banner-carousel__slide img {
   width: 100%;
   height: auto;
   border: var(--rule-hair) solid var(--color-rule-strong);
   border-radius: var(--radius-card);
   display: block;
-  background: var(--color-paper-2);
+  background: var(--color-paper);
+}
+
+.hero-banner-carousel__slide figcaption {
+  min-height: 2.5lh;
+  padding: var(--space-xs) var(--space-2xs) var(--space-sm);
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+
+.hero-banner-carousel__progress {
+  width: min(100%, var(--page-max));
+  margin-inline: auto;
+  padding: 0 var(--page-gutter) var(--space-sm);
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.hero-banner-carousel__progress span {
+  height: var(--rule-strong);
+  flex: 1;
+  background: var(--color-rule-strong);
+  transition: background-color var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+  transform-origin: left;
+}
+
+.hero-banner-carousel__progress span[data-active="true"] {
+  background: var(--color-accent);
+  transform: scaleX(1.08);
 }
 
 .dashboard-essay,
@@ -2272,6 +2317,11 @@
   .dashboard-scroll-copy,
   .dashboard-scroll-list li {
     animation: none;
+  }
+
+  .hero-banner-carousel__track,
+  .hero-banner-carousel__progress span {
+    transition: none;
   }
 
   .dashboard-typewriter__caret {

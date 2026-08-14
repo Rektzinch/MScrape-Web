@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { AppFooter } from "../_components/app-footer";
 import { AppHeader } from "../_components/app-header";
+import { HeroBannerCarousel } from "../_components/hero-banner-carousel";
 import { TypewriterText } from "../_components/typewriter-text";
 
 export const metadata: Metadata = {
@@ -107,6 +108,7 @@ export default function DashboardPage() {
   return (
     <>
       <AppHeader current="dashboard" />
+      <HeroBannerCarousel />
       <main className="dashboard-page">
         <section className="dashboard-hero wb-shell" aria-labelledby="dashboard-title">
           <div className="dashboard-hero__copy wb-reveal" style={{ "--reveal-index": 0 } as React.CSSProperties}>
@@ -162,19 +164,6 @@ export default function DashboardPage() {
             </figcaption>
           </figure>
 
-          <figure className="dashboard-hero__banner wb-reveal" style={{ "--reveal-index": 2 } as React.CSSProperties}>
-            <Image
-              src="/media/mscrape-hero-banner.png"
-              alt="Ilustrasi MScrape yang menampilkan peta lokasi bisnis, hasil scan, ekspor data, dan indikator keberhasilan"
-              width={1672}
-              height={941}
-              sizes="(min-width: 60rem) 72rem, 100vw"
-              loading="lazy"
-            />
-            <figcaption>
-              Dari peta pencarian hingga data siap ekspor—satu alur untuk membantu Anda bergerak lebih cepat.
-            </figcaption>
-          </figure>
         </section>
 
         <section className="dashboard-pricing" id="pricing" aria-labelledby="pricing-title">
