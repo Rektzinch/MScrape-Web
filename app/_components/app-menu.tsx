@@ -1,21 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { TierCheckLink } from "./tier-check-link";
 
 type AppMenuProps = {
-  current: "dashboard" | "production";
+  current: "dashboard" | "production" | "info";
 };
-
-const socialLinks = [
-  { label: "Kirim email ke Muh Amin Arsyad", href: "mailto:alienrektz@gmail.com", icon: "/media/social/gmail.svg", name: "Email" },
-  { label: "Facebook Muh Amin Arsyad", href: "https://www.facebook.com/share/1C6po4Tj86/", icon: "/media/social/facebook.svg", name: "Facebook" },
-  { label: "WhatsApp Muh Amin Arsyad", href: "https://wa.me/6285111349699", icon: "/media/social/whatsapp.svg", name: "WhatsApp" },
-  { label: "TikTok Muh Amin Arsyad", href: "https://www.tiktok.com/@rektxkz?_r=1&_t=ZS-98ry9zZuC7Z", icon: "/media/social/tiktok.svg", name: "TikTok" },
-];
 
 export function AppMenu({ current }: AppMenuProps) {
   const [open, setOpen] = useState(false);
@@ -73,43 +65,10 @@ export function AppMenu({ current }: AppMenuProps) {
                   {destinationLabel} <span aria-hidden="true">↙</span>
                 </Link>
               )}
-              <a className="app-side-menu__nav-link" href="#tentang-mscrape">Tentang MScrape</a>
-              <a className="app-side-menu__nav-link" href="#syarat-ketentuan">Syarat &amp; Ketentuan</a>
-              <a className="app-side-menu__nav-link" href="#developer">Developer</a>
+              <Link className="app-side-menu__nav-link" href="/tentang-mscrape" onClick={closeMenu}>Tentang MScrape</Link>
+              <Link className="app-side-menu__nav-link" href="/syarat-ketentuan" onClick={closeMenu}>Syarat &amp; Ketentuan</Link>
+              <Link className="app-side-menu__nav-link" href="/developer" onClick={closeMenu}>Developer</Link>
             </nav>
-
-            <section className="app-side-menu__about" id="tentang-mscrape">
-              <p className="app-side-menu__label">Tentang MScrape</p>
-              <p>Ruang kerja untuk mengubah pencarian bisnis lokal menjadi daftar riset, analisis, dan tindak lanjut yang lebih terarah.</p>
-            </section>
-
-            <section className="app-side-menu__terms" id="syarat-ketentuan">
-              <p className="app-side-menu__label">Syarat &amp; Ketentuan</p>
-              <p>Gunakan data secara bertanggung jawab, patuhi aturan sumber data, dan pastikan setiap tindak lanjut dilakukan dengan izin yang relevan.</p>
-            </section>
-
-            <section className="app-side-menu__developer" id="developer" aria-labelledby="developer-name">
-              <Image
-                className="app-side-menu__developer-photo"
-                src="/media/developer/muh-amin-arsyad.jpg"
-                alt="Muh Amin Arsyad"
-                width={1080}
-                height={1083}
-                loading="lazy"
-                sizes="7rem"
-              />
-              <div>
-                <p className="app-side-menu__label">Developer</p>
-                <h2 id="developer-name">MUH AMIN ARSYAD</h2>
-                <div className="app-side-menu__socials" aria-label="Kontak developer">
-                  {socialLinks.map((social) => (
-                    <a key={social.name} href={social.href} target={social.href.startsWith("http") ? "_blank" : undefined} rel={social.href.startsWith("http") ? "noreferrer" : undefined} aria-label={social.label} title={social.name}>
-                      <img src={social.icon} alt="" aria-hidden="true" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </section>
           </aside>
         </div>,
         document.body,

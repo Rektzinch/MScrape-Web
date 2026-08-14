@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AppMenu } from "./app-menu";
 
 type AppHeaderProps = {
-  current: "dashboard" | "production";
+  current: "dashboard" | "production" | "info";
 };
 
 export function AppHeader({ current }: AppHeaderProps) {
