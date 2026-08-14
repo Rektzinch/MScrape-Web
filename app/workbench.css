@@ -53,36 +53,18 @@
   padding: var(--space-lg);
   display: grid;
   place-items: center;
-  background: color-mix(in oklch, var(--color-ink) 40%, var(--color-transparent));
-  backdrop-filter: blur(12px) saturate(0.72);
+  background: color-mix(in oklch, var(--color-ink) 84%, var(--color-transparent));
+  backdrop-filter: blur(20px) brightness(0.48) saturate(0.55);
   animation: tier-check-overlay-in var(--dur-base) var(--ease-out) both;
 }
 
-.tier-check-overlay__panel {
-  width: min(100%, 25rem);
-  padding: var(--space-md);
-  border: var(--rule-hair) solid color-mix(in oklch, var(--color-paper) 62%, var(--color-transparent));
-  border-radius: var(--radius-card);
-  display: grid;
-  justify-items: center;
-  background: color-mix(in oklch, var(--color-paper) 92%, var(--color-transparent));
-  box-shadow: 0 var(--space-xl) var(--space-3xl) color-mix(in oklch, var(--color-ink) 35%, var(--color-transparent));
-  animation: tier-check-panel-in var(--dur-slow) var(--ease-out) both;
-}
-
 .tier-check-overlay__visual {
-  width: min(100%, 19rem);
+  width: min(88vw, 29rem);
+  max-height: calc(100dvh - (var(--space-xl) * 2));
   height: auto;
   display: block;
-}
-
-.tier-check-overlay__panel p {
-  margin: calc(var(--space-sm) * -1) 0 0;
-  color: var(--color-ink);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  font-weight: 760;
-  text-align: center;
+  filter: drop-shadow(0 var(--space-xl) var(--space-3xl) color-mix(in oklch, var(--color-ink) 68%, var(--color-transparent)));
+  animation: tier-check-panel-in var(--dur-slow) var(--ease-out) both;
 }
 
 .page-switch {
@@ -909,17 +891,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-sm);
 }
 
 .app-footer__logo {
   width: clamp(10rem, 32vw, 15rem);
-  height: auto;
-  display: block;
-}
-
-.app-footer__mascot {
-  width: clamp(3.5rem, 10vw, 5rem);
   height: auto;
   display: block;
 }
@@ -2854,7 +2829,7 @@
 
   .production-page .activation-panel,
   .tier-check-overlay,
-  .tier-check-overlay__panel {
+  .tier-check-overlay__visual {
     animation: none;
   }
 
