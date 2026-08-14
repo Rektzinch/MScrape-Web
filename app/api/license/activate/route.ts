@@ -1,5 +1,7 @@
 import { DurableStoreError, durableStoreConfigured } from "@/lib/durable-store";
+import { recordLicenseActivation } from "@/lib/admin-license-ledger";
 import { activationIsConfigured, redeemLicense, validateLicenseCode } from "@/lib/license";
+import { existingVisitorSession } from "@/lib/visitor-session";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -41,6 +43,18 @@ export async function POST(request: Request) {
         { message: "Kode ini sudah diaktifkan. Hubungi admin untuk reset perangkat bila diperlukan." },
         { status: 409, headers: noStoreHeaders },
       );
+    }
+
+    try {
+      await recordLicenseActivation(
+        license.id,
+        license.tier,
+        new Date(redeemed.access.activatedAt || Date.now()).getTime(),
+        new Date(redeemed.access.expiresAt || Date.now()).getTime(),
+        existingVisitorSession(request),
+      );
+    } catch {
+      // ponytail: aktivasi lisensi tetap berhasil bila pencatatan observabilitas tertunda.
     }
 
     return Response.json(

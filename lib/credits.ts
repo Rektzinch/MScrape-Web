@@ -1,4 +1,5 @@
 import { DurableStoreError, evalStore, readStore } from "@/lib/durable-store";
+import { recordCreditUsage } from "@/lib/admin-license-ledger";
 import type { ResolvedLicense } from "@/lib/license";
 import { planAccess, type PlanAccess } from "@/lib/plans";
 
@@ -79,5 +80,12 @@ export async function consumeCredit(
   }
 
   if (remaining < 0) return { allowed: false, access: withCredit(access, 0) };
+  if (license.licenseId && (license.access.tier === "pro" || license.access.tier === "max")) {
+    try {
+      await recordCreditUsage(license.licenseId, license.access.tier, visitorId, remaining);
+    } catch {
+      // ponytail: audit tidak boleh membatalkan scan yang kreditnya sudah dipotong atomik.
+    }
+  }
   return { allowed: true, access: withCredit(access, remaining) };
 }

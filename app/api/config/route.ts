@@ -1,4 +1,5 @@
 import { backendFetch, getBackendConfig } from "@/lib/backend";
+import { recordLicensePresence } from "@/lib/admin-license-ledger";
 import { readCreditAccess } from "@/lib/credits";
 import { durableStoreConfigured } from "@/lib/durable-store";
 import { activationIsConfigured, resolveLicense } from "@/lib/license";
@@ -35,6 +36,9 @@ export async function GET(request: Request) {
   let access;
   try {
     const license = await resolveLicense(request);
+    if (license.licenseId && (license.access.tier === "pro" || license.access.tier === "max")) {
+      void recordLicensePresence(license.licenseId, license.access.tier, visitor.id).catch(() => undefined);
+    }
     access = await readCreditAccess(
       license,
       visitor.id,

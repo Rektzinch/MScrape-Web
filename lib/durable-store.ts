@@ -72,6 +72,18 @@ export async function evalStore<T>(script: string, keys: string[], args: string[
   return command<T>("EVAL", script, String(keys.length), ...keys, ...args);
 }
 
+export async function listStore(key: string, start = 0, end = -1) {
+  return (await command<string[] | null>("LRANGE", key, String(start), String(end))) || [];
+}
+
+export async function pushStore(key: string, value: string) {
+  return command<number>("LPUSH", key, value);
+}
+
+export async function trimStore(key: string, start: number, end: number) {
+  return command<string>("LTRIM", key, String(start), String(end));
+}
+
 export async function deleteStore(key: string) {
   return command<number>("DEL", key);
 }

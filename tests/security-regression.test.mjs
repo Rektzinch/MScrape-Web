@@ -82,3 +82,21 @@ test("kredit paket dikurangi atomik satu kali per scan dan masa lisensi mengikut
   assert.match(scrape, /consumeCredit\(license, visitor\.id, rate\.access\)/);
   assert.match(license, /LICENSE_TERM_MONTHS = 2/);
 });
+
+test("gateway admin memakai token, audit inventaris, dan pesan aktivasi perangkat yang diwajibkan", async () => {
+  const [gateway, ledger, credits, activation] = await Promise.all([
+    source("app/api/admin/license/route.ts"),
+    source("lib/admin-license-ledger.ts"),
+    source("lib/credits.ts"),
+    source("app/api/license/activate/route.ts"),
+  ]);
+  assert.match(gateway, /MSCRAPE_ADMIN_GATEWAY_TOKEN/);
+  assert.match(gateway, /timingSafeEqual/);
+  assert.match(gateway, /case "create"/);
+  assert.match(gateway, /case "reset"/);
+  assert.match(ledger, /createManagedLicense/);
+  assert.match(ledger, /recordLicensePresence/);
+  assert.match(ledger, /recordCreditUsage/);
+  assert.match(credits, /recordCreditUsage/);
+  assert.match(activation, /Kode ini sudah diaktifkan\. Hubungi admin untuk reset perangkat bila diperlukan\./);
+});
