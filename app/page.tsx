@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { AppFooter } from "./_components/app-footer";
 import { AppHeader } from "./_components/app-header";
@@ -87,21 +88,36 @@ export default function Home() {
       <HeroBannerCarousel />
       <main className="seo-page seo-page--home dashboard-page">
         <section className="seo-hero seo-hero--home wb-shell" aria-labelledby="home-title">
-          <p className="seo-hero__kicker">MSCRAPE / DATA BISNIS INDONESIA</p>
-          <h1 id="home-title">Cari Data Bisnis dari Google Maps</h1>
-          <p className="seo-hero__lead">
-            Temukan bisnis berdasarkan niche dan wilayah, kumpulkan informasi yang tersedia, lalu jadikan hasilnya daftar kerja untuk riset pasar, penawaran layanan, dan tindak lanjut yang lebih terarah.
-          </p>
-          <div className="seo-hero__actions">
-            <Link className="seo-button seo-button--primary" href="/produksi">Mulai Cari Data Bisnis</Link>
-            <Link className="seo-button seo-button--quiet" href="/google-maps-scraper">Cara kerja MScrape</Link>
+          <div className="home-fold__copy">
+            <p className="seo-hero__kicker">MSCRAPE / DATA BISNIS INDONESIA</p>
+            <h1 id="home-title">Cari data bisnis.<br />Mulai percakapan yang lebih tepat.</h1>
+            <p className="seo-hero__lead">
+              Tentukan niche dan wilayah, lalu ubah hasil Google Maps menjadi daftar kerja untuk riset pasar, penawaran layanan, dan tindak lanjut yang lebih terarah.
+            </p>
+            <div className="seo-hero__actions">
+              <Link className="seo-button seo-button--primary" href="/produksi">Buka Produksi →</Link>
+              <Link className="seo-button seo-button--quiet" href="/google-maps-scraper">Pelajari cara kerja</Link>
+            </div>
           </div>
+          <figure className="home-fold__visual">
+            <Image
+              src="/media/production-console.webp"
+              alt="Workspace Produksi MScrape untuk mengatur pencarian dan meninjau hasil bisnis"
+              width={1600}
+              height={1000}
+              sizes="(min-width: 60rem) 54vw, 100vw"
+              priority
+            />
+            <figcaption>MASUKKAN NICHE · PILIH WILAYAH · TINJAU HASIL</figcaption>
+          </figure>
           <dl className="seo-fact-row" aria-label="Ringkasan layanan MScrape">
             <div><dt>Sumber</dt><dd>Google Maps live</dd></div>
-            <div><dt>Ruang lingkup</dt><dd>Niche, kota &amp; kecamatan</dd></div>
+            <div><dt>Cakupan</dt><dd>Niche, kota &amp; kecamatan</dd></div>
             <div><dt>Output</dt><dd>Filter &amp; ekspor CSV</dd></div>
           </dl>
         </section>
+
+        <HomeDashboardContent />
 
         <section className="seo-body wb-shell" aria-label="Informasi utama MScrape">
           <article className="seo-article">
@@ -164,8 +180,6 @@ export default function Home() {
             <Link className="seo-text-link" href="/cari-bisnis-tanpa-website">Pelajari pencarian bisnis tanpa website →</Link>
           </article>
         </section>
-
-        <HomeDashboardContent />
 
         <section className="seo-related" aria-labelledby="home-related-title">
           <div className="wb-shell">

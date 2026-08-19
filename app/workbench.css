@@ -4135,3 +4135,197 @@
     gap: var(--space-2xl);
   }
 }
+
+/* Homepage: fold editorial dengan bukti workspace nyata, bukan hero generik yang berdiri sendiri. */
+.seo-hero--home {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2xl);
+}
+
+.home-fold__copy,
+.home-fold__visual {
+  min-width: 0;
+}
+
+.seo-hero--home h1 {
+  max-width: 10ch;
+}
+
+.home-fold__visual {
+  margin: 0;
+  border: var(--rule-hair) solid var(--color-rule-strong);
+  border-radius: var(--radius-card);
+  overflow: clip;
+  background: var(--color-paper-2);
+}
+
+.home-fold__visual img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.home-fold__visual figcaption {
+  padding: var(--space-sm) var(--space-md);
+  border-top: var(--rule-hair) solid var(--color-rule);
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.seo-hero--home .seo-fact-row {
+  grid-column: 1 / -1;
+  margin-top: 0;
+}
+
+@media (min-width: 60rem) {
+  .seo-hero--home {
+    grid-template-columns: minmax(20rem, 0.86fr) minmax(0, 1.14fr);
+    column-gap: clamp(var(--space-2xl), 7vw, 7rem);
+  }
+
+  .home-fold__visual {
+    margin-inline-end: calc(var(--page-gutter) * -0.5);
+  }
+}
+
+/* Hasil scan: perangkat sentuh selalu memakai kartu satu kolom, bahkan bila browser mengirim viewport desktop. */
+@media (max-width: 59.99rem), (pointer: coarse) {
+  .production-page .results-table-wrap {
+    overflow: visible;
+  }
+
+  .production-page .results-table {
+    width: 100%;
+    min-width: 0;
+    table-layout: auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: transparent;
+  }
+
+  .production-page .results-table caption,
+  .production-page .results-table thead {
+    display: none;
+  }
+
+  .production-page .results-table tbody {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+  }
+
+  .production-page .results-table tr,
+  .production-page .results-table tbody tr:nth-child(even) {
+    display: block;
+    min-width: 0;
+    overflow: clip;
+    border: var(--rule-hair) solid var(--color-rule-strong);
+    border-radius: var(--radius-control);
+    background: var(--color-paper);
+  }
+
+  .production-page .results-table td {
+    display: block;
+    width: auto;
+    min-width: 0;
+    padding: var(--space-sm);
+    border: 0;
+    border-bottom: var(--rule-hair) solid var(--color-rule);
+    overflow-wrap: anywhere;
+  }
+
+  .production-page .results-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .production-page .results-table td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: var(--space-2xs);
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+}
+
+/* Homepage motion: urutan masuk mengikuti ritme membaca; seluruh animasi hanya memakai opacity dan transform. */
+@keyframes home-copy-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-xl));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes home-visual-drift {
+  0% { transform: translateY(calc(var(--space-md) * -1)) scale(1.01); }
+  55% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(var(--space-md)) scale(1.01); }
+}
+
+@supports (animation-timeline: view()) {
+  .seo-page--home .home-fold__copy {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .seo-page--home .home-fold__visual {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .seo-page--home .home-fold__visual img {
+    animation: home-visual-drift linear both;
+    animation-range: entry 0% exit 100%;
+    animation-timeline: view(block);
+  }
+
+  .seo-page--home .seo-body .seo-article,
+  .seo-page--home .seo-related,
+  .seo-page--home .seo-faq,
+  .seo-page--home .seo-cta {
+    animation: dashboard-scroll-fade linear both;
+    animation-range: entry 0% exit 100%;
+    animation-timeline: view(block);
+  }
+
+  .seo-page--home .seo-related__card {
+    animation: dashboard-side-reveal linear both;
+    animation-range: entry 6% cover 42%;
+    animation-timeline: view(block);
+  }
+
+  .seo-page--home .seo-related__card:nth-child(2) { animation-delay: 60ms; }
+  .seo-page--home .seo-related__card:nth-child(3) { animation-delay: 120ms; }
+  .seo-page--home .seo-related__card:nth-child(4) { animation-delay: 180ms; }
+  .seo-page--home .seo-related__card:nth-child(5) { animation-delay: 240ms; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seo-page--home .home-fold__copy,
+  .seo-page--home .home-fold__visual,
+  .seo-page--home .home-fold__visual img,
+  .seo-page--home .seo-body .seo-article,
+  .seo-page--home .seo-related,
+  .seo-page--home .seo-faq,
+  .seo-page--home .seo-cta,
+  .seo-page--home .seo-related__card {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

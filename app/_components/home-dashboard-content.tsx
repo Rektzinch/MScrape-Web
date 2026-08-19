@@ -1,5 +1,5 @@
+
 import Image from "next/image";
-import { TypewriterText } from "./typewriter-text";
 
 const principles = [
   {
@@ -100,63 +100,7 @@ function ProcessIcon({ name }: { name: (typeof processSteps)[number]["icon"] }) 
 export function HomeDashboardContent() {
   return (
     <>
-      <section className="dashboard-hero wb-shell" aria-labelledby="home-workflow-title">
-          <div className="dashboard-hero__copy wb-reveal" style={{ "--reveal-index": 0 } as React.CSSProperties}>
-            <p className="dashboard-kicker">Data bisnis · Google Maps live</p>
-            <h2 id="home-workflow-title">Temukan data bisnis yang relevan untuk langkah berikutnya.</h2>
-            <p className="dashboard-hero__lede">
-              MScrape membantu Anda menemukan, mengumpulkan, dan menata data bisnis sesuai kebutuhan pencarian—
-              lalu menyiapkannya untuk riset, analisis, tindak lanjut, atau ekspor.
-            </p>
-            <p className="dashboard-typewriter" aria-label="Cari kecamatan, saring peluang, mulai percakapan.">
-              <span>Ritme kerja:</span> <TypewriterText text="Cari kecamatan. Saring peluang. Mulai percakapan." />
-            </p>
-            <dl className="hero-facts" aria-label="Manfaat utama MScrape">
-              <div><dt>Ruang lingkup</dt><dd>Kata kunci &amp; wilayah</dd></div>
-              <div><dt>Data pencarian</dt><dd>Google Maps live</dd></div>
-              <div><dt>Hasil kerja</dt><dd>Siap filter &amp; unduh</dd></div>
-            </dl>
-          </div>
-
-          <figure className="dashboard-hero__media wb-reveal" style={{ "--reveal-index": 1 } as React.CSSProperties}>
-            <video
-              {...{ fetchpriority: "high" }}
-              autoPlay
-              muted
-              loop
-              playsInline
-              controls
-              preload="metadata"
-              poster="/media/mscrape-tour.webp"
-              aria-describedby="tour-caption"
-            >
-              <source src="/media/mscrape-tour.webm" type="video/webm" />
-              <source src="/media/mscrape-tour.mp4" type="video/mp4" />
-              <track
-                default
-                kind="captions"
-                src="/media/mscrape-tour.vtt"
-                srcLang="id"
-                label="Bahasa Indonesia"
-              />
-            </video>
-            <Image
-              className="dashboard-hero__poster"
-              src="/media/mscrape-tour.webp"
-              alt="Tampilan halaman Produksi MScrape dengan formulir scan dan panel hasil"
-              width={1600}
-              height={1000}
-              sizes="(min-width: 60rem) 62vw, 100vw"
-              priority
-            />
-            <figcaption id="tour-caption">
-              Lihat bagaimana MScrape membantu mengubah niche dan wilayah menjadi daftar prospek lokal yang bisa ditindaklanjuti.
-            </figcaption>
-          </figure>
-
-      </section>
-
-        <section className="dashboard-pricing" id="pricing" aria-labelledby="pricing-title">
+      <section className="dashboard-pricing" id="pricing" aria-labelledby="pricing-title">
           <div className="dashboard-pricing__inner wb-shell dashboard-scroll-scene">
             <header className="dashboard-pricing__head dashboard-scroll-copy">
               <div>

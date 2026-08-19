@@ -84,16 +84,28 @@ test("kredit paket dikurangi atomik satu kali per scan dan masa lisensi mengikut
 });
 
 test("hasil menampilkan ulasan dan Homepage menggantikan Dashboard sebagai tujuan publik", async () => {
-  const [scraper, consolePage, home, dashboard, menu] = await Promise.all([
+  const [scraper, consolePage, home, dashboard, menu, styles] = await Promise.all([
     source("lib/google-maps-live.ts"),
     source("app/_components/scrape-console.tsx"),
     source("app/page.tsx"),
     source("app/dashboard/page.tsx"),
     source("app/_components/app-menu.tsx"),
+    source("app/workbench.css"),
   ]);
   assert.match(scraper, /reviewCount/);
   assert.match(consolePage, /data-label="Ulasan"/);
   assert.match(consolePage, /ulasan Google Maps/);
+  assert.match(consolePage, /Tidak dikirim sumber/);
+  assert.match(styles, /@media \(max-width: 59\.99rem\), \(pointer: coarse\)/);
+  assert.match(styles, /Hasil scan: perangkat sentuh selalu memakai kartu satu kolom/);
+  assert.match(styles, /Homepage motion: urutan masuk mengikuti ritme membaca/);
+  assert.match(styles, /home-visual-drift/);
+  assert.match(styles, /\.seo-page--home \.home-fold__visual img/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+  const reducedMotionStyles = styles.slice(styles.indexOf("@media (prefers-reduced-motion: reduce)"));
+  assert.match(reducedMotionStyles, /\.seo-page--home \.home-fold__visual img/);
+  assert.match(reducedMotionStyles, /\.seo-page--home \.seo-related__card/);
+  assert.match(reducedMotionStyles, /animation: none;/);
   assert.match(home, /HomeDashboardContent/);
   assert.match(home, /jumlah ulasan/);
   assert.match(home, /absolute: "MScrape — Google Maps Scraper & Pencari Data Bisnis Indonesia"/);

@@ -36,7 +36,7 @@ const structuredData = {
       url: siteUrl?.origin,
       inLanguage: "id-ID",
       description:
-        "Aplikasi untuk mencari dan mengumpulkan data bisnis dari Google Maps berdasarkan kata kunci serta wilayah, lalu mengekspor hasil pilihan ke CSV.",
+        "Aplikasi untuk mencari dan mengumpulkan data bisnis dari Google Maps berdasarkan kata kunci serta wilayah, termasuk rating dan jumlah ulasan bila tersedia dari sumber, lalu mengekspor hasil pilihan ke CSV.",
       image: brandLogo,
       publisher: {
         "@type": "Organization",
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     template: "%s | MScrape",
   },
   description:
-    "Cari dan kumpulkan data bisnis dari Google Maps dengan MScrape. Temukan nama bisnis, alamat, telepon, website, email bila tersedia, lalu ekspor hasil ke CSV.",
+    "Cari dan kumpulkan data bisnis dari Google Maps dengan MScrape. Temukan nama bisnis, alamat, telepon, website, rating, jumlah ulasan, dan email bila tersedia, lalu ekspor hasil ke CSV.",
   applicationName: "MScrape",
   manifest: "/manifest.webmanifest",
   icons: {
@@ -93,7 +93,7 @@ export const metadata: Metadata = {
     siteName: "MScrape",
     title: "MScrape — Google Maps Scraper & Pencari Data Bisnis Indonesia",
     description:
-      "Cari dan kumpulkan data bisnis dari Google Maps dengan MScrape. Temukan nama bisnis, alamat, telepon, website, email bila tersedia, lalu ekspor hasil ke CSV.",
+      "Cari dan kumpulkan data bisnis dari Google Maps dengan MScrape. Temukan nama bisnis, alamat, telepon, website, rating, jumlah ulasan, dan email bila tersedia, lalu ekspor hasil ke CSV.",
     images: socialImage
       ? [
           {
@@ -109,7 +109,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "MScrape — Google Maps Scraper & Pencari Data Bisnis Indonesia",
     description:
-      "Cari dan kumpulkan data bisnis dari Google Maps dengan MScrape. Temukan nama bisnis, alamat, telepon, website, email bila tersedia, lalu ekspor hasil ke CSV.",
+      "Cari dan kumpulkan data bisnis dari Google Maps dengan MScrape. Temukan nama bisnis, alamat, telepon, website, rating, jumlah ulasan, dan email bila tersedia, lalu ekspor hasil ke CSV.",
     images: socialImage ? [socialImage] : undefined,
   },
   category: "business",

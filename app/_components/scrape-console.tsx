@@ -781,7 +781,7 @@ export function ScrapeConsole() {
                     <td data-label="Kontak" className="contact-cell">{row.phone ? <a href={`tel:${telephone}`}>{row.phone}</a> : <span>Telepon tidak tersedia</span>}{row.email ? <a href={`mailto:${row.email}`}>{row.email}</a> : <span>Email tidak tersedia</span>}</td>
                     <td data-label="Website" className="website-cell">{row.website ? <><span className="status-tag" data-status="ready">Tersedia</span><a href={row.website} target="_blank" rel="noreferrer">Buka website ↗</a></> : <span className="status-tag" data-status="missing">Belum ada</span>}</td>
                     <td data-label="Rating" className="rating-cell"><strong>{row.rating || "—"}</strong></td>
-                    <td data-label="Ulasan" className="review-count-cell"><strong>{row.reviewCount || "—"}</strong><span className="cell-note">{row.reviewCount ? "ulasan Google Maps" : "Belum ada ulasan"}</span></td>
+                    <td data-label="Ulasan" className="review-count-cell"><strong>{row.reviewCount || "—"}</strong><span className="cell-note">{row.reviewCount ? "ulasan Google Maps" : "Tidak dikirim sumber"}</span></td>
                     <td data-label="Koordinat" className="numeric-cell">{row.coordinates || "—"}</td>
                     <td data-label="Sumber" className="source-cell">{row.source ? <a href={row.source} target="_blank" rel="noreferrer">Buka Maps ↗</a> : <span>—</span>}</td>
                   </tr>
