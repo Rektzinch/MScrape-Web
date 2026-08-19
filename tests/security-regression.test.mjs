@@ -96,6 +96,9 @@ test("hasil menampilkan ulasan dan Homepage menggantikan Dashboard sebagai tujua
   assert.match(consolePage, /ulasan Google Maps/);
   assert.match(home, /HomeDashboardContent/);
   assert.match(home, /jumlah ulasan/);
+  assert.match(home, /absolute: "MScrape — Google Maps Scraper & Pencari Data Bisnis Indonesia"/);
+  assert.match(home, /canonical: "\/"/);
+  assert.match(home, /openGraph: \{\s*url: "\/"/);
   assert.match(dashboard, /permanentRedirect\("\/"\)/);
   assert.doesNotMatch(menu, /href="\/dashboard"/);
 });
