@@ -10,3 +10,7 @@ Catatan: CSS kartu hasil perangkat sentuh ditulis sebagai override akhir untuk `
 ## Motion Homepage
 
 Fold Homepage diverifikasi kembali setelah penambahan motion. Headline dan CTA harus tetap langsung tampak saat halaman dibuka; karena itu motion berbasis `view()` diterapkan pada bagian setelah fold, sedangkan visual fold hanya memakai transisi masuk biasa. Seluruh motion memiliki override `prefers-reduced-motion: reduce`.
+
+## Verifikasi produksi
+
+Deployment produksi pada `https://mscrape.web.id/` berhasil menampilkan fold dengan visual workspace, menu, dan CTA Produksi. Rute lama `https://mscrape.web.id/dashboard` juga telah mengalihkan ke Homepage.
