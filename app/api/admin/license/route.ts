@@ -7,6 +7,7 @@ import {
   resetManagedLicense,
   type ManagedTier,
 } from "@/lib/admin-license-ledger";
+import { analyticsOverview } from "@/lib/admin-analytics-ledger";
 import { DurableStoreError, durableStoreConfigured } from "@/lib/durable-store";
 
 export const dynamic = "force-dynamic";
@@ -51,6 +52,8 @@ export async function POST(request: Request) {
     switch (body.action) {
       case "overview":
         return Response.json({ overview: await managedLicenseOverview() }, { headers: noStoreHeaders });
+      case "analytics":
+        return Response.json({ analytics: await analyticsOverview() }, { headers: noStoreHeaders });
       case "list":
         return Response.json({ licenses: await listManagedLicenses() }, { headers: noStoreHeaders });
       case "detail": {

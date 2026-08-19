@@ -133,3 +133,43 @@ test("gateway admin memakai token, audit inventaris, dan pesan aktivasi perangka
   assert.match(credits, /recordCreditUsage/);
   assert.match(activation, /Kode ini sudah diaktifkan\. Hubungi admin untuk reset perangkat bila diperlukan\./);
 });
+
+test("analytics Homepage mencatat interaksi tanpa IP mentah dan panel admin membaca ringkasan terautentikasi", async () => {
+  const [route, ledger, client, home, dashboardContent, styles, adminProduction, adminLocal, adminHome] = await Promise.all([
+    source("app/api/analytics/route.ts"),
+    source("lib/admin-analytics-ledger.ts"),
+    source("app/_components/home-analytics.tsx"),
+    source("app/page.tsx"),
+    source("app/_components/home-dashboard-content.tsx"),
+    source("app/workbench.css"),
+    source("../mscrape-redeem-admin/api/trpc/[...path].ts"),
+    source("../mscrape-redeem-admin/server/routers.ts"),
+    source("../mscrape-redeem-admin/client/src/pages/Home.tsx"),
+  ]);
+  assert.match(route, /allowedOrigins/);
+  assert.match(route, /visitorSession\(request\)/);
+  assert.match(route, /x-vercel-ip-city/);
+  assert.doesNotMatch(route, /x-forwarded-for|cf-connecting-ip/);
+  assert.match(ledger, /dailyCtaKey/);
+  assert.match(ledger, /pageViewKey/);
+  assert.match(ledger, /firstView/);
+  assert.match(ledger, /publicVisitorId/);
+  assert.match(ledger, /precise_location/);
+  assert.match(client, /event: "page_view"/);
+  assert.match(client, /navigator\.geolocation\.getCurrentPosition/);
+  assert.match(client, /enableHighAccuracy: true/);
+  assert.match(client, /onClick=\{requestLocation\}/);
+  assert.match(home, /data-analytics-cta="hero_buka_produksi"/);
+  assert.match(home, /href="\/produksi" data-analytics-cta="hero_buka_produksi"/);
+  assert.match(dashboardContent, /href=\{plan\.href\}\s+data-analytics-cta=/);
+  assert.doesNotMatch(client, /preventDefault/);
+  assert.match(home, /home-visual-signal/);
+  assert.match(styles, /home-signal-orbit/);
+  assert.match(styles, /prefers-reduced-motion: no-preference/);
+  assert.match(styles, /home-visual-signal__node/);
+  assert.match(adminProduction, /analytics: t\.procedure/);
+  assert.match(adminLocal, /analytics: publicProcedure/);
+  assert.match(adminHome, /refetchInterval: 10_000/);
+  assert.match(adminHome, /analyticsQuery\.refetch\(\)/);
+  assert.match(adminHome, /analytics-feed/);
+});

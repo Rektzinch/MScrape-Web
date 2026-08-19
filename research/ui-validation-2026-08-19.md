@@ -14,3 +14,11 @@ Fold Homepage diverifikasi kembali setelah penambahan motion. Headline dan CTA h
 ## Verifikasi produksi
 
 Deployment produksi pada `https://mscrape.web.id/` berhasil menampilkan fold dengan visual workspace, menu, dan CTA Produksi. Rute lama `https://mscrape.web.id/dashboard` juga telah mengalihkan ke Homepage.
+
+## Analytics dan motion hero lokal
+
+Homepage lokal menampilkan CTA yang dapat dicatat serta kontrol lokasi presisi opsional. Konsol tidak menunjukkan kesalahan aplikasi dari pemancar analytics atau lapisan grafis hero; satu peringatan `eval()` berasal dari mode pengembangan React dan tidak berlaku pada build produksi.
+
+Lapisan grafis Hero juga diverifikasi di DOM: tiga node, orbit, dan garis sinyal dirender di atas visual workspace; node memakai animasi `home-signal-pulse` saat pengguna tidak memilih reduced-motion.
+
+Verifikasi pengiriman event lokal mencapai endpoint yang benar, tetapi ledger mengembalikan status tidak tersedia karena server pengembangan tidak menerima kredensial penyimpanan durable. Pengujian pencatatan nyata dijadwalkan pada deployment produksi yang memiliki konfigurasi Redis.

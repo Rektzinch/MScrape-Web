@@ -4,6 +4,7 @@ import Link from "next/link";
 import { AppFooter } from "./_components/app-footer";
 import { AppHeader } from "./_components/app-header";
 import { HeroBannerCarousel } from "./_components/hero-banner-carousel";
+import { HomeAnalytics } from "./_components/home-analytics";
 import { HomeDashboardContent } from "./_components/home-dashboard-content";
 
 export const metadata: Metadata = {
@@ -95,11 +96,19 @@ export default function Home() {
               Tentukan niche dan wilayah, lalu ubah hasil Google Maps menjadi daftar kerja untuk riset pasar, penawaran layanan, dan tindak lanjut yang lebih terarah.
             </p>
             <div className="seo-hero__actions">
-              <Link className="seo-button seo-button--primary" href="/produksi">Buka Produksi →</Link>
-              <Link className="seo-button seo-button--quiet" href="/google-maps-scraper">Pelajari cara kerja</Link>
+              <Link className="seo-button seo-button--primary" href="/produksi" data-analytics-cta="hero_buka_produksi">Buka Produksi →</Link>
+              <Link className="seo-button seo-button--quiet" href="/google-maps-scraper" data-analytics-cta="hero_pelajari_cara_kerja">Pelajari cara kerja</Link>
             </div>
+            <HomeAnalytics />
           </div>
           <figure className="home-fold__visual">
+            <div className="home-visual-signal" aria-hidden="true">
+              <span className="home-visual-signal__orbit" />
+              <span className="home-visual-signal__line" />
+              <span className="home-visual-signal__node home-visual-signal__node--one" />
+              <span className="home-visual-signal__node home-visual-signal__node--two" />
+              <span className="home-visual-signal__node home-visual-signal__node--three" />
+            </div>
             <Image
               src="/media/production-console.webp"
               alt="Workspace Produksi MScrape untuk mengatur pencarian dan meninjau hasil bisnis"
@@ -177,7 +186,7 @@ export default function Home() {
             <p>
               Saat menawarkan website atau layanan digital, status ketersediaan website dapat membantu Anda memprioritaskan hasil yang perlu ditinjau. MScrape memungkinkan Anda menggunakan informasi tersebut sebagai salah satu konteks filter, bukan sebagai asumsi akhir mengenai kondisi digital sebuah bisnis.
             </p>
-            <Link className="seo-text-link" href="/cari-bisnis-tanpa-website">Pelajari pencarian bisnis tanpa website →</Link>
+            <Link className="seo-text-link" href="/cari-bisnis-tanpa-website" data-analytics-cta="artikel_bisnis_tanpa_website">Pelajari pencarian bisnis tanpa website →</Link>
           </article>
         </section>
 
@@ -189,7 +198,7 @@ export default function Home() {
             </div>
             <div className="seo-related__grid">
               {relatedPages.map(([href, label, description]) => (
-                <Link className="seo-related__card" href={href} key={href}>
+                <Link className="seo-related__card" href={href} key={href} data-analytics-cta={`panduan_${href.slice(1)}`}>
                   <h3>{label}</h3>
                   <p>{description}</p>
                   <span aria-hidden="true">Buka panduan →</span>
@@ -221,7 +230,7 @@ export default function Home() {
           </div>
           <div>
             <p>Gunakan paket Free untuk mencoba alur kerja atau pilih Pro dan Max saat membutuhkan kapasitas pencarian yang lebih luas.</p>
-            <Link className="seo-button seo-button--dark" href="/produksi">Buka Produksi</Link>
+            <Link className="seo-button seo-button--dark" href="/produksi" data-analytics-cta="footer_buka_produksi">Buka Produksi</Link>
           </div>
         </section>
       </main>

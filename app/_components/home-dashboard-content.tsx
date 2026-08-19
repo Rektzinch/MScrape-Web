@@ -134,6 +134,7 @@ export function HomeDashboardContent() {
                   <a
                     className="pricing-card__cta"
                     href={plan.href}
+                    data-analytics-cta={`pricing_${plan.tier.toLowerCase()}`}
                     {...(plan.external ? { target: "_blank", rel: "noreferrer" } : {})}
                   >
                     {plan.cta}
@@ -143,7 +144,7 @@ export function HomeDashboardContent() {
             </div>
 
             <p className="dashboard-pricing__note">
-              Ingin memilih paket yang tepat? <a href={adminWhatsapp} target="_blank" rel="noreferrer">Chat admin MScrape · 0851 1134 9699 ↗</a>
+              Ingin memilih paket yang tepat? <a href={adminWhatsapp} target="_blank" rel="noreferrer" data-analytics-cta="pricing_chat_admin">Chat admin MScrape · 0851 1134 9699 ↗</a>
             </p>
           </div>
         </section>
