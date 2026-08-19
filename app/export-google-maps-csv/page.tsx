@@ -53,7 +53,7 @@ export default function ExportGoogleMapsCsvPage() {
         { href: "/lead-generation", label: "Lead Generation", description: "Gunakan daftar sebagai dasar riset prospek yang terarah." },
       ]}
       ctaTitle="Siapkan daftar hasil yang siap ditinjau."
-      ctaCopy="Jalankan pencarian di Dashboard, pilih hasil yang relevan, lalu gunakan ekspor CSV untuk meneruskan pekerjaan Anda."
+      ctaCopy="Jalankan pencarian di Produksi, pilih hasil yang relevan, lalu gunakan ekspor CSV untuk meneruskan pekerjaan Anda."
     />
   );
 }

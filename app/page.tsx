@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AppFooter } from "./_components/app-footer";
 import { AppHeader } from "./_components/app-header";
+import { HeroBannerCarousel } from "./_components/hero-banner-carousel";
+import { HomeDashboardContent } from "./_components/home-dashboard-content";
 
 export const metadata: Metadata = {
   title: {
     absolute: "MScrape — Google Maps Scraper & Pencari Data Bisnis Indonesia",
   },
   description:
-    "Cari dan kumpulkan data bisnis dari Google Maps dengan MScrape. Temukan nama bisnis, alamat, telepon, website, email bila tersedia, lalu ekspor hasil ke CSV.",
+    "Cari dan kumpulkan data bisnis dari Google Maps dengan MScrape. Temukan nama bisnis, alamat, telepon, website, rating, jumlah ulasan, dan email bila tersedia, lalu ekspor hasil ke CSV.",
   alternates: {
     canonical: "/",
   },
@@ -19,7 +21,7 @@ export const metadata: Metadata = {
 
 const capabilities = [
   ["Pencarian", "Kata kunci, kota, hingga kecamatan untuk akses Pro dan Max."],
-  ["Data", "Nama bisnis, alamat, telepon, website, rating, tautan Google Maps, serta email bila tersedia pada sumber."],
+  ["Data", "Nama bisnis, alamat, telepon, website, rating, jumlah ulasan, tautan Google Maps, serta email bila tersedia pada sumber."],
   ["Tindak lanjut", "Filter hasil dan ekspor daftar yang dipilih ke CSV untuk riset atau proses kerja tim."],
 ] as const;
 
@@ -46,7 +48,7 @@ const faqs = [
   {
     question: "Data apa saja yang bisa ditemukan?",
     answer:
-      "Hasil scan dapat memuat nama bisnis, alamat, telepon, website, rating, tautan Google Maps, dan email apabila informasi tersebut tersedia pada sumber hasil.",
+      "Hasil scan dapat memuat nama bisnis, alamat, telepon, website, rating, jumlah ulasan, tautan Google Maps, dan email apabila informasi tersebut tersedia pada sumber hasil.",
   },
   {
     question: "Apakah MScrape dapat mencari bisnis sampai tingkat kecamatan?",
@@ -82,7 +84,8 @@ export default function Home() {
   return (
     <>
       <AppHeader current="info" />
-      <main className="seo-page seo-page--home">
+      <HeroBannerCarousel />
+      <main className="seo-page seo-page--home dashboard-page">
         <section className="seo-hero seo-hero--home wb-shell" aria-labelledby="home-title">
           <p className="seo-hero__kicker">MSCRAPE / DATA BISNIS INDONESIA</p>
           <h1 id="home-title">Cari Data Bisnis dari Google Maps</h1>
@@ -90,7 +93,7 @@ export default function Home() {
             Temukan bisnis berdasarkan niche dan wilayah, kumpulkan informasi yang tersedia, lalu jadikan hasilnya daftar kerja untuk riset pasar, penawaran layanan, dan tindak lanjut yang lebih terarah.
           </p>
           <div className="seo-hero__actions">
-            <Link className="seo-button seo-button--primary" href="/dashboard">Mulai Cari Data Bisnis</Link>
+            <Link className="seo-button seo-button--primary" href="/produksi">Mulai Cari Data Bisnis</Link>
             <Link className="seo-button seo-button--quiet" href="/google-maps-scraper">Cara kerja MScrape</Link>
           </div>
           <dl className="seo-fact-row" aria-label="Ringkasan layanan MScrape">
@@ -105,7 +108,7 @@ export default function Home() {
             <p className="seo-article__eyebrow">Informasi yang tersedia</p>
             <h2>Data apa yang bisa dicari dari Google Maps?</h2>
             <p>
-              MScrape menata informasi yang tersedia pada hasil Google Maps agar lebih mudah ditinjau dalam satu workspace. Bergantung pada hasil sumber, daftar dapat mencakup nama bisnis, alamat, nomor telepon, website, rating, tautan Google Maps, dan email bila tersedia.
+              MScrape menata informasi yang tersedia pada hasil Google Maps agar lebih mudah ditinjau dalam satu workspace. Bergantung pada hasil sumber, daftar dapat mencakup nama bisnis, alamat, nomor telepon, website, rating, jumlah ulasan, tautan Google Maps, dan email bila tersedia.
             </p>
             <p>
               Pencarian dimulai dari kata kunci dan wilayah. Anda dapat memakainya untuk menyusun gambaran bisnis lokal sebelum membuat keputusan riset atau proses penawaran berikutnya.
@@ -162,6 +165,8 @@ export default function Home() {
           </article>
         </section>
 
+        <HomeDashboardContent />
+
         <section className="seo-related" aria-labelledby="home-related-title">
           <div className="wb-shell">
             <div className="seo-section-heading">
@@ -202,7 +207,7 @@ export default function Home() {
           </div>
           <div>
             <p>Gunakan paket Free untuk mencoba alur kerja atau pilih Pro dan Max saat membutuhkan kapasitas pencarian yang lebih luas.</p>
-            <Link className="seo-button seo-button--dark" href="/dashboard">Buka Dashboard</Link>
+            <Link className="seo-button seo-button--dark" href="/produksi">Buka Produksi</Link>
           </div>
         </section>
       </main>

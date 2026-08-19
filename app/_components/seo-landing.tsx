@@ -57,7 +57,7 @@ export function SeoLanding({
           <h1 id="seo-page-title">{title}</h1>
           <p className="seo-hero__lead">{lead}</p>
           <div className="seo-hero__actions">
-            <Link className="seo-button seo-button--primary" href="/dashboard">Buka MScrape</Link>
+            <Link className="seo-button seo-button--primary" href="/produksi">Buka MScrape</Link>
             <Link className="seo-button seo-button--quiet" href="/google-maps-scraper">Lihat cara kerjanya</Link>
           </div>
           <dl className="seo-fact-row" aria-label="Kapabilitas MScrape">
@@ -105,7 +105,7 @@ export function SeoLanding({
           </div>
           <div>
             <p>{ctaCopy}</p>
-            <Link className="seo-button seo-button--dark" href="/dashboard">Masuk ke Dashboard</Link>
+            <Link className="seo-button seo-button--dark" href="/produksi">Mulai Produksi</Link>
           </div>
         </section>
       </main>

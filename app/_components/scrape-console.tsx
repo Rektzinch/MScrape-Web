@@ -2,7 +2,7 @@
 
 import { type FormEvent, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import type { LeadRow } from "@/lib/leads";
-import { ALL_RESULTS_LIMIT, NUMERIC_LIMITS, planAccess, type PlanAccess, type ResultLimit } from "@/lib/plans";
+import { ALL_RESULTS_LIMIT, planAccess, type PlanAccess, type ResultLimit } from "@/lib/plans";
 import { SearchableCombobox, type ComboboxOption } from "./searchable-combobox";
 import { Turnstile } from "./turnstile";
 
@@ -314,7 +314,7 @@ export function ScrapeConsole() {
 
   useEffect(() => {
     setManualLimit("");
-    setLimit(api.access.tier === "max" ? api.access.maxLimit : 10);
+    setLimit(api.access.tier === "free" ? 10 : api.access.maxLimit);
     if (!api.access.allowsSubdistrict) setAreaLevel("city");
   }, [api.access.allowsSubdistrict, api.access.maxLimit, api.access.tier]);
 
@@ -410,17 +410,18 @@ export function ScrapeConsole() {
   const pagedRows = visibleRows.slice(pageStart, pageStart + RESULT_PAGE_SIZE);
   const hasManualLimit = manualLimit.trim().length > 0;
   const manualLimitNumber = hasManualLimit ? Number(manualLimit) : null;
-  const manualLimitError = !hasManualLimit || api.access.tier === "free" ? ""
-    : !Number.isSafeInteger(manualLimitNumber) || Number(manualLimitNumber) <= 0
+  const manualLimitMax = typeof api.access.maxLimit === "number" ? api.access.maxLimit : Number.MAX_SAFE_INTEGER;
+  const manualLimitError = api.access.tier === "free" ? ""
+    : !hasManualLimit
+      ? `Masukkan jumlah data untuk scan tier ${api.access.label}.`
+      : !Number.isSafeInteger(manualLimitNumber) || Number(manualLimitNumber) <= 0
       ? "Masukkan bilangan bulat lebih dari 0."
-      : api.access.tier === "pro" && Number(manualLimitNumber) > 250
-        ? "Tier Pro menerima maksimal 250 hasil."
-        : api.access.tier === "max" && Number(manualLimitNumber) > 500
-          ? "Tier Max menerima maksimal 500 hasil per scan."
-          : "";
+      : Number(manualLimitNumber) > manualLimitMax
+        ? `Tier ${api.access.label} menerima maksimal ${manualLimitMax} hasil per scan.`
+        : "";
   const requestedLimit: ResultLimit = api.access.tier === "free" ? 10
-    : hasManualLimit && !manualLimitError ? Number(manualLimitNumber)
-      : api.access.tier === "max" ? api.access.maxLimit : limit;
+    : !manualLimitError ? Number(manualLimitNumber)
+      : api.access.maxLimit;
   const challengeRequired = api.access.tier === "free" && Boolean(api.turnstileSiteKey);
   const canSubmit = api.reachable && hasCredit && !submitting && !active && remainingSeconds === 0 && !manualLimitError && (!challengeRequired || Boolean(turnstileToken));
 
@@ -435,13 +436,13 @@ export function ScrapeConsole() {
   ], [api.access.allowsSubdistrict]);
 
   const limitOptions = useMemo<ComboboxOption[]>(() => {
-    if (api.access.tier === "max") return [];
+    if (api.access.tier !== "free") return [];
     return api.access.allowedLimits
-      .filter((value): value is number => typeof value === "number" && NUMERIC_LIMITS.includes(value as (typeof NUMERIC_LIMITS)[number]))
+      .filter((value): value is number => typeof value === "number")
       .map((value) => ({
         value: String(value),
         label: resultLimitLabel(value),
-        description: api.access.tier === "free" ? "Free · jeda 1 jam" : "Pro · jeda 1 menit",
+        description: "Free · jeda 1 jam",
       }));
   }, [api.access.allowedLimits, api.access.tier]);
 
@@ -715,16 +716,16 @@ export function ScrapeConsole() {
           {areaLevel === "subdistrict" ? <label className="field field--wide"><span>Kecamatan</span><input name="subdistrict" type="text" required maxLength={100} autoComplete="address-level3" /><small className="field__hint">Masukkan nama kecamatan, lalu pastikan kota/kabupaten di atas sesuai.</small></label> : null}
           <label className="field"><span>Negara</span><input name="country" type="text" defaultValue="Indonesia" required maxLength={100} autoComplete="country-name" /><small className="field__hint">Dipakai untuk memperjelas kueri.</small></label>
           <label className="field"><span>Bahasa</span><input name="lang" type="text" defaultValue="id" minLength={2} maxLength={2} required /><small className="field__hint">Kode ISO dua huruf.</small></label>
-          {api.access.tier !== "max" ? (
+          {api.access.tier === "free" ? (
             <div className="field">
-              <SearchableCombobox label="Batas hasil" name="limit" value={String(limit)} options={limitOptions} onChange={changeLimit} helper={`Pilihan yang tampil hanya milik tier ${api.access.label}.`} searchPlaceholder="Cari batas hasil" />
+              <SearchableCombobox label="Batas hasil" name="limit" value={String(limit)} options={limitOptions} onChange={changeLimit} helper="Free: 10 kredit dengan jeda 1 jam setiap scan." searchPlaceholder="Cari batas hasil" />
             </div>
           ) : null}
           {api.access.tier !== "free" ? (
-            <label className={`field custom-limit${api.access.tier === "max" ? " field--wide" : ""}`}>
-              <span>Jumlah hasil custom · {api.access.label}</span>
-              <input type="number" min="1" max={api.access.tier === "pro" ? 250 : 500} step="1" inputMode="numeric" value={manualLimit} onChange={(event) => setManualLimit(event.target.value)} placeholder={api.access.tier === "pro" ? "Opsional · maksimal 250" : "Opsional · maksimal 500"} aria-label={`Jumlah hasil custom untuk tier ${api.access.label}`} aria-invalid={Boolean(manualLimitError)} aria-describedby="manual-limit-help" />
-              <small className="field__hint" id="manual-limit-help">{manualLimitError || (api.access.tier === "pro" ? "Kosongkan untuk memakai preset batas hasil." : "Kosongkan untuk memakai batas maksimal 500 hasil per scan.")}</small>
+            <label className="field custom-limit field--wide">
+              <span>Jumlah data manual · {api.access.label}</span>
+              <input type="number" min="1" max={manualLimitMax} step="1" inputMode="numeric" value={manualLimit} onChange={(event) => setManualLimit(event.target.value)} placeholder={`Masukkan 1–${manualLimitMax} hasil`} aria-label={`Jumlah data manual untuk tier ${api.access.label}`} aria-invalid={Boolean(manualLimitError)} aria-describedby="manual-limit-help" required />
+              <small className="field__hint" id="manual-limit-help">{manualLimitError || `Pro dan Max tanpa cooldown. Setiap scan menggunakan 1 kredit.`}</small>
             </label>
           ) : null}
           {challengeRequired && api.turnstileSiteKey ? (
@@ -767,7 +768,7 @@ export function ScrapeConsole() {
             <table className="results-table">
               <caption>Daftar bisnis hasil scan Google Maps</caption>
               <thead>
-                <tr><th scope="col">No</th><th scope="col">Bisnis</th><th scope="col">Alamat</th><th scope="col">Kontak</th><th scope="col">Website</th><th scope="col">Rating</th><th scope="col">Koordinat</th><th scope="col">Sumber</th></tr>
+                <tr><th scope="col">No</th><th scope="col">Bisnis</th><th scope="col">Alamat</th><th scope="col">Kontak</th><th scope="col">Website</th><th scope="col">Rating</th><th scope="col">Ulasan</th><th scope="col">Koordinat</th><th scope="col">Sumber</th></tr>
               </thead>
               <tbody>{pagedRows.map((row, index) => {
                 const sequence = pageStart + index + 1;
@@ -779,7 +780,8 @@ export function ScrapeConsole() {
                     <td data-label="Alamat" className="address-cell">{row.address || "Alamat tidak tersedia"}</td>
                     <td data-label="Kontak" className="contact-cell">{row.phone ? <a href={`tel:${telephone}`}>{row.phone}</a> : <span>Telepon tidak tersedia</span>}{row.email ? <a href={`mailto:${row.email}`}>{row.email}</a> : <span>Email tidak tersedia</span>}</td>
                     <td data-label="Website" className="website-cell">{row.website ? <><span className="status-tag" data-status="ready">Tersedia</span><a href={row.website} target="_blank" rel="noreferrer">Buka website ↗</a></> : <span className="status-tag" data-status="missing">Belum ada</span>}</td>
-                    <td data-label="Rating" className="rating-cell"><strong>{row.rating || "—"}</strong>{row.reviewCount ? <span className="cell-note">{row.reviewCount} ulasan</span> : <span className="cell-note">Tanpa ulasan</span>}</td>
+                    <td data-label="Rating" className="rating-cell"><strong>{row.rating || "—"}</strong></td>
+                    <td data-label="Ulasan" className="review-count-cell"><strong>{row.reviewCount || "—"}</strong><span className="cell-note">{row.reviewCount ? "ulasan Google Maps" : "Belum ada ulasan"}</span></td>
                     <td data-label="Koordinat" className="numeric-cell">{row.coordinates || "—"}</td>
                     <td data-label="Sumber" className="source-cell">{row.source ? <a href={row.source} target="_blank" rel="noreferrer">Buka Maps ↗</a> : <span>—</span>}</td>
                   </tr>

@@ -83,6 +83,23 @@ test("kredit paket dikurangi atomik satu kali per scan dan masa lisensi mengikut
   assert.match(license, /LICENSE_TERM_MONTHS = 2/);
 });
 
+test("hasil menampilkan ulasan dan Homepage menggantikan Dashboard sebagai tujuan publik", async () => {
+  const [scraper, consolePage, home, dashboard, menu] = await Promise.all([
+    source("lib/google-maps-live.ts"),
+    source("app/_components/scrape-console.tsx"),
+    source("app/page.tsx"),
+    source("app/dashboard/page.tsx"),
+    source("app/_components/app-menu.tsx"),
+  ]);
+  assert.match(scraper, /reviewCount/);
+  assert.match(consolePage, /data-label="Ulasan"/);
+  assert.match(consolePage, /ulasan Google Maps/);
+  assert.match(home, /HomeDashboardContent/);
+  assert.match(home, /jumlah ulasan/);
+  assert.match(dashboard, /permanentRedirect\("\/"\)/);
+  assert.doesNotMatch(menu, /href="\/dashboard"/);
+});
+
 test("gateway admin memakai token, audit inventaris, dan pesan aktivasi perangkat yang diwajibkan", async () => {
   const [gateway, ledger, credits, activation] = await Promise.all([
     source("app/api/admin/license/route.ts"),

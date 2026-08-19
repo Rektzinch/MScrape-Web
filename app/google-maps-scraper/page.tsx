@@ -53,7 +53,7 @@ export default function GoogleMapsScraperPage() {
         { href: "/lead-generation", label: "Lead Generation", description: "Jadikan data awal sebagai bahan riset prospek." },
       ]}
       ctaTitle="Mulai pencarian bisnis yang lebih spesifik."
-      ctaCopy="Buka Dashboard MScrape, pilih kata kunci dan wilayah, lalu tinjau hasil yang tersedia sebelum melanjutkan pekerjaan Anda."
+      ctaCopy="Buka Produksi MScrape, pilih kata kunci dan wilayah, lalu tinjau hasil yang tersedia sebelum melanjutkan pekerjaan Anda."
     />
   );
 }

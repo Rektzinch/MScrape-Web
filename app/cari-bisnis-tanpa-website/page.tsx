@@ -53,7 +53,7 @@ export default function CariBisnisTanpaWebsitePage() {
         { href: "/export-google-maps-csv", label: "Ekspor CSV", description: "Lanjutkan daftar terpilih dalam spreadsheet Anda." },
       ]}
       ctaTitle="Mulai dari peluang yang perlu diteliti, bukan asumsi."
-      ctaCopy="Buka Dashboard untuk mencari bisnis lokal dan gunakan status website sebagai salah satu konteks saat menyusun prioritas riset."
+      ctaCopy="Buka Produksi untuk mencari bisnis lokal dan gunakan status website sebagai salah satu konteks saat menyusun prioritas riset."
     />
   );
 }

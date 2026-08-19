@@ -53,7 +53,7 @@ export default function CariDataBisnisPage() {
         { href: "/lead-generation", label: "Lead Generation", description: "Hubungkan daftar awal dengan riset prospek yang bertanggung jawab." },
       ]}
       ctaTitle="Mulai dari niche dan wilayah yang tepat."
-      ctaCopy="Gunakan Dashboard untuk menjalankan pencarian, lalu jadikan hasil yang tersedia sebagai bahan riset pasar lokal Anda."
+      ctaCopy="Gunakan Produksi untuk menjalankan pencarian, lalu jadikan hasil yang tersedia sebagai bahan riset pasar lokal Anda."
     />
   );
 }

@@ -53,7 +53,7 @@ export default function LeadGenerationPage() {
         { href: "/export-google-maps-csv", label: "Ekspor CSV", description: "Lanjutkan daftar pilihan dalam alat kerja tim Anda." },
       ]}
       ctaTitle="Mulai riset prospek dari wilayah yang Anda pahami."
-      ctaCopy="Masuk ke Dashboard, tentukan niche dan lokasi, kemudian tinjau hasil sebelum menyusun langkah tindak lanjut yang relevan."
+      ctaCopy="Buka Produksi, tentukan niche dan lokasi, kemudian tinjau hasil sebelum menyusun langkah tindak lanjut yang relevan."
     />
   );
 }

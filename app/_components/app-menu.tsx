@@ -6,7 +6,7 @@ import { createPortal } from "react-dom";
 import { TierCheckLink } from "./tier-check-link";
 
 type AppMenuProps = {
-  current: "dashboard" | "production" | "info";
+  current: "production" | "info";
 };
 
 export function AppMenu({ current }: AppMenuProps) {
@@ -55,9 +55,6 @@ export function AppMenu({ current }: AppMenuProps) {
             <nav className="app-side-menu__nav" aria-label="Navigasi utama">
               <Link className="app-side-menu__nav-link" href="/" onClick={closeMenu}>
                 Homepage <span aria-hidden="true">↖</span>
-              </Link>
-              <Link className="app-side-menu__nav-link" href="/dashboard" onClick={closeMenu} aria-current={current === "dashboard" ? "page" : undefined}>
-                Dashboard <span aria-hidden="true">↗</span>
               </Link>
               {current === "production" ? (
                 <span className="app-side-menu__nav-link app-side-menu__nav-link--current" aria-current="page">
