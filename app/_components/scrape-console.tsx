@@ -50,6 +50,7 @@ type ActionNotice = {
   title: string;
   detail: string;
   tone: NoticeTone;
+  persistent: boolean;
 };
 
 const ADMIN_WHATSAPP = "https://wa.me/6285111349699";
@@ -182,17 +183,34 @@ export function ScrapeConsole() {
   const toastTimer = useRef<number | null>(null);
   const notifiedJobs = useRef(new Set<string>());
 
-  const notify = useCallback((title: string, detail: string, tone: NoticeTone = "info") => {
+  const dismissToast = useCallback(() => {
+    if (toastTimer.current) {
+      window.clearTimeout(toastTimer.current);
+      toastTimer.current = null;
+    }
+    setToast(null);
+  }, []);
+
+  const notify = useCallback((title: string, detail: string, tone: NoticeTone = "info", persistent = false) => {
     noticeId.current += 1;
     const next: ActionNotice = {
       id: noticeId.current,
       title,
       detail,
       tone,
+      persistent,
     };
     setToast(next);
-    if (toastTimer.current) window.clearTimeout(toastTimer.current);
-    toastTimer.current = window.setTimeout(() => setToast(null), 3_200);
+    if (toastTimer.current) {
+      window.clearTimeout(toastTimer.current);
+      toastTimer.current = null;
+    }
+    if (!persistent) {
+      toastTimer.current = window.setTimeout(() => {
+        setToast(null);
+        toastTimer.current = null;
+      }, 4_800);
+    }
   }, []);
 
   useEffect(() => () => {
@@ -252,7 +270,7 @@ export function ScrapeConsole() {
         if (data.status === "completed" && !notifiedJobs.current.has(job.id)) {
           notifiedJobs.current.add(job.id);
           const received = Array.isArray(data.results) ? data.results.length : data.resultCount ?? 0;
-          notify("Scan selesai", `${received} data bisnis diterima dan siap difilter.`, "success");
+          notify("Scan selesai", `${received} data bisnis diterima dan siap difilter.`, "success", true);
         }
         if (data.status === "failed") {
           const failure = data.error || "Scan dihentikan oleh layanan.";
@@ -518,7 +536,7 @@ export function ScrapeConsole() {
       setJob(nextJob);
       if (nextJob.status === "completed") {
         notifiedJobs.current.add(nextJob.id);
-        notify("Scan selesai", `${nextJob.rows.length} data bisnis diterima dan siap difilter.`, "success");
+        notify("Scan selesai", `${nextJob.rows.length} data bisnis diterima dan siap difilter.`, "success", true);
       } else {
         notify("Scan diterima", "Pencarian sedang diproses. Hasil akan diperbarui otomatis.");
       }
@@ -745,7 +763,37 @@ export function ScrapeConsole() {
           </div>
         )}
       </div>
-      {toast ? <div className="action-toast" data-tone={toast.tone} role={toast.tone === "error" ? "alert" : "status"} aria-live={toast.tone === "error" ? "assertive" : "polite"}><span className="action-toast__signal" aria-hidden="true" /><div><strong>{toast.title}</strong><p>{toast.detail}</p></div><button type="button" onClick={() => setToast(null)} aria-label="Tutup feedback">×</button></div> : null}
+      {toast ? (
+        <div
+          className="action-toast"
+          data-tone={toast.tone}
+          data-persistent={toast.persistent ? "true" : "false"}
+          role={toast.tone === "error" || toast.persistent ? "alert" : "status"}
+          aria-live={toast.tone === "error" || toast.persistent ? "assertive" : "polite"}
+          aria-atomic="true"
+        >
+          <span className="action-toast__signal" aria-hidden="true" />
+          <div className="action-toast__copy">
+            {toast.persistent ? <span className="action-toast__eyebrow">Hasil siap</span> : null}
+            <strong>{toast.title}</strong>
+            <p>{toast.detail}</p>
+          </div>
+          <button className="action-toast__close" type="button" onClick={dismissToast} aria-label="Tutup notifikasi">×</button>
+          {toast.persistent ? (
+            <button
+              className="action-toast__view"
+              type="button"
+              onClick={() => {
+                dismissToast();
+                const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                document.getElementById("results")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
+              }}
+            >
+              Lihat hasil <span aria-hidden="true">↓</span>
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </section>
   );
 }

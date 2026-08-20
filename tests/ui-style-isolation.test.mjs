@@ -36,7 +36,12 @@ test("landing dan produksi baru terisolasi dari selector layout lama", async () 
   assert.match(rebrand, /\.ms-production \.combobox__trigger > svg \{ width: 1rem; height: 1rem;/);
   assert.match(rebrand, /\.ms-production \.button__icon \{ width: 1\.1rem; height: 1\.1rem;/);
   assert.match(rebrand, /\.ms-production \.results-table tr \{[^}]*grid-template-columns: minmax\(0, 1fr\);/);
+  assert.match(rebrand, /\.ms-production \.results-table td:first-child \{[^}]*background: var\(--ms-violet\);[^}]*color: var\(--ms-light\);/);
   assert.match(rebrand, /@media\s*\(pointer:\s*coarse\)[\s\S]*?\.ms-production \.results-table tbody \{[^}]*grid-template-columns: minmax\(0, 1fr\);/);
+  assert.match(rebrand, /@supports\s*\(animation-timeline:\s*view\(\)\)[\s\S]*?animation-timeline: view\(\);/);
+  assert.match(rebrand, /\.ms-production \.action-toast\[data-tone="success"\]\[data-persistent="true"\]/);
+  assert.match(consoleView, /notify\("Scan selesai",[^\n]+"success", true\);/);
+  assert.match(consoleView, /data-persistent=\{toast\.persistent/);
   assert.match(rebrand, /\.ms-production \.ms-console \{[^}]*display: grid;/);
   assert.match(rebrand, /\.ms-production \.results \{ min-height: 30rem; \}/);
   assert.match(rebrand, /@media\s*\(min-width:\s*64rem\)[\s\S]*?\.ms-production \.ms-console \{ grid-template-columns:/);
