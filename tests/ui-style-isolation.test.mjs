@@ -27,4 +27,6 @@ test("landing dan produksi baru terisolasi dari selector layout lama", async () 
   assert.match(rebrand, /--ms-paper: #f3f2ec;/);
   assert.match(rebrand, /--ms-accent: #70dd70;/);
   assert.match(rebrand, /\.ms-production \.ms-console \{[\s\S]*?grid-template-columns:/);
+  assert.match(rebrand, /\.ms-production \.results \{ grid-column: 2; grid-row: 2;/);
+  assert.match(rebrand, /@media\s*\(max-width:\s*56rem\)[\s\S]*?\.ms-production \.results \{ grid-column: 1; grid-row: 3;/);
 });
