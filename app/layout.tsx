@@ -10,8 +10,8 @@ const socialImage = siteUrl
   ? new URL("/opengraph-image", siteUrl).toString()
   : undefined;
 const brandLogo = siteUrl
-  ? new URL("/media/mscrape-logo.png", siteUrl).toString()
-  : "/media/mscrape-logo.png";
+  ? new URL("/media/mscrape-brand.png", siteUrl).toString()
+  : "/media/mscrape-brand.png";
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -58,11 +58,6 @@ export const metadata: Metadata = {
     "Cari dan kumpulkan data bisnis dari Google Maps dengan MScrape. Temukan nama bisnis, alamat, telepon, website, rating, jumlah ulasan, dan email bila tersedia, lalu ekspor hasil ke CSV.",
   applicationName: "MScrape",
   manifest: "/manifest.webmanifest",
-  icons: {
-    icon: [{ url: "/media/mscrape-logo.png", type: "image/png", sizes: "2172x724" }],
-    shortcut: ["/media/mscrape-logo.png"],
-    apple: [{ url: "/media/mscrape-logo.png", type: "image/png", sizes: "2172x724" }],
-  },
   keywords: [
     "google maps scraper indonesia",
     "scraper google maps",
