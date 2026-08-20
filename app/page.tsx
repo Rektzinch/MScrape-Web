@@ -110,22 +110,51 @@ export default function Home() {
             <span className="ms-map-district ms-map-district--two">RAPPOCINI / 24</span>
             <div className="ms-map-scan"><i /><i /><i /><b /></div>
           </div>
-          <p className="ms-hero__eyebrow"><span aria-hidden="true" /> MScrape / pencarian bisnis lokal</p>
-          <h1 id="home-title">Baca pasar lokal.<br /><em>Baris demi baris.</em></h1>
-          <p className="ms-hero__lead">Tentukan niche dan wilayah. MScrape menyusun data bisnis yang tersedia dari Google Maps menjadi daftar yang bisa Anda tinjau dan ekspor.</p>
+          <div className="ms-hero__copy">
+            <p className="ms-hero__eyebrow"><span aria-hidden="true" /> MScrape / pencarian bisnis lokal</p>
+            <h1 id="home-title">Baca pasar lokal.<br /><em>Baris demi baris.</em></h1>
+            <p className="ms-hero__lead">Tentukan niche dan wilayah. MScrape menyusun data bisnis yang tersedia dari Google Maps menjadi daftar yang bisa Anda tinjau dan ekspor.</p>
 
-          <div className="ms-command" aria-label="Contoh pencarian MScrape">
-            <span className="ms-command__prompt" aria-hidden="true">QUERY</span>
-            <span className="ms-command__text">Klinik gigi di Makassar</span>
-            <Link href="/produksi" data-analytics-cta="hero_buka_produksi">Cari bisnis <span aria-hidden="true">↗</span></Link>
+            <div className="ms-command" aria-label="Contoh pencarian MScrape">
+              <span className="ms-command__prompt" aria-hidden="true">QUERY</span>
+              <span className="ms-command__text">Klinik gigi di Makassar</span>
+              <Link href="/produksi" data-analytics-cta="hero_buka_produksi">Cari bisnis <span aria-hidden="true">↗</span></Link>
+            </div>
+            <a className="ms-hero__quiet-link" href="#cara-kerja" data-analytics-cta="hero_cara_kerja">Lihat alur dan data yang tersedia ↓</a>
           </div>
-          <a className="ms-hero__quiet-link" href="#cara-kerja" data-analytics-cta="hero_cara_kerja">Lihat apa yang akan Anda dapatkan ↓</a>
 
-          <div className="ms-records" aria-label="Contoh data bisnis yang tersedia">
-            <div className="ms-records__head"><span>Bisnis</span><span>Wilayah</span><span>Website</span><span>Kontak</span></div>
-            <div><strong>Ruang Dental Care</strong><span>Panakkukang</span><span className="is-missing">Belum ada</span><span>+62 8•••</span></div>
-            <div><strong>Klinik Senyum</strong><span>Rappocini</span><span>kliniks•••.com</span><span>+62 8•••</span></div>
-            <div><strong>Dental Point</strong><span>Tamalate</span><span className="is-missing">Belum ada</span><span>+62 4•••</span></div>
+          <div className="ms-hero-product" aria-label="Pratinjau workspace MScrape">
+            <div className="ms-hero-product__bar">
+              <span><i /> Produksi / scan baru</span>
+              <span>Google Maps <b>aktif</b></span>
+            </div>
+            <div className="ms-hero-product__body">
+              <div className="ms-hero-product__query">
+                <span className="ms-product-label">Pencarian</span>
+                <strong>Klinik gigi</strong>
+                <p>
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 18s6-5.3 6-10A6 6 0 1 0 4 8c0 4.7 6 10 6 10Z"/><circle cx="10" cy="8" r="2"/></svg>
+                  Makassar · Kota
+                </p>
+                <div><span>Target</span><b>100 bisnis</b></div>
+                <div><span>Biaya</span><b>1 scan</b></div>
+                <span className="ms-product-run">Jalankan pencarian <b>↗</b></span>
+              </div>
+              <div className="ms-hero-product__results">
+                <div className="ms-product-results__head">
+                  <div><span className="ms-product-label">Hasil</span><strong>Dataset bisnis</strong></div>
+                  <span>37 tanpa website</span>
+                </div>
+                <div className="ms-product-stats"><span><b>100</b>Ditemukan</span><span><b>28</b>Punya nomor</span><span><b>12</b>Punya email</span></div>
+                <div className="ms-records">
+                  <div className="ms-records__head"><span>Bisnis</span><span>Wilayah</span><span>Website</span></div>
+                  <div><strong>Ruang Dental Care</strong><span>Panakkukang</span><span className="is-missing">Belum ada</span></div>
+                  <div><strong>Klinik Senyum</strong><span>Rappocini</span><span>kliniks•••.com</span></div>
+                  <div><strong>Dental Point</strong><span>Tamalate</span><span className="is-missing">Belum ada</span></div>
+                </div>
+                <div className="ms-product-export"><span>CSV</span><span>JSON</span><span>Sheets</span><b>Ekspor ↗</b></div>
+              </div>
+            </div>
           </div>
           <HomeAnalytics />
         </section>

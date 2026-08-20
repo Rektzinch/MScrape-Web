@@ -4,7 +4,7 @@ import "@fontsource-variable/bricolage-grotesque";
 import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
 import "./workbench.css";
-import "./rebrand.css";
+import "./ms-interface.css";
 
 const socialImage = siteUrl
   ? new URL("/opengraph-image", siteUrl).toString()
