@@ -16,9 +16,8 @@ export function AppHeader({ current }: AppHeaderProps) {
         </Link>
         <nav className="ms-header__nav" aria-label="Navigasi utama">
           <Link href="/#cara-kerja"><span>01</span>Cara kerja</Link>
-          <Link href="/#data"><span>02</span>Data</Link>
-          <Link href="/#pricing"><span>03</span>Harga</Link>
-          <Link href="/#faq"><span>04</span>FAQ</Link>
+          <Link href="/#pricing"><span>02</span>Harga</Link>
+          <Link href="/#faq"><span>03</span>FAQ</Link>
         </nav>
         <div className="ms-header__actions">
           {current === "production" ? (

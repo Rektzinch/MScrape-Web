@@ -21,9 +21,12 @@ test("landing dan produksi baru terisolasi dari selector layout lama", async () 
   assert.match(production, /className="ms-production"/);
   assert.match(consoleView, /className="ms-console"/);
   assert.doesNotMatch(`${home}\n${pricing}`, /product-stage|ms-process|ms-use-list/);
+  assert.doesNotMatch(pricing, /ms-workflow|Mesin kerja/);
+  assert.match(pricing, /aria-roledescription="carousel"/);
 
   assert.match(rebrand, /\.ms-header__nav,\s*\.ms-header__actions \{ display: none; \}/);
-  assert.match(rebrand, /@media\s*\(min-width:\s*40rem\)[\s\S]*?\.ms-plan-list \{ grid-template-columns: repeat\(2, minmax\(0, 1fr\)\); \}/);
+  assert.match(rebrand, /\.ms-plan-list \{[^}]*grid-auto-flow: column;[^}]*scroll-snap-type: inline mandatory;/);
+  assert.match(rebrand, /\.ms-plan \{[^}]*scroll-snap-align: start;[^}]*scroll-snap-stop: always;/);
   assert.match(rebrand, /@media\s*\(min-width:\s*64rem\)[\s\S]*?\.ms-header__actions \{ display: flex;/);
   assert.match(rebrand, /--ms-paper: #f3efe6;/);
   assert.match(rebrand, /--ms-coral: #ff5a3d;/);
@@ -31,6 +34,9 @@ test("landing dan produksi baru terisolasi dari selector layout lama", async () 
   assert.match(rebrand, /\.ms-plan\[data-tier="pro"\] \{[^}]*background: var\(--ms-coral\);/);
   assert.match(rebrand, /\.ms-plan\[data-tier="max"\] \{[^}]*background: var\(--ms-violet\);/);
   assert.match(rebrand, /\.ms-production \.combobox__trigger > svg \{ width: 1rem; height: 1rem;/);
+  assert.match(rebrand, /\.ms-production \.button__icon \{ width: 1\.1rem; height: 1\.1rem;/);
+  assert.match(rebrand, /\.ms-production \.results-table tr \{[^}]*grid-template-columns: minmax\(0, 1fr\);/);
+  assert.match(rebrand, /@media\s*\(pointer:\s*coarse\)[\s\S]*?\.ms-production \.results-table tbody \{[^}]*grid-template-columns: minmax\(0, 1fr\);/);
   assert.match(rebrand, /\.ms-production \.ms-console \{[^}]*display: grid;/);
   assert.match(rebrand, /\.ms-production \.results \{ min-height: 30rem; \}/);
   assert.match(rebrand, /@media\s*\(min-width:\s*64rem\)[\s\S]*?\.ms-production \.ms-console \{ grid-template-columns:/);

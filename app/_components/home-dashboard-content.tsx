@@ -21,21 +21,6 @@ const promises = [
   },
 ] as const;
 
-const workflow = [
-  ["Query", "Klinik gigi", "Niche bisnis"],
-  ["Lokasi", "Makassar", "Kota / kabupaten"],
-  ["Cakupan", "Kota", "Bisa sampai kecamatan"],
-  ["Target", "100 bisnis", "Satu scan"],
-] as const;
-
-const dataFields = [
-  ["01", "Identitas", "Nama bisnis · kategori"],
-  ["02", "Lokasi", "Alamat · koordinat · Maps"],
-  ["03", "Kontak", "Telepon · email bila tersedia"],
-  ["04", "Digital", "Website · domain"],
-  ["05", "Reputasi", "Rating · jumlah ulasan"],
-] as const;
-
 const audiences = ["Sales dan agen", "Freelancer digital", "Peneliti pasar", "Pemilik usaha"] as const;
 
 const adminWhatsapp = "https://wa.me/6285111349699";
@@ -99,46 +84,29 @@ export function HomeDashboardContent() {
         </ol>
       </section>
 
-      <section className="ms-workflow" id="data" aria-labelledby="workflow-title">
-        <div className="ms-workflow__inner wb-shell">
-          <header className="ms-section-intro ms-section-intro--inverse">
-            <p>02 / Mesin kerja</p>
-            <h2 id="workflow-title">Satu query masuk.<br />Dataset terstruktur keluar.</h2>
-            <span>Setiap kontrol mengarah ke hasil—tanpa dashboard dekoratif dan statistik palsu.</span>
-          </header>
-
-          <div className="ms-workflow__surface">
-            <div className="ms-workflow__query">
-              <div className="ms-surface-label"><span>Query / 001</span><i>Siap</i></div>
-              <div className="ms-query-line"><span aria-hidden="true">›</span><strong>Klinik gigi di Makassar</strong></div>
-              <dl>
-                {workflow.map(([term, value, note]) => (
-                  <div key={term}><dt>{term}</dt><dd>{value}</dd><span>{note}</span></div>
-                ))}
-              </dl>
-              <div className="ms-run-line"><span>Gunakan 1 scan</span><b>Jalankan pencarian ↗</b></div>
-            </div>
-
-            <div className="ms-workflow__schema">
-              <div className="ms-surface-label"><span>Dataset / tersedia</span><i>5 kelompok data</i></div>
-              <div className="ms-schema-head"><span>Field</span><span>Isi</span></div>
-              {dataFields.map(([code, name, detail]) => (
-                <div className="ms-schema-row" key={code}><span>{code}</span><strong>{name}</strong><p>{detail}</p></div>
-              ))}
-              <p className="ms-schema-note"><span aria-hidden="true">*</span> Kolom kosong tidak diisi dengan perkiraan.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="ms-pricing wb-shell" id="pricing" aria-labelledby="pricing-title">
         <header className="ms-section-intro">
-          <p>03 / Pilih kapasitas</p>
+          <p>02 / Pilih kapasitas</p>
           <h2 id="pricing-title">Harga yang terbaca.<br />Batas yang transparan.</h2>
           <span>Satu pencarian memakai satu scan. Tidak ada perhitungan tersembunyi.</span>
         </header>
 
-        <div className="ms-plan-list" aria-label="Harga lisensi MScrape">
+        <nav className="ms-plan-nav" aria-label="Pilih kartu paket">
+          <div>
+            {pricing.map((plan, index) => (
+              <a href={`#pricing-${plan.tier.toLowerCase()}`} key={plan.tier}><span>0{index + 1}</span>{plan.tier}</a>
+            ))}
+          </div>
+          <p><span>Swipe</span>Geser kartu <b aria-hidden="true">→</b></p>
+        </nav>
+
+        <div
+          className="ms-plan-list"
+          role="region"
+          aria-roledescription="carousel"
+          aria-label="Harga lisensi MScrape"
+          tabIndex={0}
+        >
           {pricing.map((plan) => (
             <article className="ms-plan" id={`pricing-${plan.tier.toLowerCase()}`} data-tier={plan.tier.toLowerCase()} key={plan.tier}>
               <header className="ms-plan__head">
@@ -165,7 +133,7 @@ export function HomeDashboardContent() {
       </section>
 
       <section className="ms-audience wb-shell" aria-labelledby="audience-title">
-        <p>04 / Dibangun untuk pekerjaan nyata</p>
+        <p>03 / Dibangun untuk pekerjaan nyata</p>
         <h2 id="audience-title">Temukan bahannya.<br />Tentukan langkah berikutnya.</h2>
         <div className="ms-audience__roles" aria-label="Pengguna MScrape">
           {audiences.map((audience, index) => <span key={audience}><i>0{index + 1}</i>{audience}</span>)}

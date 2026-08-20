@@ -42,9 +42,11 @@ namun komposisi, identitas, copy, serta perilakunya dibuat khusus untuk MScrape.
 2. Desktop memakai hero asimetris: headline besar di kiri, bukti produk di kanan.
 3. Mobile memakai urutan copy → command → bukti produk tanpa overlap atau overflow.
 4. Empat principles berupa bidang editorial bernomor, bukan kartu lepas.
-5. Product surface menyandingkan query dan schema dataset yang realistis.
-6. Harga berupa tiga ticket plans dengan latar berbeda yang menumpuk bersih di mobile.
-7. Audience strip, FAQ linear, dan closing prompt menjadi urutan penutup.
+5. Bukti produk berada di hero; tidak ada blok demonstrasi kedua yang mengulang alur.
+6. Harga berupa tiga ticket plans dalam rail scroll-snap: swipe satu kartu per layar
+   di mobile dan tetap bisa digeser atau dipilih lewat indeks pada desktop.
+7. Audience strip, FAQ linear, dan closing prompt menjadi urutan penutup dengan
+   jarak vertikal yang lebih rapat di mobile.
 
 ## Produksi
 
