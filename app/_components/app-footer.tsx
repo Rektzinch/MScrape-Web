@@ -5,10 +5,9 @@ export function AppFooter() {
     <footer className="ms-footer wb-shell">
       <div className="ms-footer__line">
         <Link className="ms-footer__brand" href="/" aria-label="MScrape — Beranda">
-          <span className="ms-footer__mark" aria-hidden="true">M</span>
-          <span>MScrape</span>
+          <span>mscrape</span><i aria-hidden="true" />
         </Link>
-        <p>Business discovery workspace<br />untuk pasar lokal Indonesia.</p>
+        <p>Data bisnis lokal untuk riset<br />dan tindak lanjut yang lebih tepat.</p>
         <nav className="ms-footer__links" aria-label="Informasi MScrape">
           <Link href="/tentang-mscrape">Tentang</Link>
           <Link href="/syarat-ketentuan">Ketentuan</Link>

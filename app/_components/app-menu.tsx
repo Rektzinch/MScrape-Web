@@ -40,15 +40,14 @@ export function AppMenu({ current }: AppMenuProps) {
         aria-controls="ms-drawer"
         onClick={() => setOpen(true)}
       >
-        <span aria-hidden="true" />
-        <span aria-hidden="true" />
-        <span aria-hidden="true" />
+        <span>Menu</span>
+        <b aria-hidden="true">+</b>
       </button>
       {open && typeof document !== "undefined" ? createPortal(
         <div className="ms-menu-layer" onClick={closeMenu}>
           <aside id="ms-drawer" className="ms-drawer" aria-label="Menu MScrape" onClick={(event) => event.stopPropagation()}>
             <div className="ms-drawer__top">
-              <p>MScrape</p>
+              <p>mscrape</p>
               <button className="ms-drawer__close" type="button" onClick={closeMenu} aria-label="Tutup menu">×</button>
             </div>
 

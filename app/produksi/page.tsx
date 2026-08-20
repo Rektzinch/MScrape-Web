@@ -25,9 +25,9 @@ export default function ProduksiPage() {
       <main className="ms-production">
         <section className="ms-production-intro" aria-labelledby="production-title">
           <div className="ms-production-heading wb-shell">
-            <p className="ms-production-heading__index">Produksi</p>
-            <h1 id="production-title">Cari bisnis lokal.</h1>
-            <p>Rancang pencarian di panel kiri. Data yang tersedia akan tersusun di panel hasil tanpa mengubah informasi sumber.</p>
+            <p className="ms-production-heading__index">Workspace / Produksi</p>
+            <h1 id="production-title">Rancang query.<br />Periksa datanya.</h1>
+            <p>Tentukan niche dan wilayah di panel pencarian. MScrape menyusun data sumber di panel hasil agar siap ditinjau, disaring, dan diekspor.</p>
           </div>
         </section>
         <section className="ms-production-workspace wb-shell" aria-label="Workspace scraping">

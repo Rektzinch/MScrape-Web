@@ -1,51 +1,51 @@
 # MScrape — Visual System 2026
 
-MScrape memakai bahasa visual “cartographic data workspace”: antarmuka yang terasa
-seperti indeks riset modern, bukan landing SaaS generik. Sistem ini menggantikan
-seluruh tema krem, panel hitam dominan, logo gambar, kartu harga horizontal, dan
-hero dua kolom dari versi sebelumnya.
+MScrape memakai bahasa visual “local intelligence terminal”: fokus dan alur halaman
+mengambil inspirasi dari TokenHarbor, sementara kepadatan antarmuka, ritme garis,
+dan kualitas permukaan produk mengambil inspirasi dari Qoder. Ini bukan salinan
+keduanya; identitas, copy, data, dan perilaku tetap milik MScrape.
 
 ## Prinsip
 
-- Struktur terlihat sebelum dekorasi: headline, indeks, rule, dataset, dan aksi.
-- Landing menjelaskan alur sekali; Produksi langsung menempatkan query dan hasil.
-- Cobalt hanya untuk arah dan tindakan utama. Mint menandai sumber atau status hidup.
-- Tidak memakai gradient hero, glass card bertumpuk, pill berlebihan, atau ilustrasi AI.
+- Satu ide per bidang: headline, query, dataset, perbandingan, lalu tindakan.
+- Landing menunjukkan produk lebih awal; Produksi langsung menempatkan query dan hasil.
+- Acid lime hanya untuk status hidup dan tindakan penting, bukan dekorasi massal.
+- Tidak memakai hero gradient, glass card, bento SaaS, pill berlebihan, atau ilustrasi AI.
 - Data kosong tidak diperkirakan dan status internal diterjemahkan ke bahasa pengguna.
 
 ## Identitas
 
-- Wordmark: teks `MScrape` dengan monogram `M` pada tile navy.
-- Display: Bricolage Grotesque Variable, weight 510–720.
+- Wordmark: teks lowercase `mscrape` dengan satu titik sinyal acid lime.
+- Display: Bricolage Grotesque Variable, weight 430–590.
 - Body/UI: Archivo Variable, weight 400–760.
-- Display tracking: -0.06em hingga -0.072em.
-- Label indeks: uppercase, 0.60–0.74rem, tracking 0.08–0.13em.
+- Display tracking: -0.04em hingga -0.075em.
+- Label teknis: uppercase monospace, 0.52–0.66rem, tracking 0.07–0.12em.
 
 ## Warna
 
-- Paper: `oklch(98.5% 0.006 248)`
-- Paper 2: `oklch(96% 0.014 248)`
-- Paper 3: `oklch(92.5% 0.025 248)`
-- Ink: `oklch(19% 0.045 258)`
-- Ink 2: `oklch(31% 0.05 258)`
-- Muted: `oklch(49% 0.04 255)`
-- Rule: `oklch(85% 0.025 250)`
-- Cobalt/action: `oklch(55% 0.22 260)`
-- Mint/live: `oklch(79% 0.16 160)`
+- Background: `#080a0d`
+- Background raised: `#0c0f13`
+- Surface: `#10141a`
+- Surface active: `#151a21`
+- Text: `#f2f1ea`
+- Secondary text: `#c7c8c2`
+- Muted: `#81858a`
+- Rule: `#242a31`
+- Acid/action: `#c8ff3d`
 
 ## Landing
 
-1. Header horizontal dengan wordmark, anchor konten, dan CTA Produksi.
-2. Hero tipografis satu kolom dengan status sumber dan satu pesan utama.
-3. Product preview berbasis markup yang mencerminkan query builder dan dataset baru.
-4. Cara kerja berupa indexed rows pada bidang navy.
-5. Struktur data berupa ledger; pricing berupa comparison rows, bukan kartu carousel.
-6. Use case berupa grid berindeks, diikuti FAQ dan CTA cobalt.
+1. Announcement rail ringkas, header horizontal, dan CTA Produksi.
+2. Hero terpusat dengan satu pesan, satu command surface, dan cuplikan data.
+3. Empat promises berupa bidang ber-rule, bukan kartu lepas.
+4. Product surface menyandingkan query dan schema dataset yang realistis.
+5. Harga berupa comparison rows yang menumpuk bersih di mobile.
+6. Audience strip, FAQ linear, dan closing prompt tanpa blok CTA generik.
 
 ## Produksi
 
-- Masthead ringkas menjelaskan hubungan panel kiri dan kanan.
-- Status lisensi berupa satu utility rail; tanggal tetap di disclosure.
+- Masthead ringkas menjelaskan hubungan panel query dan dataset.
+- Status lisensi berupa utility rail; tanggal tetap di disclosure.
 - Desktop: query builder sticky di kiri, dataset di kanan.
 - Tablet/mobile: kedua panel ditumpuk dengan query selalu lebih dulu.
 - Form default hanya menampilkan niche, wilayah, cakupan, dan jumlah hasil.
@@ -63,6 +63,6 @@ hero dua kolom dari versi sebelumnya.
 ## Interaksi
 
 - Target sentuh minimum 44 px.
-- Focus ring cobalt terlihat di semua kontrol.
+- Focus ring acid lime terlihat di semua kontrol.
 - Motion hanya memberi respons pada tombol, dropdown, progress, dan toast.
 - `prefers-reduced-motion` mematikan animasi dan transisi non-esensial.

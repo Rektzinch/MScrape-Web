@@ -11,8 +11,8 @@ export function AppHeader({ current }: AppHeaderProps) {
     <header className="ms-header">
       <div className="ms-header__inner wb-shell">
         <Link className="ms-wordmark" href="/" aria-label="MScrape — kembali ke Beranda">
-          <span className="ms-wordmark__mark" aria-hidden="true">M</span>
-          <span className="ms-wordmark__name">MScrape</span>
+          <span className="ms-wordmark__name">mscrape</span>
+          <span className="ms-wordmark__signal" aria-hidden="true" />
         </Link>
         <nav className="ms-header__nav" aria-label="Navigasi utama">
           <Link href="/#cara-kerja">Cara kerja</Link>
@@ -22,7 +22,7 @@ export function AppHeader({ current }: AppHeaderProps) {
         </nav>
         <div className="ms-header__actions">
           {current === "production" ? (
-            <span className="ms-header__current"><span aria-hidden="true" /> Workspace aktif</span>
+            <span className="ms-header__current"><span aria-hidden="true" /> Produksi aktif</span>
           ) : (
             <TierCheckLink className="ms-header__production" href="/produksi">Buka Produksi <span aria-hidden="true">↗</span></TierCheckLink>
           )}

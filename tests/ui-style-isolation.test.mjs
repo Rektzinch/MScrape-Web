@@ -20,8 +20,11 @@ test("landing dan produksi baru terisolasi dari selector layout lama", async () 
   assert.match(pricing, /className="ms-plan"/);
   assert.match(production, /className="ms-production"/);
   assert.match(consoleView, /className="ms-console"/);
+  assert.doesNotMatch(`${home}\n${pricing}`, /product-stage|ms-process|ms-use-list/);
 
   assert.match(rebrand, /@media \(max-width: 39\.99rem\)[\s\S]*?\.ms-header__actions \{ display: none; \}/);
   assert.match(rebrand, /@media \(max-width: 39\.99rem\)[\s\S]*?\.ms-plan \{[^}]*grid-template-columns: 1fr;/);
-  assert.match(rebrand, /\.ms-pricing__head h2 \{ color: var\(--color-ink\); \}/);
+  assert.match(rebrand, /--ms-bg: #080a0d;/);
+  assert.match(rebrand, /--ms-accent: #c8ff3d;/);
+  assert.match(rebrand, /\.ms-production \.ms-console \{[\s\S]*?grid-template-columns:/);
 });

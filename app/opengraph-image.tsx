@@ -10,34 +10,41 @@ export default function OpenGraphImage() {
       style={{
         width: "100%",
         height: "100%",
-        padding: "58px 64px",
+        padding: "48px 58px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        background: "#f8faff",
-        color: "#111a33",
+        background: "#080a0d",
+        color: "#f2f1ea",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 18, fontSize: 28, fontWeight: 700 }}>
-          <div style={{ width: 52, height: 52, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", background: "#111a33", color: "#8be4ae" }}>M</div>
-          MScrape
+        <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 28, fontWeight: 700, letterSpacing: -1 }}>
+          mscrape
+          <div style={{ width: 9, height: 9, borderRadius: 999, background: "#c8ff3d" }} />
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#516078", fontSize: 17, letterSpacing: 2 }}>
-          <div style={{ width: 10, height: 10, borderRadius: 999, background: "#54bf82" }} />
-          GOOGLE MAPS LIVE
-        </div>
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <div style={{ color: "#3157df", fontSize: 18, fontWeight: 700, letterSpacing: 3, marginBottom: 22 }}>BUSINESS DISCOVERY / INDONESIA</div>
-        <div style={{ maxWidth: 980, display: "flex", flexDirection: "column", fontSize: 84, fontWeight: 700, lineHeight: .92, letterSpacing: -5 }}>
-          <span>Cari data bisnis.</span>
-          <span style={{ color: "#3157df" }}>Temukan peluang lokal.</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#81858a", fontSize: 15, letterSpacing: 2 }}>
+          <div style={{ width: 8, height: 8, borderRadius: 999, background: "#c8ff3d" }} />
+          PENCARIAN BISNIS LOKAL
         </div>
       </div>
 
-      <div style={{ paddingTop: 24, borderTop: "2px solid #dbe2ef", display: "flex", justifyContent: "space-between", color: "#516078", fontSize: 18 }}>
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 50 }}>
+        <div style={{ maxWidth: 760, display: "flex", flexDirection: "column", fontSize: 80, fontWeight: 600, lineHeight: .9, letterSpacing: -5 }}>
+          <span>Baca pasar lokal.</span>
+          <span style={{ color: "#c7c8c2", fontWeight: 400 }}>Baris demi baris.</span>
+        </div>
+        <div style={{ width: 300, border: "1px solid #3a424c", display: "flex", flexDirection: "column", background: "#10141a" }}>
+          <div style={{ height: 44, padding: "0 16px", borderBottom: "1px solid #242a31", display: "flex", alignItems: "center", justifyContent: "space-between", color: "#81858a", fontSize: 12 }}>
+            <span>QUERY / 001</span><span style={{ color: "#c8ff3d" }}>SIAP</span>
+          </div>
+          <div style={{ height: 78, padding: "0 16px", display: "flex", alignItems: "center", gap: 12, fontSize: 18 }}>
+            <span style={{ color: "#c8ff3d" }}>›</span><span>Klinik gigi di Makassar</span>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ paddingTop: 22, borderTop: "1px solid #3a424c", display: "flex", justifyContent: "space-between", color: "#81858a", fontSize: 15, letterSpacing: 1 }}>
         <span>NICHE → WILAYAH → DATASET</span>
         <span>CSV · TXT · JSON</span>
       </div>

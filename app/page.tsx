@@ -65,60 +65,29 @@ export default function Home() {
     <>
       <AppHeader current="info" />
       <main className="ms-home">
+        <aside className="ms-notice">
+          <span>10 scan gratis untuk memulai</span>
+          <Link href="/produksi">Coba sekarang <span aria-hidden="true">→</span></Link>
+        </aside>
+
         <section className="ms-hero wb-shell" aria-labelledby="home-title">
-          <div className="ms-hero__index" aria-hidden="true">
-            <span>Data bisnis lokal</span><span>Sumber langsung · Indonesia</span>
-          </div>
-          <div className="ms-hero__copy">
-            <p className="ms-hero__signal"><span aria-hidden="true" /> Google Maps live · siap digunakan</p>
-            <h1 id="home-title">Cari data bisnis.<br /><em>Temukan peluang lokal.</em></h1>
-            <div className="ms-hero__lower">
-              <p className="ms-hero__lead">
-                Cari bisnis berdasarkan niche dan wilayah. Susun nama, alamat, telepon,
-                website, rating, dan data kontak yang tersedia dalam satu workspace.
-              </p>
-              <div className="ms-hero__actions">
-                <Link className="ms-button ms-button--primary" href="/produksi" data-analytics-cta="hero_buka_produksi">Mulai scan <span aria-hidden="true">↗</span></Link>
-                <a className="ms-hero__text-link" href="#cara-kerja" data-analytics-cta="hero_cara_kerja">Pelajari alur <span aria-hidden="true">↓</span></a>
-              </div>
-            </div>
-          </div>
+          <p className="ms-hero__eyebrow"><span aria-hidden="true" /> MScrape / pencarian bisnis lokal</p>
+          <h1 id="home-title">Baca pasar lokal.<br /><em>Baris demi baris.</em></h1>
+          <p className="ms-hero__lead">Tentukan niche dan wilayah. MScrape menyusun data bisnis yang tersedia dari Google Maps menjadi daftar yang bisa Anda tinjau dan ekspor.</p>
 
-          <div className="product-stage" aria-label="Contoh workspace pencarian MScrape">
-            <div className="product-stage__rail">
-              <span className="product-stage__brand"><i aria-hidden="true">M</i> MScrape Produksi</span>
-              <span className="product-stage__live"><i aria-hidden="true" /> Sumber aktif</span>
-            </div>
-            <div className="product-stage__canvas">
-              <div className="product-stage__query">
-                <div className="product-stage__panel-head"><span>Pencarian</span><strong>Rancang scan</strong></div>
-                <div className="product-stage__field"><span>Cari apa?</span><b>Klinik gigi</b></div>
-                <div className="product-stage__field"><span>Di mana?</span><b>Makassar</b></div>
-                <div className="product-stage__query-row"><div className="product-stage__field"><span>Cakupan</span><b>Kota / Kabupaten</b></div><div className="product-stage__field"><span>Jumlah</span><b>100 bisnis</b></div></div>
-                <span className="product-stage__button">Mulai scan <b aria-hidden="true">↗</b></span>
-              </div>
-              <div className="product-stage__dataset">
-                <div className="product-stage__panel-head"><span>Hasil</span><strong>Data bisnis</strong></div>
-                <div className="product-stage__stats"><span><b>100</b> Diterima</span><span><b>37</b> Tanpa website</span><span><b>28</b> Punya nomor</span></div>
-                <div className="product-stage__table" role="presentation">
-                  <div><span>Bisnis</span><span>Area</span><span>Kontak</span></div>
-                  <div><strong>Ruang Dental Care</strong><span>Panakkukang</span><span>+62 8•••</span></div>
-                  <div><strong>Klinik Senyum</strong><span>Rappocini</span><span>+62 8•••</span></div>
-                  <div><strong>Dental Point</strong><span>Tamalate</span><span>+62 4•••</span></div>
-                </div>
-              </div>
-            </div>
-            <ol className="product-stage__notes">
-              <li><span>01</span> Tentukan niche</li><li><span>02</span> Pilih wilayah</li><li><span>03</span> Ekspor dataset</li>
-            </ol>
+          <div className="ms-command" aria-label="Contoh pencarian MScrape">
+            <span className="ms-command__prompt" aria-hidden="true">QUERY</span>
+            <span className="ms-command__text">Klinik gigi di Makassar</span>
+            <Link href="/produksi" data-analytics-cta="hero_buka_produksi">Cari bisnis <span aria-hidden="true">↗</span></Link>
           </div>
+          <a className="ms-hero__quiet-link" href="#cara-kerja" data-analytics-cta="hero_cara_kerja">Lihat apa yang akan Anda dapatkan ↓</a>
 
-          <dl className="ms-hero__facts" aria-label="Ringkasan layanan MScrape">
-            <div><dt>Sumber</dt><dd>Google Maps live</dd></div>
-            <div><dt>Cakupan</dt><dd>Kota &amp; kecamatan</dd></div>
-            <div><dt>Output</dt><dd>CSV · TXT · JSON</dd></div>
-            <div><dt>Mulai</dt><dd>10 scan gratis</dd></div>
-          </dl>
+          <div className="ms-records" aria-label="Contoh data bisnis yang tersedia">
+            <div className="ms-records__head"><span>Bisnis</span><span>Wilayah</span><span>Website</span><span>Kontak</span></div>
+            <div><strong>Ruang Dental Care</strong><span>Panakkukang</span><span className="is-missing">Belum ada</span><span>+62 8•••</span></div>
+            <div><strong>Klinik Senyum</strong><span>Rappocini</span><span>kliniks•••.com</span><span>+62 8•••</span></div>
+            <div><strong>Dental Point</strong><span>Tamalate</span><span className="is-missing">Belum ada</span><span>+62 4•••</span></div>
+          </div>
           <HomeAnalytics />
         </section>
 
@@ -140,10 +109,10 @@ export default function Home() {
         </section>
 
         <section className="ms-closing wb-shell" aria-labelledby="home-cta-title">
-          <p>Mulai tanpa biaya</p>
-          <h2 id="home-cta-title">Mulai dari pasar<br />yang Anda pahami.</h2>
-          <div><p>Jalankan 10 scan pertama tanpa biaya. Tinjau data yang tersedia, lalu pilih daftar yang layak ditindaklanjuti.</p>
-          <Link className="ms-button ms-button--dark" href="/produksi" data-analytics-cta="footer_buka_produksi">Buka Produksi <span aria-hidden="true">↗</span></Link></div>
+          <p>Query pertama</p>
+          <h2 id="home-cta-title">Niche apa yang<br />ingin Anda petakan?</h2>
+          <div><p>Jalankan 10 scan pertama tanpa biaya. Tidak perlu kartu pembayaran.</p>
+          <Link className="ms-closing__link" href="/produksi" data-analytics-cta="footer_buka_produksi">Buka Produksi <span aria-hidden="true">↗</span></Link></div>
         </section>
       </main>
       <AppFooter />
