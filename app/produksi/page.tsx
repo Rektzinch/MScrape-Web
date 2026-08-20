@@ -22,15 +22,15 @@ export default function ProduksiPage() {
   return (
     <>
       <AppHeader current="production" />
-      <main className="production-page">
-        <section className="production-masthead" aria-labelledby="production-title">
-          <div className="production-heading wb-shell">
-            <p className="production-heading__index">WORKSPACE / 01</p>
+      <main className="ms-production">
+        <section className="ms-production-intro" aria-labelledby="production-title">
+          <div className="ms-production-heading wb-shell">
+            <p className="ms-production-heading__index">Produksi</p>
             <h1 id="production-title">Cari bisnis lokal.</h1>
             <p>Rancang pencarian di panel kiri. Data yang tersedia akan tersusun di panel hasil tanpa mengubah informasi sumber.</p>
           </div>
         </section>
-        <section className="production-workspace wb-shell" aria-label="Workspace scraping">
+        <section className="ms-production-workspace wb-shell" aria-label="Workspace scraping">
           <ScrapeConsole />
         </section>
         <AppFooter />

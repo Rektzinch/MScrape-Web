@@ -565,7 +565,7 @@ export function ScrapeConsole() {
   }
 
   return (
-    <section className="scanner production-console" id="scanner" aria-label="Konsol produksi">
+    <section className="ms-console" id="scanner" aria-label="Konsol produksi">
       <section className="license-dock" aria-labelledby="license-dock-title">
         <div className="license-dock__bar">
           <div className="license-dock__identity">
@@ -622,7 +622,7 @@ export function ScrapeConsole() {
 
       <div className="scanner__console" aria-busy={submitting || active}>
         <header className="workspace-panel__head">
-          <span>01 / QUERY BUILDER</span>
+          <span>Pencarian</span>
           <h2>Rancang scan</h2>
         </header>
         <div className="console__bar">
@@ -682,7 +682,7 @@ export function ScrapeConsole() {
 
       <div className="results" id="results">
         <header className="workspace-panel__head workspace-panel__head--results">
-          <span>02 / DATASET</span>
+          <span>Hasil</span>
           <h2>Hasil pencarian</h2>
         </header>
         {sourceRows.length > 0 ? (

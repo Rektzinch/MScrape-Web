@@ -64,41 +64,41 @@ export default function Home() {
   return (
     <>
       <AppHeader current="info" />
-      <main className="seo-page seo-page--home dashboard-page">
-        <section className="home-hero wb-shell" aria-labelledby="home-title">
-          <div className="home-hero__index" aria-hidden="true">
-            <span>BUSINESS DISCOVERY</span><span>INDONESIA / 2026</span>
+      <main className="ms-home">
+        <section className="ms-hero wb-shell" aria-labelledby="home-title">
+          <div className="ms-hero__index" aria-hidden="true">
+            <span>Data bisnis lokal</span><span>Sumber langsung · Indonesia</span>
           </div>
-          <div className="home-hero__copy">
-            <p className="home-hero__signal"><span aria-hidden="true" /> Google Maps live · siap digunakan</p>
+          <div className="ms-hero__copy">
+            <p className="ms-hero__signal"><span aria-hidden="true" /> Google Maps live · siap digunakan</p>
             <h1 id="home-title">Cari data bisnis.<br /><em>Temukan peluang lokal.</em></h1>
-            <div className="home-hero__lower">
-              <p className="home-hero__lead">
+            <div className="ms-hero__lower">
+              <p className="ms-hero__lead">
                 Cari bisnis berdasarkan niche dan wilayah. Susun nama, alamat, telepon,
                 website, rating, dan data kontak yang tersedia dalam satu workspace.
               </p>
-              <div className="home-hero__actions">
-                <Link className="seo-button seo-button--primary" href="/produksi" data-analytics-cta="hero_buka_produksi">Mulai scan <span aria-hidden="true">↗</span></Link>
-                <a className="home-hero__text-link" href="#cara-kerja" data-analytics-cta="hero_cara_kerja">Pelajari alur <span aria-hidden="true">↓</span></a>
+              <div className="ms-hero__actions">
+                <Link className="ms-button ms-button--primary" href="/produksi" data-analytics-cta="hero_buka_produksi">Mulai scan <span aria-hidden="true">↗</span></Link>
+                <a className="ms-hero__text-link" href="#cara-kerja" data-analytics-cta="hero_cara_kerja">Pelajari alur <span aria-hidden="true">↓</span></a>
               </div>
             </div>
           </div>
 
           <div className="product-stage" aria-label="Contoh workspace pencarian MScrape">
             <div className="product-stage__rail">
-              <span className="product-stage__brand"><i aria-hidden="true">M</i> MScrape / Produksi</span>
-              <span className="product-stage__live"><i aria-hidden="true" /> Live source</span>
+              <span className="product-stage__brand"><i aria-hidden="true">M</i> MScrape Produksi</span>
+              <span className="product-stage__live"><i aria-hidden="true" /> Sumber aktif</span>
             </div>
             <div className="product-stage__canvas">
               <div className="product-stage__query">
-                <div className="product-stage__panel-head"><span>01 / QUERY</span><strong>Rancang scan</strong></div>
+                <div className="product-stage__panel-head"><span>Pencarian</span><strong>Rancang scan</strong></div>
                 <div className="product-stage__field"><span>Cari apa?</span><b>Klinik gigi</b></div>
                 <div className="product-stage__field"><span>Di mana?</span><b>Makassar</b></div>
                 <div className="product-stage__query-row"><div className="product-stage__field"><span>Cakupan</span><b>Kota / Kabupaten</b></div><div className="product-stage__field"><span>Jumlah</span><b>100 bisnis</b></div></div>
                 <span className="product-stage__button">Mulai scan <b aria-hidden="true">↗</b></span>
               </div>
               <div className="product-stage__dataset">
-                <div className="product-stage__panel-head"><span>02 / DATASET</span><strong>Hasil pencarian</strong></div>
+                <div className="product-stage__panel-head"><span>Hasil</span><strong>Data bisnis</strong></div>
                 <div className="product-stage__stats"><span><b>100</b> Diterima</span><span><b>37</b> Tanpa website</span><span><b>28</b> Punya nomor</span></div>
                 <div className="product-stage__table" role="presentation">
                   <div><span>Bisnis</span><span>Area</span><span>Kontak</span></div>
@@ -113,23 +113,23 @@ export default function Home() {
             </ol>
           </div>
 
-          <dl className="home-hero__facts" aria-label="Ringkasan layanan MScrape">
-            <div><dt>01 / Sumber</dt><dd>Google Maps live</dd></div>
-            <div><dt>02 / Cakupan</dt><dd>Kota &amp; kecamatan</dd></div>
-            <div><dt>03 / Output</dt><dd>CSV · TXT · JSON</dd></div>
-            <div><dt>04 / Mulai</dt><dd>10 scan gratis</dd></div>
+          <dl className="ms-hero__facts" aria-label="Ringkasan layanan MScrape">
+            <div><dt>Sumber</dt><dd>Google Maps live</dd></div>
+            <div><dt>Cakupan</dt><dd>Kota &amp; kecamatan</dd></div>
+            <div><dt>Output</dt><dd>CSV · TXT · JSON</dd></div>
+            <div><dt>Mulai</dt><dd>10 scan gratis</dd></div>
           </dl>
           <HomeAnalytics />
         </section>
 
         <HomeDashboardContent />
 
-        <section className="seo-faq wb-shell" id="faq" aria-labelledby="faq-title">
-          <div className="seo-section-heading">
-            <p>06 / FAQ</p>
+        <section className="ms-faq wb-shell" id="faq" aria-labelledby="faq-title">
+          <div className="ms-faq-head">
+            <p>Pertanyaan umum</p>
             <h2 id="faq-title">Sebelum scan pertama.</h2>
           </div>
-          <div className="seo-faq__list">
+          <div className="ms-faq__list">
             {faqs.map((faq) => (
               <details key={faq.question}>
                 <summary>{faq.question}</summary>
@@ -139,11 +139,11 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="seo-cta wb-shell" aria-labelledby="home-cta-title">
-          <p>READY WHEN YOU ARE</p>
+        <section className="ms-closing wb-shell" aria-labelledby="home-cta-title">
+          <p>Mulai tanpa biaya</p>
           <h2 id="home-cta-title">Mulai dari pasar<br />yang Anda pahami.</h2>
           <div><p>Jalankan 10 scan pertama tanpa biaya. Tinjau data yang tersedia, lalu pilih daftar yang layak ditindaklanjuti.</p>
-          <Link className="seo-button seo-button--dark" href="/produksi" data-analytics-cta="footer_buka_produksi">Buka Produksi <span aria-hidden="true">↗</span></Link></div>
+          <Link className="ms-button ms-button--dark" href="/produksi" data-analytics-cta="footer_buka_produksi">Buka Produksi <span aria-hidden="true">↗</span></Link></div>
         </section>
       </main>
       <AppFooter />
