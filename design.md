@@ -1,15 +1,15 @@
 # MScrape — Visual System 2026
 
-MScrape memakai bahasa visual “local intelligence terminal”: fokus dan alur halaman
-mengambil inspirasi dari TokenHarbor, sementara kepadatan antarmuka, ritme garis,
-dan kualitas permukaan produk mengambil inspirasi dari Qoder. Ini bukan salinan
-keduanya; identitas, copy, data, dan perilaku tetap milik MScrape.
+MScrape memakai bahasa visual “local intelligence workspace”: kanvas publik yang
+terang dan fokus mengambil inspirasi dari TokenHarbor, sementara permukaan produk,
+ritme garis, dan workspace gelap mengambil inspirasi dari Qoder. Identitas, copy,
+data, dan perilaku tetap milik MScrape.
 
 ## Prinsip
 
-- Satu ide per bidang: headline, query, dataset, perbandingan, lalu tindakan.
-- Landing menunjukkan produk lebih awal; Produksi langsung menempatkan query dan hasil.
-- Acid lime hanya untuk status hidup dan tindakan penting, bukan dekorasi massal.
+- Satu ide per bidang: value proposition, aksi, bukti produk, manfaat, harga, lalu penutup.
+- Bukti produk wajib terlihat dalam viewport pertama di desktop dan langsung setelah aksi di mobile.
+- Hijau hanya untuk status hidup dan tindakan penting, bukan dekorasi massal.
 - Tidak memakai hero gradient, glass card, bento SaaS, pill berlebihan, atau ilustrasi AI.
 - Data kosong tidak diperkirakan dan status internal diterjemahkan ke bahasa pengguna.
 
@@ -23,31 +23,32 @@ keduanya; identitas, copy, data, dan perilaku tetap milik MScrape.
 
 ## Warna
 
-- Background: `#080a0d`
-- Background raised: `#0c0f13`
-- Surface: `#10141a`
-- Surface active: `#151a21`
-- Text: `#f2f1ea`
-- Secondary text: `#c7c8c2`
-- Muted: `#81858a`
-- Rule: `#242a31`
-- Acid/action: `#c8ff3d`
+- Landing paper: `#f3f2ec`
+- Landing ink: `#12130f`
+- Landing muted: `#70746b`
+- Landing rule: `#d5d5cb`
+- Workspace: `#0a0d0c`
+- Workspace raised: `#101411`
+- Workspace text: `#f5f4ee`
+- Workspace rule: `#2a312b`
+- Live/action: `#70dd70` dan `#b8ff68`
 
 ## Landing
 
-1. Announcement rail ringkas, header horizontal, dan CTA Produksi.
-2. Hero terpusat dengan satu pesan, satu command surface, dan cuplikan data.
-3. Empat promises berupa bidang ber-rule, bukan kartu lepas.
-4. Product surface menyandingkan query dan schema dataset yang realistis.
-5. Harga berupa comparison rows yang menumpuk bersih di mobile.
-6. Audience strip, FAQ linear, dan closing prompt tanpa blok CTA generik.
+1. Announcement rail ringkas, header horizontal, dan satu CTA Produksi.
+2. Desktop memakai hero dua kolom: pesan/aksi di kiri, bukti produk di kanan.
+3. Mobile memakai urutan copy → command → bukti produk tanpa overlap atau overflow.
+4. Empat promises berupa bidang ber-rule, bukan kartu lepas.
+5. Product surface menyandingkan query dan schema dataset yang realistis.
+6. Harga berupa comparison rows yang menumpuk bersih di mobile.
+7. Audience strip, FAQ linear, dan closing prompt menjadi urutan penutup.
 
 ## Produksi
 
 - Masthead ringkas menjelaskan hubungan panel query dan dataset.
 - Status lisensi berupa utility rail; tanggal tetap di disclosure.
-- Desktop: query builder sticky di kiri, dataset di kanan.
-- Tablet/mobile: kedua panel ditumpuk dengan query selalu lebih dulu.
+- Desktop: status lisensi di row pertama, query sticky di kolom kiri, dataset di kanan.
+- Tablet/mobile: lisensi → query → hasil ditumpuk dengan grid row eksplisit.
 - Form default hanya menampilkan niche, wilayah, cakupan, dan jumlah hasil.
 - Negara/bahasa tetap berada di Pengaturan lanjutan.
 - Search, filter, statistik, tabel, dan ekspor baru muncul saat hasil tersedia.
