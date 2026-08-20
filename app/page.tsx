@@ -4,6 +4,9 @@ import { AppFooter } from "./_components/app-footer";
 import { AppHeader } from "./_components/app-header";
 import { HomeAnalytics } from "./_components/home-analytics";
 import { HomeDashboardContent } from "./_components/home-dashboard-content";
+import { DocumentLanguage } from "./_components/document-language";
+import type { Locale } from "@/lib/locale";
+import { localeHref } from "@/lib/locale";
 
 export const metadata: Metadata = {
   title: {
@@ -19,7 +22,7 @@ export const metadata: Metadata = {
   },
 };
 
-const faqs = [
+const faqsId = [
   {
     question: "Apa itu MScrape?",
     answer:
@@ -47,10 +50,33 @@ const faqs = [
   },
 ] as const;
 
+const faqsEn = [
+  {
+    question: "What is MScrape?",
+    answer: "MScrape is a workspace for finding and organizing business data available in Google Maps results by niche and region.",
+  },
+  {
+    question: "What data can it find?",
+    answer: "Scan results may include business name, category, address, phone, website, rating, review count, Google Maps link, coordinates, and email when available at the source.",
+  },
+  {
+    question: "What is the difference between scan count and result limit?",
+    answer: "Scan count is the number of searches you can run. Result limit is the maximum number of businesses requested in one scan.",
+  },
+  {
+    question: "Can searches target a subdistrict?",
+    answer: "Yes. Subdistrict coverage is available on Pro and Max, while result capacity follows your active plan.",
+  },
+  {
+    question: "How do I download the results?",
+    answer: "After a scan completes, select the filter you need and download the list as CSV, TXT, JSON, or a file ready for Google Sheets.",
+  },
+] as const;
+
 const faqStructuredData = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: faqs.map((faq) => ({
+  mainEntity: faqsId.map((faq) => ({
     "@type": "Question",
     name: faq.question,
     acceptedAnswer: {
@@ -60,15 +86,20 @@ const faqStructuredData = {
   })),
 };
 
-export default function Home() {
+export function HomePage({ locale = "id" }: { locale?: Locale }) {
+  const en = locale === "en";
+  const faqs = en ? faqsEn : faqsId;
+  const href = (path: string) => localeHref(locale, path);
+
   return (
     <>
-      <AppHeader current="info" />
+      <DocumentLanguage locale={locale} />
+      <AppHeader current="info" locale={locale} currentPath={en ? "/en" : "/"} />
       <main className="ms-home">
         <aside className="ms-notice">
-          <span><b>Free access</b> 10 scan pertama</span>
-          <span className="ms-notice__truth">Data yang tersedia, tanpa isian buatan</span>
-          <Link href="/produksi">Mulai memetakan <span aria-hidden="true">↗</span></Link>
+          <span><b>Free access</b> {en ? "first 10 scans" : "10 scan pertama"}</span>
+          <span className="ms-notice__truth">{en ? "Available data, without invented fields" : "Data yang tersedia, tanpa isian buatan"}</span>
+          <Link href={href("/produksi")}>{en ? "Start mapping" : "Mulai memetakan"} <span aria-hidden="true">↗</span></Link>
         </aside>
 
         <section className="ms-hero wb-shell" aria-labelledby="home-title">
@@ -113,64 +144,64 @@ export default function Home() {
           </div>
           <div className="ms-hero__copy">
             <p className="ms-hero__eyebrow"><span aria-hidden="true" /> Google Maps / local intelligence</p>
-            <h1 id="home-title">Temukan bisnis.<br /><em>Baca pasarnya.</em></h1>
-            <p className="ms-hero__lead">Masukkan jenis bisnis dan wilayah. MScrape mengubah hasil Google Maps menjadi dataset yang rapi, bisa diperiksa, dan siap dibawa ke alur kerja Anda.</p>
+            <h1 id="home-title">{en ? <>Find businesses.<br /><em>Read the market.</em></> : <>Temukan bisnis.<br /><em>Baca pasarnya.</em></>}</h1>
+            <p className="ms-hero__lead">{en ? "Enter a business type and region. MScrape turns Google Maps results into a clean, reviewable dataset ready for your workflow." : "Masukkan jenis bisnis dan wilayah. MScrape mengubah hasil Google Maps menjadi dataset yang rapi, bisa diperiksa, dan siap dibawa ke alur kerja Anda."}</p>
 
-            <div className="ms-command" aria-label="Contoh pencarian MScrape">
+            <div className="ms-command" aria-label={en ? "Example MScrape search" : "Contoh pencarian MScrape"}>
               <span className="ms-command__prompt" aria-hidden="true">QUERY</span>
-              <span className="ms-command__text">Klinik gigi / Makassar</span>
-              <Link href="/produksi" data-analytics-cta="hero_buka_produksi">Jalankan scan <span aria-hidden="true">↗</span></Link>
+              <span className="ms-command__text">{en ? "Dental clinic / Makassar" : "Klinik gigi / Makassar"}</span>
+              <Link href={href("/produksi")} data-analytics-cta="hero_buka_produksi">{en ? "Run scan" : "Jalankan scan"} <span aria-hidden="true">↗</span></Link>
             </div>
-            <dl className="ms-hero-facts" aria-label="Ringkasan alur MScrape">
-              <div><dt>Input</dt><dd>Niche + wilayah</dd></div>
-              <div><dt>Output</dt><dd>Dataset bisnis</dd></div>
-              <div><dt>Ekspor</dt><dd>CSV · JSON · Sheets</dd></div>
+            <dl className="ms-hero-facts" aria-label={en ? "MScrape workflow summary" : "Ringkasan alur MScrape"}>
+              <div><dt>Input</dt><dd>{en ? "Niche + region" : "Niche + wilayah"}</dd></div>
+              <div><dt>Output</dt><dd>{en ? "Business dataset" : "Dataset bisnis"}</dd></div>
+              <div><dt>{en ? "Export" : "Ekspor"}</dt><dd>CSV · JSON · Sheets</dd></div>
             </dl>
-            <a className="ms-hero__quiet-link" href="#cara-kerja" data-analytics-cta="hero_cara_kerja">Pelajari cara kerjanya <span aria-hidden="true">↓</span></a>
+            <a className="ms-hero__quiet-link" href="#cara-kerja" data-analytics-cta="hero_cara_kerja">{en ? "See how it works" : "Pelajari cara kerjanya"} <span aria-hidden="true">↓</span></a>
           </div>
 
-          <div className="ms-hero-product" aria-label="Pratinjau workspace MScrape">
+          <div className="ms-hero-product" aria-label={en ? "MScrape workspace preview" : "Pratinjau workspace MScrape"}>
             <div className="ms-hero-product__bar">
-              <span><i /> Produksi / scan baru</span>
-              <span>Google Maps <b>aktif</b></span>
+              <span><i /> {en ? "Production / new scan" : "Produksi / scan baru"}</span>
+              <span>Google Maps <b>{en ? "active" : "aktif"}</b></span>
             </div>
             <div className="ms-hero-product__body">
               <div className="ms-hero-product__query">
-                <span className="ms-product-label">Pencarian</span>
-                <strong>Klinik gigi</strong>
+                <span className="ms-product-label">{en ? "Search" : "Pencarian"}</span>
+                <strong>{en ? "Dental clinic" : "Klinik gigi"}</strong>
                 <p>
                   <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 18s6-5.3 6-10A6 6 0 1 0 4 8c0 4.7 6 10 6 10Z"/><circle cx="10" cy="8" r="2"/></svg>
-                  Makassar · Kota
+                  Makassar · {en ? "City" : "Kota"}
                 </p>
-                <div><span>Target</span><b>100 bisnis</b></div>
-                <div><span>Biaya</span><b>1 scan</b></div>
-                <span className="ms-product-run">Jalankan pencarian <b>↗</b></span>
+                <div><span>{en ? "Target" : "Target"}</span><b>100 {en ? "businesses" : "bisnis"}</b></div>
+                <div><span>{en ? "Cost" : "Biaya"}</span><b>1 scan</b></div>
+                <span className="ms-product-run">{en ? "Run search" : "Jalankan pencarian"} <b>↗</b></span>
               </div>
               <div className="ms-hero-product__results">
                 <div className="ms-product-results__head">
-                  <div><span className="ms-product-label">Hasil</span><strong>Dataset bisnis</strong></div>
-                  <span>37 tanpa website</span>
+                  <div><span className="ms-product-label">{en ? "Results" : "Hasil"}</span><strong>{en ? "Business dataset" : "Dataset bisnis"}</strong></div>
+                  <span>37 {en ? "without a website" : "tanpa website"}</span>
                 </div>
-                <div className="ms-product-stats"><span><b>100</b>Ditemukan</span><span><b>28</b>Punya nomor</span><span><b>12</b>Punya email</span></div>
+                <div className="ms-product-stats"><span><b>100</b>{en ? "Found" : "Ditemukan"}</span><span><b>28</b>{en ? "With phone" : "Punya nomor"}</span><span><b>12</b>{en ? "With email" : "Punya email"}</span></div>
                 <div className="ms-records">
-                  <div className="ms-records__head"><span>Bisnis</span><span>Wilayah</span><span>Website</span></div>
-                  <div><strong>Ruang Dental Care</strong><span>Panakkukang</span><span className="is-missing">Belum ada</span></div>
+                  <div className="ms-records__head"><span>{en ? "Business" : "Bisnis"}</span><span>{en ? "Region" : "Wilayah"}</span><span>Website</span></div>
+                  <div><strong>Ruang Dental Care</strong><span>Panakkukang</span><span className="is-missing">{en ? "Missing" : "Belum ada"}</span></div>
                   <div><strong>Klinik Senyum</strong><span>Rappocini</span><span>kliniks•••.com</span></div>
-                  <div><strong>Dental Point</strong><span>Tamalate</span><span className="is-missing">Belum ada</span></div>
+                  <div><strong>Dental Point</strong><span>Tamalate</span><span className="is-missing">{en ? "Missing" : "Belum ada"}</span></div>
                 </div>
-                <div className="ms-product-export"><span>CSV</span><span>JSON</span><span>Sheets</span><b>Ekspor ↗</b></div>
+                <div className="ms-product-export"><span>CSV</span><span>JSON</span><span>Sheets</span><b>{en ? "Export" : "Ekspor"} ↗</b></div>
               </div>
             </div>
           </div>
           <HomeAnalytics />
         </section>
 
-        <HomeDashboardContent />
+        <HomeDashboardContent locale={locale} />
 
         <section className="ms-faq wb-shell" id="faq" aria-labelledby="faq-title">
           <div className="ms-faq-head">
-            <p>Pertanyaan umum</p>
-            <h2 id="faq-title">Sebelum scan pertama.</h2>
+            <p>{en ? "Common questions" : "Pertanyaan umum"}</p>
+            <h2 id="faq-title">{en ? "Before your first scan." : "Sebelum scan pertama."}</h2>
           </div>
           <div className="ms-faq__list">
             {faqs.map((faq) => (
@@ -183,14 +214,18 @@ export default function Home() {
         </section>
 
         <section className="ms-closing wb-shell" aria-labelledby="home-cta-title">
-          <p>Mulai dari satu wilayah</p>
-          <h2 id="home-cta-title">Pasar mana yang<br />ingin Anda baca?</h2>
-          <div><p>Jalankan 10 scan pertama tanpa biaya dan tanpa kartu pembayaran.</p>
-          <Link className="ms-closing__link" href="/produksi" data-analytics-cta="footer_buka_produksi">Buka workspace <span aria-hidden="true">↗</span></Link></div>
+          <p>{en ? "Start with one region" : "Mulai dari satu wilayah"}</p>
+          <h2 id="home-cta-title">{en ? <>Which market do<br />you want to read?</> : <>Pasar mana yang<br />ingin Anda baca?</>}</h2>
+          <div><p>{en ? "Run your first 10 scans free, with no payment card." : "Jalankan 10 scan pertama tanpa biaya dan tanpa kartu pembayaran."}</p>
+          <Link className="ms-closing__link" href={href("/produksi")} data-analytics-cta="footer_buka_produksi">{en ? "Open workspace" : "Buka workspace"} <span aria-hidden="true">↗</span></Link></div>
         </section>
       </main>
-      <AppFooter />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }} />
+      <AppFooter locale={locale} />
+      {!en ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }} /> : null}
     </>
   );
+}
+
+export default function Home() {
+  return <HomePage />;
 }

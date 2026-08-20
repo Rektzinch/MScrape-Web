@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { AppFooter } from "../_components/app-footer";
 import { AppHeader } from "../_components/app-header";
+import { DocumentLanguage } from "../_components/document-language";
+import type { Locale } from "@/lib/locale";
 
 export const metadata: Metadata = {
   title: "Developer",
@@ -17,10 +19,12 @@ const contacts = [
   { label: "TikTok Muh Amin Arsyad", href: "https://www.tiktok.com/@rektxkz?_r=1&_t=ZS-98ry9zZuC7Z", icon: "/media/social/tiktok.svg", name: "TikTok" },
 ];
 
-export default function DeveloperPage() {
+export function DeveloperProfilePage({ locale = "id" }: { locale?: Locale }) {
+  const en = locale === "en";
   return (
     <>
-      <AppHeader current="info" />
+      <DocumentLanguage locale={locale} />
+      <AppHeader current="info" locale={locale} currentPath={en ? "/en/developer" : "/developer"} />
       <main className="developer-page">
         <section className="developer-profile wb-shell" aria-labelledby="developer-title">
           <div className="developer-profile__image-wrap">
@@ -37,7 +41,7 @@ export default function DeveloperPage() {
           <div className="developer-profile__copy">
             <p className="info-kicker">03 / DEVELOPER</p>
             <h1 id="developer-title">MUH AMIN ARSYAD</h1>
-            <p>Developer MScrape. Hubungi melalui kanal berikut untuk pertanyaan terkait aplikasi, pengembangan, atau kolaborasi.</p>
+            <p>{en ? "Developer of MScrape. Use the channels below for questions about the application, development, or collaboration." : "Developer MScrape. Hubungi melalui kanal berikut untuk pertanyaan terkait aplikasi, pengembangan, atau kolaborasi."}</p>
             <div className="developer-profile__socials" aria-label="Kontak Muh Amin Arsyad">
               {contacts.map((contact) => (
                 <a key={contact.name} href={contact.href} target={contact.href.startsWith("http") ? "_blank" : undefined} rel={contact.href.startsWith("http") ? "noreferrer" : undefined} aria-label={contact.label} title={contact.name}>
@@ -48,8 +52,12 @@ export default function DeveloperPage() {
             </div>
           </div>
         </section>
-        <AppFooter />
+        <AppFooter locale={locale} />
       </main>
     </>
   );
+}
+
+export default function DeveloperPage() {
+  return <DeveloperProfilePage />;
 }

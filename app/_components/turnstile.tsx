@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import type { Locale } from "@/lib/locale";
 
 declare global {
   interface Window {
@@ -19,9 +20,10 @@ declare global {
 type TurnstileProps = {
   siteKey: string;
   onToken: (token: string) => void;
+  locale?: Locale;
 };
 
-export function Turnstile({ siteKey, onToken }: TurnstileProps) {
+export function Turnstile({ siteKey, onToken, locale = "id" }: TurnstileProps) {
   const container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -58,5 +60,5 @@ export function Turnstile({ siteKey, onToken }: TurnstileProps) {
     };
   }, [onToken, siteKey]);
 
-  return <div ref={container} className="turnstile" aria-label="Verifikasi keamanan" />;
+  return <div ref={container} className="turnstile" aria-label={locale === "en" ? "Security verification" : "Verifikasi keamanan"} />;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import type { Locale } from "@/lib/locale";
 
 export type ComboboxOption = {
   value: string;
@@ -19,6 +20,7 @@ type SearchableComboboxProps = {
   helper?: string;
   searchPlaceholder?: string;
   className?: string;
+  locale?: Locale;
 };
 
 export function SearchableCombobox({
@@ -29,9 +31,12 @@ export function SearchableCombobox({
   onLockedOption,
   name,
   helper,
-  searchPlaceholder = "Cari pilihan",
+  searchPlaceholder,
   className,
+  locale = "id",
 }: SearchableComboboxProps) {
+  const en = locale === "en";
+  const resolvedSearchPlaceholder = searchPlaceholder || (en ? "Search options" : "Cari pilihan");
   const generatedId = useId().replaceAll(":", "");
   const listboxId = `combobox-${generatedId}`;
   const rootRef = useRef<HTMLDivElement>(null);
@@ -43,14 +48,14 @@ export function SearchableCombobox({
 
   const selected = options.find((option) => option.value === value) ?? options[0];
   const filtered = useMemo(() => {
-    const normalized = query.trim().toLocaleLowerCase("id");
+    const normalized = query.trim().toLocaleLowerCase(locale);
     if (!normalized) return options;
     return options.filter((option) =>
       `${option.label} ${option.description || ""}`
-        .toLocaleLowerCase("id")
+        .toLocaleLowerCase(locale)
         .includes(normalized),
     );
-  }, [options, query]);
+  }, [locale, options, query]);
 
   useEffect(() => {
     if (!open) return;
@@ -137,8 +142,8 @@ export function SearchableCombobox({
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={handleListKeys}
-              placeholder={searchPlaceholder}
-              aria-label={`${searchPlaceholder} untuk ${label}`}
+              placeholder={resolvedSearchPlaceholder}
+              aria-label={`${resolvedSearchPlaceholder} ${en ? "for" : "untuk"} ${label}`}
               aria-controls={listboxId}
               aria-activedescendant={filtered[activeIndex] ? `${listboxId}-${filtered[activeIndex].value}` : undefined}
             />
@@ -159,10 +164,10 @@ export function SearchableCombobox({
               >
                 <span><strong>{option.label}</strong>{option.description ? <small>{option.description}</small> : null}</span>
                 {option.locked ? (
-                  <svg className="combobox__lock" viewBox="0 0 20 20" aria-label="Terkunci"><rect x="4.5" y="8.5" width="11" height="8" rx="1" /><path d="M7 8.5V6.7a3 3 0 0 1 6 0v1.8" /></svg>
+                  <svg className="combobox__lock" viewBox="0 0 20 20" aria-label={en ? "Locked" : "Terkunci"}><rect x="4.5" y="8.5" width="11" height="8" rx="1" /><path d="M7 8.5V6.7a3 3 0 0 1 6 0v1.8" /></svg>
                 ) : option.value === value ? <span className="combobox__check" aria-hidden="true">✓</span> : null}
               </button>
-            )) : <p className="combobox__empty">Pilihan tidak ditemukan.</p>}
+            )) : <p className="combobox__empty">{en ? "No options found." : "Pilihan tidak ditemukan."}</p>}
           </div>
         </div>
       ) : null}

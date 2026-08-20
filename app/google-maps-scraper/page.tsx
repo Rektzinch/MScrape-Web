@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 export default function GoogleMapsScraperPage() {
   return (
     <SeoLanding
+      currentPath="/google-maps-scraper"
       breadcrumb="Google Maps Scraper"
       kicker="GOOGLE MAPS SCRAPER INDONESIA"
       title="Google Maps Scraper untuk Riset Data Bisnis Lokal"

@@ -47,7 +47,7 @@ html { scroll-padding-top: 5.25rem; }
 }
 .ms-header:has(+ .ms-production) { border-color: var(--ms-night-line); background: color-mix(in srgb, var(--ms-night) 92%, transparent); color: var(--ms-light); }
 .ms-header::after { content: ""; position: absolute; inset: auto 0 -1px; width: clamp(4rem, 12vw, 10rem); height: 3px; background: var(--ms-coral); pointer-events: none; }
-.ms-header__inner { min-height: 4.5rem; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .75rem; }
+.ms-header__inner { min-height: 4.5rem; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: .5rem; }
 .ms-wordmark,
 .ms-footer__brand { min-height: 2.75rem; display: inline-flex; align-items: center; gap: .55rem; color: inherit; }
 .ms-wordmark__name,
@@ -61,6 +61,12 @@ html { scroll-padding-top: 5.25rem; }
 .ms-header__production { border-color: var(--ms-ink); background: var(--ms-ink); color: var(--ms-paper); }
 .ms-header:has(+ .ms-production) .ms-header__current { border-color: var(--ms-night-line); background: var(--ms-night-2); }
 .ms-header__current > span { width: .45rem; aspect-ratio: 1; border-radius: 50%; background: var(--ms-live); box-shadow: 0 0 0 .28rem rgb(168 229 106 / 10%); }
+.ms-locale-switch { min-height: 2.75rem; padding: .22rem; border: 1px solid var(--ms-line); display: inline-flex; align-items: center; gap: .12rem; }
+.ms-locale-switch a { min-width: 2rem; min-height: 2.2rem; padding-inline: .45rem; display: inline-flex; align-items: center; justify-content: center; color: var(--ms-muted); font-size: .55rem; font-weight: 780; letter-spacing: .04em; text-transform: uppercase; }
+.ms-locale-switch a[aria-current="page"] { background: var(--ms-ink); color: var(--ms-paper); }
+.ms-header:has(+ .ms-production) .ms-locale-switch { border-color: var(--ms-night-line); }
+.ms-header:has(+ .ms-production) .ms-locale-switch a { color: #aaa7b0; }
+.ms-header:has(+ .ms-production) .ms-locale-switch a[aria-current="page"] { background: var(--ms-coral); color: var(--ms-ink); }
 .ms-menu-trigger { min-width: 3.5rem; min-height: 2.75rem; padding: 0 .75rem; border: 1px solid var(--ms-line); display: inline-flex; align-items: center; justify-content: space-between; gap: .65rem; background: transparent; color: inherit; cursor: pointer; }
 .ms-menu-trigger span { font-size: .64rem; font-weight: 720; text-transform: uppercase; }
 .ms-menu-trigger b { color: var(--ms-coral); font-size: 1rem; font-weight: 500; }
@@ -324,7 +330,8 @@ body:has(.ms-production) { background: #11121a; }
 .ms-production .scrape-form { padding: 1rem; border: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: .95rem; background: #14151e; }
 .ms-production .field,
 .ms-production .location-field,
-.ms-production .combobox { min-width: 0; display: grid; gap: .4rem; }
+.ms-production .combobox { position: relative; min-width: 0; display: grid; gap: .4rem; }
+.ms-production .combobox:has(.combobox__trigger[aria-expanded="true"]) { z-index: 12; }
 .ms-production .location-field > label { display: grid; gap: .4rem; }
 .ms-production .field > span,
 .ms-production .location-field > label > span,
@@ -352,9 +359,21 @@ body:has(.ms-production) { background: #11121a; }
 .ms-production .combobox__trigger strong { color: #d1ccc5; font-size: .64rem; }
 .ms-production .combobox__trigger small { color: #797681; font-size: .5rem; }
 .ms-production .combobox__trigger[aria-expanded="true"] { border-color: var(--ms-coral); background: #232431; }
-.ms-production .combobox__popover { inset-block-start: calc(100% + .2rem); border: 1px solid #464653; border-radius: 0; background: #1b1c27; color: var(--ms-light); box-shadow: 0 1.25rem 3rem rgb(0 0 0 / 45%); }
-.ms-production .combobox__option { background: #1b1c27; color: #c7c2bb; }
+.ms-production .combobox__popover { position: absolute; inset: calc(100% + .2rem) 0 auto; z-index: 2; max-width: 100%; overflow: hidden; border: 1px solid #464653; border-radius: 0; background: #1b1c27; color: var(--ms-light); box-shadow: 0 1.25rem 3rem rgb(0 0 0 / 45%); }
+.ms-production .combobox__search { position: relative; padding: .45rem; border-bottom: 1px solid var(--ms-night-line); }
+.ms-production .combobox__search svg { position: absolute; inset: 50% auto auto 1.15rem; width: 1rem; height: 1rem; display: block; fill: none; stroke: #85828c; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; transform: translateY(-50%); pointer-events: none; }
+.ms-production .combobox__search input { width: 100%; min-height: 2.75rem; padding: .6rem .65rem .6rem 2.35rem; border: 1px solid var(--ms-night-line); outline: 3px solid transparent; }
+.ms-production .combobox__options { max-height: min(18rem, 48svh); padding: .2rem; overflow-y: auto; overscroll-behavior: contain; }
+.ms-production .combobox__option { width: 100%; min-height: 3.15rem; padding: .58rem .65rem; border: 0; border-bottom: 1px solid var(--ms-night-line); display: flex; align-items: center; justify-content: space-between; gap: .75rem; background: #1b1c27; color: #c7c2bb; text-align: left; cursor: pointer; }
+.ms-production .combobox__option:last-child { border-bottom: 0; }
+.ms-production .combobox__option > span:first-child { min-width: 0; display: grid; gap: .12rem; }
+.ms-production .combobox__option strong { font-size: .62rem; line-height: 1.35; }
+.ms-production .combobox__option small { color: #85828c; font-size: .5rem; line-height: 1.4; }
+.ms-production .combobox__check,
+.ms-production .combobox__lock { flex: 0 0 auto; color: currentColor; font-size: .7rem; }
+.ms-production .combobox__empty { margin: 0; padding: 1rem .75rem; color: #85828c; font-size: .55rem; text-align: center; }
 .ms-production .combobox__option[data-active="true"] { background: var(--ms-coral); color: var(--ms-ink); }
+.ms-production .combobox__option[data-active="true"] small { color: rgb(17 18 26 / 68%); }
 .ms-production .combobox__search input { background: #14151e; color: var(--ms-light); }
 .ms-production .advanced-settings { padding-block: .45rem; border-block: 1px solid var(--ms-night-line); }
 .ms-production .advanced-settings > summary { min-height: 2.4rem; padding-inline: .7rem; border: 1px solid var(--ms-night-line); border-radius: 0; display: inline-flex; align-items: center; background: var(--ms-night-2); color: #bdb9b2; font-size: .55rem; list-style: none; }
@@ -458,7 +477,7 @@ body:has(.ms-production) { background: #11121a; }
 
 /* Desktop */
 @media (min-width: 64rem) {
-  .ms-header__inner { gap: clamp(2rem, 5vw, 5rem); }
+  .ms-header__inner { grid-template-columns: auto minmax(0, 1fr) auto auto; gap: clamp(.75rem, 2.2vw, 2.25rem); }
   .ms-header__nav { justify-self: center; display: flex; align-items: center; gap: clamp(1.25rem, 2.5vw, 2.6rem); }
   .ms-header__nav a { min-height: 2.75rem; display: inline-flex; align-items: center; gap: .45rem; color: var(--ms-muted); font-size: .7rem; font-weight: 650; }
   .ms-header__nav a span { color: var(--ms-coral); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .45rem; }
@@ -489,9 +508,14 @@ body:has(.ms-production) { background: #11121a; }
   .ms-production .scanner__console { grid-column: 1; grid-row: 2; position: sticky; inset-block-start: 5.4rem; }
   .ms-production .results { grid-column: 2; grid-row: 2; min-height: 40rem; align-self: stretch; }
   .ms-production .license-dock__facts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .ms-production .results__actions { grid-template-columns: minmax(10rem, 1fr) minmax(9rem, .8fr) minmax(9rem, .7fr) auto; align-items: end; }
+  .ms-production .results__actions { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; }
+  .ms-production .button--export { width: 100%; }
   .ms-production .result-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .ms-production .result-facts > div { padding: .75rem; border-right: 1px solid var(--ms-night-line); border-bottom: 0; }
+}
+
+@media (min-width: 84rem) {
+  .ms-production .results__actions { grid-template-columns: minmax(10rem, 1fr) minmax(9rem, .8fr) minmax(9rem, .8fr) minmax(9rem, auto); }
 }
 
 /* Full desktop data table */

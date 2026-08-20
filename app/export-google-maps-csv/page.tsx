@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 export default function ExportGoogleMapsCsvPage() {
   return (
     <SeoLanding
+      currentPath="/export-google-maps-csv"
       breadcrumb="Ekspor Google Maps ke CSV"
       kicker="EKSPOR GOOGLE MAPS KE CSV"
       title="Ekspor Data Google Maps ke CSV untuk Dikerjakan Lebih Lanjut"

@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 export default function CariDataBisnisPage() {
   return (
     <SeoLanding
+      currentPath="/cari-data-bisnis"
       breadcrumb="Cari Data Bisnis"
       kicker="CARI DATA BISNIS INDONESIA"
       title="Cari Data Bisnis Berdasarkan Niche dan Wilayah"

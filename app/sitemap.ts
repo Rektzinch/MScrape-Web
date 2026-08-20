@@ -15,10 +15,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/syarat-ketentuan", changeFrequency: "yearly", priority: 0.3 },
   ];
 
-  return pages.map((page) => ({
-    url: new URL(page.path, siteUrl).toString(),
-    lastModified,
-    changeFrequency: page.changeFrequency,
-    priority: page.priority,
-  }));
+  return pages.flatMap((page) => {
+    const englishPath = page.path === "/" ? "/en" : `/en${page.path}`;
+    const languages = {
+      "id-ID": new URL(page.path, siteUrl).toString(),
+      "en-US": new URL(englishPath, siteUrl).toString(),
+    };
+    return [
+      {
+        url: languages["id-ID"],
+        lastModified,
+        changeFrequency: page.changeFrequency,
+        priority: page.priority,
+        alternates: { languages },
+      },
+      {
+        url: languages["en-US"],
+        lastModified,
+        changeFrequency: page.changeFrequency,
+        priority: Math.max(0.2, page.priority - 0.05),
+        alternates: { languages },
+      },
+    ];
+  });
 }

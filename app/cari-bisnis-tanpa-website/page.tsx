@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 export default function CariBisnisTanpaWebsitePage() {
   return (
     <SeoLanding
+      currentPath="/cari-bisnis-tanpa-website"
       breadcrumb="Cari Bisnis Tanpa Website"
       kicker="CARI BISNIS TANPA WEBSITE"
       title="Cari Bisnis Tanpa Website untuk Riset Peluang Digital"

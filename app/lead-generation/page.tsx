@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 export default function LeadGenerationPage() {
   return (
     <SeoLanding
+      currentPath="/lead-generation"
       breadcrumb="Lead Generation Indonesia"
       kicker="LEAD GENERATION INDONESIA"
       title="Lead Generation Indonesia yang Dimulai dari Riset Lokal"
