@@ -94,7 +94,7 @@ test("hasil menampilkan ulasan dan Homepage menggantikan Dashboard sebagai tujua
     source("app/workbench.css"),
   ]);
   assert.match(scraper, /reviewCount/);
-  assert.match(rowRenderer, /data-label": "Ulasan"/);
+  assert.match(rowRenderer, /data-label": "Jumlah ulasan"/);
   assert.match(rowRenderer, /ulasan Google Maps/);
   assert.match(rowRenderer, /Tidak dikirim sumber/);
   assert.match(styles, /@media \(max-width: 59\.99rem\), \(pointer: coarse\)/);

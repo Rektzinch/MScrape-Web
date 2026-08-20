@@ -59,7 +59,7 @@ export function ScanResultRow({ row, sequence }: ScanResultRowProps) {
         : createElement("span", { className: "status-tag", "data-status": "missing" }, "Belum ada"),
     ),
     createElement("td", { "data-label": "Rating", className: "rating-cell" }, createElement("strong", null, row.rating || "—")),
-    createElement("td", { "data-label": "Ulasan", className: "review-count-cell" }, createElement("strong", null, row.reviewCount || "—"), createElement("span", { className: "cell-note" }, row.reviewCount ? "ulasan Google Maps" : "Tidak dikirim sumber")),
+    createElement("td", { "data-label": "Jumlah ulasan", className: "review-count-cell" }, createElement("strong", null, row.reviewCount || "—"), createElement("span", { className: "cell-note" }, row.reviewCount ? "ulasan Google Maps" : "Tidak dikirim sumber")),
     createElement("td", { "data-label": "Koordinat", className: "numeric-cell" }, row.coordinates || "—"),
     createElement("td", { "data-label": "Sumber", className: "source-cell" }, row.source ? createElement("a", { href: row.source, target: "_blank", rel: "noreferrer" }, "Buka Maps ↗") : createElement("span", null, "—")),
   );

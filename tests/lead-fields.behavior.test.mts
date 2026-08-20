@@ -9,6 +9,7 @@ import {
   recordsToText,
   toExportRecord,
 } from "../lib/lead-export.ts";
+import { parseBackendCsv } from "../lib/backend-results.ts";
 import { ScanResultRow, leadDetailItems } from "../app/_components/scan-result-row.ts";
 
 test("normalisasi mempertahankan field detail yang dikirim sumber dan mengosongkan field yang tidak dikirim", () => {
@@ -21,6 +22,7 @@ test("normalisasi mempertahankan field detail yang dikirim sumber dan mengosongk
     latitude: -7.78,
     longitude: 110.38,
     website_uri: "https://www.kopicontoh.id/menu",
+    reviewCount: 87,
     primary_type: "cafe",
     types: ["cafe", "food"],
     place_id: "ChIJ-example",
@@ -40,6 +42,7 @@ test("normalisasi mempertahankan field detail yang dikirim sumber dan mengosongk
   assert.equal(detailed.subdistrict, "Depok");
   assert.equal(detailed.domain, "kopicontoh.id");
   assert.equal(detailed.placeId, "ChIJ-example");
+  assert.equal(detailed.reviewCount, "87");
   assert.equal(detailed.coordinates, "-7.78, 110.38");
   assert.match(detailed.attributes, /Delivery/);
   assert.match(detailed.attributes, /Dine-in/);
@@ -95,4 +98,20 @@ test("baris hasil merender detail terisi pada struktur tabel yang dipakai kartu 
   assert.match(markup, /Kota/);
   assert.match(markup, /Place ID/);
   assert.match(markup, /data-label="Koordinat"/);
+});
+
+test("CSV backend memperkaya jumlah ulasan yang tidak ada pada respons JSON ringkas", () => {
+  const records = parseBackendCsv([
+    "title,address,review_count,review_rating,website,phone",
+    '"Kopi, Tengah","Jl. Mawar ""Baru""",128,4.8,https://kopi.example,+62123',
+  ].join("\r\n"));
+
+  assert.equal(records.length, 1);
+  assert.equal(records[0].title, "Kopi, Tengah");
+  assert.equal(records[0].address, 'Jl. Mawar "Baru"');
+
+  const normalized = normalizeLead(records[0]);
+  assert.ok(normalized);
+  assert.equal(normalized.reviewCount, "128");
+  assert.equal(normalized.rating, "4.8");
 });

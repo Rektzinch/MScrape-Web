@@ -3,7 +3,9 @@ import {
   backendFetch,
   getBackendConfig,
   readBackendJson,
+  type BackendConfig,
 } from "@/lib/backend";
+import { parseBackendCsv } from "@/lib/backend-results";
 import { DurableStoreError } from "@/lib/durable-store";
 import { ownsJob } from "@/lib/job-ownership";
 import { normalizeLead } from "@/lib/leads";
@@ -17,6 +19,20 @@ function normalizeStatus(value: unknown) {
   if (status === "working" || status === "running") return "running";
   if (status === "failed" || status === "cancelled") return "failed";
   return "pending";
+}
+
+async function completedCsvResults(config: BackendConfig, id: string) {
+  const response = await backendFetch(
+    config,
+    `/api/v1/jobs/${encodeURIComponent(id)}/download`,
+    { headers: { Accept: "text/csv" } },
+    8_000,
+  );
+  if (!response.ok) return [];
+
+  return parseBackendCsv(await response.text())
+    .map(normalizeLead)
+    .filter((row) => row !== null);
 }
 
 export async function GET(request: Request, context: RouteContext) {
@@ -61,9 +77,21 @@ export async function GET(request: Request, context: RouteContext) {
     const rawStatus = data.status ?? data.Status;
     const status = normalizeStatus(rawStatus);
     const rawResults = data.results;
-    const results = Array.isArray(rawResults)
+    let results = Array.isArray(rawResults)
       ? rawResults.map(normalizeLead).filter((row) => row !== null)
       : [];
+    if (
+      config.mode === "web"
+      && status === "completed"
+      && (results.length === 0 || results.some((row) => !row.reviewCount))
+    ) {
+      try {
+        const csvResults = await completedCsvResults(config, id);
+        if (csvResults.length > 0) results = csvResults;
+      } catch {
+        // The compact JSON result remains usable when the optional CSV is not ready yet.
+      }
+    }
     const rawCount = data.result_count;
     const resultCount =
       typeof rawCount === "number" ? rawCount : results.length || null;

@@ -253,9 +253,9 @@ html { scroll-padding-top: 5.25rem; }
 
 /* Footer and tier check */
 .ms-footer { max-width: none; padding-block: 0; background: var(--ms-night); color: var(--ms-light); }
-.ms-footer__line { min-height: 10rem; padding-block: 2rem max(2rem, env(safe-area-inset-bottom)); border-top: 1px solid var(--ms-night-line); display: grid; gap: 1.5rem; }
+.ms-footer__line { min-height: 10rem; padding-block: 2rem max(2rem, env(safe-area-inset-bottom)); border-top: 1px solid var(--ms-night-line); display: grid; justify-items: center; align-content: center; gap: .8rem; text-align: center; }
 .ms-footer__line > p { margin: 0; color: #8e8b95; font-size: .65rem; line-height: 1.55; }
-.ms-footer__links { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem 1.2rem; }
+.ms-footer__links { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .35rem 1.2rem; }
 .ms-footer__links a { min-height: 2.75rem; display: inline-flex; align-items: center; color: #aaa7b0; font-size: .62rem; font-weight: 650; }
 .tier-check-overlay { position: fixed; inset: 0; z-index: calc(var(--z-sticky) + 30); padding: 1.25rem; display: grid; place-items: center; background: rgb(17 18 26 / 94%); backdrop-filter: blur(16px); }
 .tier-check-overlay__content { width: min(100%, 28rem); display: grid; justify-items: center; gap: 1.25rem; text-align: center; }
@@ -450,8 +450,6 @@ body:has(.ms-production) { background: #11121a; }
   .ms-home .ms-faq { grid-template-columns: minmax(13rem, .48fr) minmax(0, 1fr); gap: clamp(2.5rem, 7vw, 7rem); }
   .ms-home .ms-closing { grid-template-columns: minmax(0, 1fr) minmax(15rem, .42fr); align-items: end; }
   .ms-closing > p { grid-column: 1 / -1; }
-  .ms-footer__line { grid-template-columns: auto minmax(0, 1fr); align-items: center; }
-  .ms-footer__links { grid-column: 1 / -1; }
   .ms-production .license-dock__bar { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
   .ms-production .license-details__body { grid-template-columns: minmax(0, 1fr) auto; align-items: end; }
   .ms-production .license-dock__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -482,8 +480,6 @@ body:has(.ms-production) { background: #11121a; }
   .ms-audience__roles > span { min-height: 8rem; }
   .ms-audience__roles > span:nth-child(even) { border-right: 1px solid var(--ms-ink); }
   .ms-audience__roles > span:last-child { border-right: 0; }
-  .ms-footer__line { grid-template-columns: auto minmax(0, 1fr) auto; gap: clamp(2rem, 6vw, 7rem); }
-  .ms-footer__links { grid-column: auto; }
   .ms-production-heading { grid-template-columns: minmax(22rem, 1fr) minmax(15rem, .38fr); align-items: end; gap: 2rem 4rem; }
   .ms-production-heading__index { grid-column: 1 / -1; }
   .ms-production-heading > p:not(.ms-production-heading__index) { grid-column: 2; grid-row: 2; }

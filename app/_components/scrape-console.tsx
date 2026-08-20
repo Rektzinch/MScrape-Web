@@ -741,7 +741,7 @@ export function ScrapeConsole() {
                 <table className="results-table">
                   <caption>Daftar bisnis hasil scan Google Maps</caption>
                   <thead>
-                    <tr><th scope="col">No</th><th scope="col">Bisnis</th><th scope="col">Alamat</th><th scope="col">Kontak</th><th scope="col">Website</th><th scope="col">Rating</th><th scope="col">Ulasan</th><th scope="col">Koordinat</th><th scope="col">Sumber</th></tr>
+                    <tr><th scope="col">No</th><th scope="col">Bisnis</th><th scope="col">Alamat</th><th scope="col">Kontak</th><th scope="col">Website</th><th scope="col">Rating</th><th scope="col">Jumlah ulasan</th><th scope="col">Koordinat</th><th scope="col">Sumber</th></tr>
                   </thead>
                   <tbody>{pagedRows.map((row, index) => {
                     const sequence = pageStart + index + 1;
