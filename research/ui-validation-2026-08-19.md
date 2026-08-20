@@ -38,3 +38,7 @@ Pengamatan langsung pada panel produksi mengonfirmasi refresh otomatis: timestam
 Verifikasi lokal menunjukkan lapisan orbit, node, dan garis sinyal telah dihapus dari visual Hero. Top-bar kini menggunakan latar grid kertas yang sama dengan Homepage, garis aksen oranye, serta tombol menu berpermukaan tinta berkontras tinggi.
 
 Halaman Produksi lokal juga berhasil dirender setelah perluasan model hasil. Top-bar yang sama tampil konsisten di atas workspace dan kontrol ekspor kini menjelaskan bahwa CSV berisi data bisnis lengkap.
+
+## Verifikasi produksi 20 Agustus 2026
+
+Deployment produksi pada [https://mscrape.web.id](https://mscrape.web.id) menampilkan Hero tanpa lapisan orbit, node, atau garis sinyal. Top-bar grid kertas dengan garis aksen oranye dan tombol menu berpermukaan tinta tampil normal. Workspace Produksi pada [https://mscrape.web.id/produksi](https://mscrape.web.id/produksi) memuat konfigurasi Google Maps live dan pilihan CSV berlabel data bisnis lengkap.
