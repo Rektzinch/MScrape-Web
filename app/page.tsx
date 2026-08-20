@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { AppFooter } from "./_components/app-footer";
 import { AppHeader } from "./_components/app-header";
-import { HeroBannerCarousel } from "./_components/hero-banner-carousel";
 import { HomeAnalytics } from "./_components/home-analytics";
 import { HomeDashboardContent } from "./_components/home-dashboard-content";
 
@@ -21,51 +20,31 @@ export const metadata: Metadata = {
   },
 };
 
-const capabilities = [
-  ["Pencarian", "Kata kunci, kota, hingga kecamatan untuk akses Pro dan Max."],
-  ["Data", "Nama bisnis, alamat, telepon, website, rating, jumlah ulasan, tautan Google Maps, serta email bila tersedia pada sumber."],
-  ["Tindak lanjut", "Filter hasil dan ekspor daftar yang dipilih ke CSV untuk riset atau proses kerja tim."],
-] as const;
-
-const audiences = [
-  ["Sales & agen", "Susun daftar bisnis lokal sebagai titik awal riset dan percakapan yang lebih relevan."],
-  ["Freelancer", "Petakan bisnis di wilayah target saat menawarkan website, pemasaran, atau layanan digital."],
-  ["Riset pasar", "Lihat lanskap bisnis suatu niche dan lokasi sebelum menentukan peluang yang akan diprioritaskan."],
-] as const;
-
-const relatedPages = [
-  ["/google-maps-scraper", "Google Maps Scraper", "Pelajari cara mencari dan menyusun data bisnis dari Google Maps."],
-  ["/cari-data-bisnis", "Cari Data Bisnis", "Gunakan niche dan lokasi untuk menemukan bisnis yang relevan."],
-  ["/lead-generation", "Lead Generation Indonesia", "Bangun proses prospek lokal yang dimulai dari data yang terarah."],
-  ["/export-google-maps-csv", "Ekspor Google Maps ke CSV", "Siapkan daftar hasil scan dalam format CSV untuk dikerjakan lebih lanjut."],
-  ["/cari-bisnis-tanpa-website", "Cari Bisnis Tanpa Website", "Fokuskan riset pada bisnis yang belum menampilkan website pada hasil sumber."],
-] as const;
-
 const faqs = [
   {
     question: "Apa itu MScrape?",
     answer:
-      "MScrape adalah aplikasi untuk mencari dan mengumpulkan data bisnis yang tersedia dari hasil Google Maps berdasarkan kata kunci dan wilayah.",
+      "MScrape adalah workspace untuk mencari dan menyusun data bisnis yang tersedia dari hasil Google Maps berdasarkan niche dan wilayah.",
   },
   {
     question: "Data apa saja yang bisa ditemukan?",
     answer:
-      "Hasil scan dapat memuat nama bisnis, alamat, telepon, website, rating, jumlah ulasan, tautan Google Maps, dan email apabila informasi tersebut tersedia pada sumber hasil.",
+      "Hasil scan dapat memuat nama bisnis, kategori, alamat, telepon, website, rating, jumlah ulasan, tautan Google Maps, koordinat, dan email apabila tersedia pada sumber.",
   },
   {
-    question: "Apakah MScrape dapat mencari bisnis sampai tingkat kecamatan?",
+    question: "Apa beda jumlah scan dan batas hasil?",
     answer:
-      "Ya. Opsi cakupan kecamatan tersedia pada paket Pro dan Max, sedangkan kapasitas hasil mengikuti batas paket yang dipilih.",
+      "Jumlah scan menunjukkan berapa kali pencarian dapat dijalankan. Batas hasil menunjukkan jumlah maksimal bisnis yang diminta dalam satu scan.",
   },
   {
-    question: "Bagaimana cara mengunduh hasil pencarian?",
+    question: "Apakah pencarian bisa sampai tingkat kecamatan?",
     answer:
-      "Setelah scan selesai, gunakan filter yang dibutuhkan lalu unduh hasil yang dipilih ke format CSV dari workspace Produksi.",
+      "Ya. Opsi cakupan kecamatan tersedia pada paket Pro dan Max, sedangkan kapasitas hasil mengikuti paket yang aktif.",
   },
   {
-    question: "Bisakah saya mencari bisnis yang belum memiliki website?",
+    question: "Bagaimana cara mengunduh hasil?",
     answer:
-      "Ya. Setelah hasil tersedia, gunakan konteks ketersediaan website untuk membantu memprioritaskan bisnis yang belum menampilkan website pada hasil sumber.",
+      "Setelah scan selesai, pilih filter yang dibutuhkan lalu unduh daftar sebagai CSV, TXT, JSON, atau file yang siap diimpor ke Google Sheets.",
   },
 ] as const;
 
@@ -86,125 +65,55 @@ export default function Home() {
   return (
     <>
       <AppHeader current="info" />
-      <HeroBannerCarousel />
       <main className="seo-page seo-page--home dashboard-page">
-        <section className="seo-hero seo-hero--home wb-shell" aria-labelledby="home-title">
-          <div className="home-fold__copy">
-            <p className="seo-hero__kicker">MSCRAPE / DATA BISNIS INDONESIA</p>
+        <section className="home-hero wb-shell" aria-labelledby="home-title">
+          <div className="home-hero__copy">
+            <p className="home-hero__signal">Google Maps live · Indonesia</p>
             <h1 id="home-title">Cari data bisnis.<br />Mulai percakapan yang lebih tepat.</h1>
-            <p className="seo-hero__lead">
-              Tentukan niche dan wilayah, lalu ubah hasil Google Maps menjadi daftar kerja untuk riset pasar, penawaran layanan, dan tindak lanjut yang lebih terarah.
+            <p className="home-hero__lead">
+              Cari bisnis berdasarkan niche dan wilayah, lalu dapatkan nama, alamat, telepon,
+              website, rating, serta data kontak yang tersedia dalam satu workspace.
             </p>
-            <div className="seo-hero__actions">
-              <Link className="seo-button seo-button--primary" href="/produksi" data-analytics-cta="hero_buka_produksi">Buka Produksi →</Link>
-              <Link className="seo-button seo-button--quiet" href="/google-maps-scraper" data-analytics-cta="hero_pelajari_cara_kerja">Pelajari cara kerja</Link>
+            <div className="home-hero__actions">
+              <Link className="seo-button seo-button--primary" href="/produksi" data-analytics-cta="hero_buka_produksi">Mulai scan</Link>
+              <a className="home-hero__text-link" href="#cara-kerja" data-analytics-cta="hero_cara_kerja">Lihat cara kerja ↓</a>
             </div>
-            <HomeAnalytics />
+            <dl className="home-hero__facts" aria-label="Ringkasan layanan MScrape">
+              <div><dt>Sumber</dt><dd>Google Maps live</dd></div>
+              <div><dt>Cakupan</dt><dd>Kota &amp; kecamatan</dd></div>
+              <div><dt>Output</dt><dd>CSV · TXT · JSON</dd></div>
+            </dl>
           </div>
-          <figure className="home-fold__visual">
-            <Image
-              src="/media/production-console.webp"
-              alt="Workspace Produksi MScrape untuk mengatur pencarian dan meninjau hasil bisnis"
-              width={1600}
-              height={1000}
-              sizes="(min-width: 60rem) 54vw, 100vw"
-              priority
-            />
-            <figcaption>MASUKKAN NICHE · PILIH WILAYAH · TINJAU HASIL</figcaption>
+
+          <figure className="home-hero__visual">
+            <div className="home-hero__visual-frame">
+              <Image
+                src="/media/production-console.webp"
+                alt="Workspace Produksi MScrape untuk mengatur pencarian dan meninjau hasil bisnis"
+                width={1600}
+                height={1000}
+                sizes="(min-width: 60rem) 54vw, 100vw"
+                priority
+              />
+              <span className="home-hero__pin home-hero__pin--one" aria-hidden="true">1</span>
+              <span className="home-hero__pin home-hero__pin--two" aria-hidden="true">2</span>
+              <span className="home-hero__pin home-hero__pin--three" aria-hidden="true">3</span>
+            </div>
+            <figcaption>
+              <span><b>1</b> Masukkan niche</span>
+              <span><b>2</b> Pilih wilayah</span>
+              <span><b>3</b> Ekspor hasil</span>
+            </figcaption>
           </figure>
-          <dl className="seo-fact-row" aria-label="Ringkasan layanan MScrape">
-            <div><dt>Sumber</dt><dd>Google Maps live</dd></div>
-            <div><dt>Cakupan</dt><dd>Niche, kota &amp; kecamatan</dd></div>
-            <div><dt>Output</dt><dd>Filter &amp; ekspor CSV</dd></div>
-          </dl>
+          <HomeAnalytics />
         </section>
 
         <HomeDashboardContent />
 
-        <section className="seo-body wb-shell" aria-label="Informasi utama MScrape">
-          <article className="seo-article">
-            <p className="seo-article__eyebrow">Informasi yang tersedia</p>
-            <h2>Data apa yang bisa dicari dari Google Maps?</h2>
-            <p>
-              MScrape menata informasi yang tersedia pada hasil Google Maps agar lebih mudah ditinjau dalam satu workspace. Bergantung pada hasil sumber, daftar dapat mencakup nama bisnis, alamat, nomor telepon, website, rating, jumlah ulasan, tautan Google Maps, dan email bila tersedia.
-            </p>
-            <p>
-              Pencarian dimulai dari kata kunci dan wilayah. Anda dapat memakainya untuk menyusun gambaran bisnis lokal sebelum membuat keputusan riset atau proses penawaran berikutnya.
-            </p>
-          </article>
-
-          <article className="seo-article seo-article--ledger">
-            <p className="seo-article__eyebrow">Untuk pekerjaan yang lebih terarah</p>
-            <h2>Siapa yang cocok menggunakan MScrape?</h2>
-            <div className="seo-ledger">
-              {audiences.map(([title, detail]) => (
-                <div key={title}>
-                  <h3>{title}</h3>
-                  <p>{detail}</p>
-                </div>
-              ))}
-            </div>
-          </article>
-
-          <article className="seo-article">
-            <p className="seo-article__eyebrow">Dari lokasi ke daftar kerja</p>
-            <h2>Temukan calon pelanggan dengan konteks yang lebih jelas</h2>
-            <p>
-              Daftar hasil bukan pengganti penilaian Anda. Namun, data lokasi dan informasi kontak yang tersedia membantu menempatkan bisnis dalam konteks yang benar sebelum Anda melakukan riset lebih lanjut atau menghubungi mereka melalui kanal yang sesuai.
-            </p>
-            <p>
-              Untuk agensi, freelancer, dan tim sales, pencarian bisnis lokal dapat menjadi cara praktis untuk memulai pemetaan pasar tanpa mengandalkan daftar contoh yang tidak lagi relevan.
-            </p>
-          </article>
-
-          <article className="seo-article seo-article--ledger">
-            <p className="seo-article__eyebrow">Bekerja dengan hasil yang dipilih</p>
-            <h2>Ekspor data Google Maps ke CSV</h2>
-            <p>
-              Setelah scan selesai, gunakan filter untuk memeriksa hasil yang paling relevan. Daftar pilihan kemudian dapat diunduh sebagai CSV, sehingga dapat dilanjutkan dalam spreadsheet atau alur kerja internal Anda.
-            </p>
-            <div className="seo-ledger">
-              {capabilities.map(([title, detail]) => (
-                <div key={title}>
-                  <h3>{title}</h3>
-                  <p>{detail}</p>
-                </div>
-              ))}
-            </div>
-          </article>
-
-          <article className="seo-article">
-            <p className="seo-article__eyebrow">Peluang layanan digital</p>
-            <h2>Cari bisnis tanpa website dengan lebih fokus</h2>
-            <p>
-              Saat menawarkan website atau layanan digital, status ketersediaan website dapat membantu Anda memprioritaskan hasil yang perlu ditinjau. MScrape memungkinkan Anda menggunakan informasi tersebut sebagai salah satu konteks filter, bukan sebagai asumsi akhir mengenai kondisi digital sebuah bisnis.
-            </p>
-            <Link className="seo-text-link" href="/cari-bisnis-tanpa-website" data-analytics-cta="artikel_bisnis_tanpa_website">Pelajari pencarian bisnis tanpa website →</Link>
-          </article>
-        </section>
-
-        <section className="seo-related" aria-labelledby="home-related-title">
-          <div className="wb-shell">
-            <div className="seo-section-heading">
-              <p>Pilih halaman sesuai tujuan</p>
-              <h2 id="home-related-title">Mulai dari kebutuhan Anda</h2>
-            </div>
-            <div className="seo-related__grid">
-              {relatedPages.map(([href, label, description]) => (
-                <Link className="seo-related__card" href={href} key={href} data-analytics-cta={`panduan_${href.slice(1)}`}>
-                  <h3>{label}</h3>
-                  <p>{description}</p>
-                  <span aria-hidden="true">Buka panduan →</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
         <section className="seo-faq wb-shell" aria-labelledby="faq-title">
           <div className="seo-section-heading">
-            <p>Jawaban singkat</p>
-            <h2 id="faq-title">Pertanyaan umum tentang MScrape</h2>
+            <h2 id="faq-title">Pertanyaan yang sering muncul.</h2>
+            <p>Jawaban singkat sebelum Anda menjalankan scan pertama.</p>
           </div>
           <div className="seo-faq__list">
             {faqs.map((faq) => (
@@ -218,12 +127,11 @@ export default function Home() {
 
         <section className="seo-cta wb-shell" aria-labelledby="home-cta-title">
           <div>
-            <p>Mulai dengan pencarian yang spesifik</p>
-            <h2 id="home-cta-title">Ubah niche dan wilayah menjadi titik awal riset Anda.</h2>
+            <h2 id="home-cta-title">Mulai dari niche dan wilayah yang Anda pahami.</h2>
           </div>
           <div>
-            <p>Gunakan paket Free untuk mencoba alur kerja atau pilih Pro dan Max saat membutuhkan kapasitas pencarian yang lebih luas.</p>
-            <Link className="seo-button seo-button--dark" href="/produksi" data-analytics-cta="footer_buka_produksi">Buka Produksi</Link>
+            <p>Jalankan scan Free pertama, tinjau data yang tersedia, lalu ekspor daftar yang ingin Anda tindak lanjuti.</p>
+            <Link className="seo-button seo-button--dark" href="/produksi" data-analytics-cta="footer_buka_produksi">Buka Produksi →</Link>
           </div>
         </section>
       </main>

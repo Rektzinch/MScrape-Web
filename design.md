@@ -10,11 +10,12 @@ hangat, diberi panel hitam dan sinyal oranye. Dashboard bersifat naratif dan kay
 media; Produksi murni workspace operasional. Keduanya hanya dihubungkan oleh satu
 tombol pada header.
 
-- Dashboard: Workbench dengan H7 video produk, alur F4 pada grid koordinat,
-  F5 gambar produk beranotasi, tabel fakta F3, dan penutup Ft5.
-- Produksi: Workbench padat yang hanya memuat form, aktivasi lisensi, status,
+- Dashboard: Field Ledger dengan H2 split diptych, satu F5 gambar produk beranotasi,
+  alur F4, daftar data F3, pricing, use case, FAQ, CTA, dan penutup Ft2.
+- Produksi: Field Ledger padat yang hanya memuat form, aktivasi lisensi, status,
   hasil, filter, dan ekspor. Tidak boleh memuat narasi atau media Dashboard.
-- Nav: N1a dibenarkan karena produk hanya memiliki dua tujuan.
+- Nav: N9 edge-aligned minimal; wordmark dan satu trigger menu menjadi dua jangkar.
+  Footer memakai Ft2 inline rule agar tidak mengulang sitemap panjang.
 
 ## Tema
 
@@ -64,40 +65,41 @@ warna inline di luar token.
 
 - Free: 10 hasil, cooldown satu jam.
 - Pro: preset 10/50/75/100/150/250 dan jumlah custom kosong secara default
-  hingga 250 hasil,
-  cooldown satu menit.
+  hingga 250 hasil, tanpa cooldown.
 - Max: tanpa menu preset; input custom kosong secara default. Nilai kosong
   meminta semua hasil cocok di area, sedangkan angka positif menjadi target;
   tanpa cooldown.
 - Kode aktivasi diverifikasi server dan disimpan dalam cookie HttpOnly,
   SameSite=Lax. Sesi Pro/Max kedaluwarsa satu bulan sejak kode diredeem.
   API tetap melakukan enforcement walaupun UI dimanipulasi.
-- Harga Dashboard: Free Rp0; Pro Rp35.000 / bulan; Max Rp175.000 / bulan.
-- Harga ditempatkan langsung setelah hero sebagai rail kartu horizontal dengan
-  scroll-snap; kartu berikutnya tetap terlihat sebagian di mobile dan setiap
-  tier memiliki CTA yang jelas.
+- Harga Dashboard: Free Rp0; Pro Rp24.999 / 2 bulan; Max Rp149.000 / 2 bulan.
+- Kartu harga membedakan jatah scan dan batas bisnis per scan. Harga ditempatkan
+  setelah alur dan daftar data sebagai rail horizontal dengan scroll-snap;
+  kartu berikutnya tetap terlihat sebagian di mobile.
 - Pembelian diarahkan ke admin melalui `https://wa.me/6285111349699`.
 - Cooldown Free tetap mengikuti cookie browser ketika smartphone berpindah
   antara mode situs mobile dan desktop.
 
 ## Per halaman
 
-- Dashboard boleh memakai teks, satu gambar produk, satu video produk, pola
-  survey-grid koordinat, ikon garis custom, satu entrance animation, dan scene
-  fade berbasis scroll.
+- Dashboard memakai satu gambar produk, pola survey-grid koordinat, dan motion
+  hanya pada state interaktif. Tidak ada carousel otomatis atau permission lokasi.
 - Produksi tidak boleh memuat gambar/video Dashboard atau footer statement.
 - Produksi mewarisi survey-grid dan masthead hitam-oranye Dashboard tanpa
   membawa konten naratifnya. Hasil scan memakai ledger padat, pencarian lokal,
   dan pagination 50 baris. Filter awal selalu “Semua bisnis”, sehingga seluruh
   baris yang diterima tetap tampil sampai pengguna memilih filter lain.
-- Panel lisensi selalu menjadi blok pertama di Produksi. Ringkasannya mencatat
-  tier, tanggal aktivasi, tanggal berakhir, tombol Cek lisensi, dan disclosure
-  untuk input kode aktivasi.
+- Status lisensi menjadi bar ringkas: tier, sisa scan, Upgrade, dan Aktivasi.
+  Tanggal aktivasi, masa berakhir, serta tombol perbarui status berada di
+  disclosure "Detail lisensi".
+- Form utama hanya menampilkan Cari apa, Di mana, Cakupan, dan Jumlah hasil.
+  Negara serta Bahasa berada dalam "Pengaturan lanjutan". Aksi lokasi perangkat
+  berada di dekat field wilayah dan tidak pernah muncul pada landing page.
 - Free tidak merender kontrol custom. Pro hanya merender preset miliknya dan
   input custom kosong; Max hanya merender input custom kosong.
-- Kotak ringkasan dan kartu hasil mobile memakai bidang oranye berpola; nomor
-  urut hasil dibungkus badge hitam. Ikon notifikasi dihapus dan status scan
-  memakai Feedback center yang tetap terlihat. Toast menghilang setelah 3,2 detik.
+- Sebelum scan pertama, hasil hanya menampilkan empty state. Search, filter,
+  statistik, dan ekspor baru dirender setelah hasil tersedia. Nomor urut hasil
+  tetap memakai badge hitam; status scan memakai bahasa pengguna, bukan istilah API.
 - Keduanya berbagi wordmark, header, tombol lintas halaman, tokens, font, focus
   ring, dan bahasa rule.
 

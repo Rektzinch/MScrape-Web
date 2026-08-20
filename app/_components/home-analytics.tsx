@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 type AnalyticsPayload = {
-  event: "page_view" | "cta_click" | "scroll_depth" | "precise_location";
+  event: "page_view" | "cta_click" | "scroll_depth";
   path: "/";
   label?: string;
   depth?: number;
   timezone: string | null;
-  location?: { latitude: number; longitude: number; accuracyMeters: number };
 };
 
 function timezone() {
@@ -30,8 +29,6 @@ function emit(payload: AnalyticsPayload) {
 }
 
 export function HomeAnalytics() {
-  const [locationState, setLocationState] = useState<"idle" | "requesting" | "shared" | "unavailable">("idle");
-
   useEffect(() => {
     const seenDepths = new Set<number>();
     emit({ event: "page_view", path: "/", timezone: timezone() });
@@ -68,47 +65,5 @@ export function HomeAnalytics() {
     };
   }, []);
 
-  const requestLocation = () => {
-    if (!("geolocation" in navigator)) {
-      setLocationState("unavailable");
-      return;
-    }
-    setLocationState("requesting");
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        emit({
-          event: "precise_location",
-          path: "/",
-          timezone: timezone(),
-          location: {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracyMeters: position.coords.accuracy,
-          },
-        });
-        setLocationState("shared");
-      },
-      () => setLocationState("unavailable"),
-      { enableHighAccuracy: true, maximumAge: 0, timeout: 10_000 },
-    );
-  };
-
-  const label = locationState === "requesting"
-    ? "Meminta izin lokasi…"
-    : locationState === "shared"
-      ? "Lokasi presisi dibagikan"
-      : locationState === "unavailable"
-        ? "Lokasi tidak tersedia"
-        : "Bagikan lokasi presisi (opsional)";
-
-  return (
-    <button
-      type="button"
-      className="analytics-location-consent"
-      onClick={requestLocation}
-      disabled={locationState === "requesting" || locationState === "shared"}
-    >
-      {label}
-    </button>
-  );
+  return null;
 }

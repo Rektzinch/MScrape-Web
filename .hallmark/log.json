@@ -1,5 +1,15 @@
 [
   {
+    "date": "2026-08-20",
+    "scope": "app",
+    "macrostructure": "Field Ledger",
+    "theme": "custom",
+    "theme_axes": "light / geometric-sans / warm",
+    "vibe": "warm field notes, black workbench, signal orange",
+    "enrichment": "H2 5/7 product proof + field ledger + progressive production disclosure",
+    "brief": "MScrape audit rebrand with concise landing, scan-based pricing, and task-first production"
+  },
+  {
     "date": "2026-08-13",
     "scope": "app",
     "macrostructure": "Workbench",

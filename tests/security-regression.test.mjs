@@ -135,12 +135,13 @@ test("gateway admin memakai token, audit inventaris, dan pesan aktivasi perangka
 });
 
 test("analytics Homepage mencatat interaksi tanpa IP mentah dan panel admin membaca ringkasan terautentikasi", async () => {
-  const [route, ledger, client, home, dashboardContent, styles, adminProduction, adminLocal, adminHome] = await Promise.all([
+  const [route, ledger, client, home, dashboardContent, consoleClient, styles, adminProduction, adminLocal, adminHome] = await Promise.all([
     source("app/api/analytics/route.ts"),
     source("lib/admin-analytics-ledger.ts"),
     source("app/_components/home-analytics.tsx"),
     source("app/page.tsx"),
     source("app/_components/home-dashboard-content.tsx"),
+    source("app/_components/scrape-console.tsx"),
     source("app/workbench.css"),
     source("../mscrape-redeem-admin/api/trpc/[...path].ts"),
     source("../mscrape-redeem-admin/server/routers.ts"),
@@ -156,9 +157,9 @@ test("analytics Homepage mencatat interaksi tanpa IP mentah dan panel admin memb
   assert.match(ledger, /publicVisitorId/);
   assert.match(ledger, /precise_location/);
   assert.match(client, /event: "page_view"/);
-  assert.match(client, /navigator\.geolocation\.getCurrentPosition/);
-  assert.match(client, /enableHighAccuracy: true/);
-  assert.match(client, /onClick=\{requestLocation\}/);
+  assert.doesNotMatch(client, /navigator\.geolocation\.getCurrentPosition/);
+  assert.match(consoleClient, /navigator\.geolocation\.getCurrentPosition/);
+  assert.match(consoleClient, /onClick=\{useCurrentLocation\}/);
   assert.match(home, /data-analytics-cta="hero_buka_produksi"/);
   assert.match(home, /href="\/produksi" data-analytics-cta="hero_buka_produksi"/);
   assert.match(dashboardContent, /href=\{plan\.href\}\s+data-analytics-cta=/);

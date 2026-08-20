@@ -23,19 +23,19 @@ export async function GET(request: Request, context: RouteContext) {
   const config = getBackendConfig();
   if (!config) {
     return Response.json(
-      { message: "Backend API belum dikonfigurasi." },
+      { message: "Layanan hasil belum tersedia." },
       { status: 503 },
     );
   }
 
   const { id } = await context.params;
   if (!/^[a-zA-Z0-9_-]{6,128}$/.test(id)) {
-    return Response.json({ message: "ID job tidak valid." }, { status: 400 });
+    return Response.json({ message: "ID hasil tidak valid." }, { status: 400 });
   }
 
   try {
     if (!await ownsJob(id, existingVisitorSession(request))) {
-      return Response.json({ message: "Job tidak tersedia." }, { status: 404 });
+      return Response.json({ message: "Hasil scan tidak tersedia." }, { status: 404 });
     }
 
     const response = await backendFetch(
@@ -51,7 +51,7 @@ export async function GET(request: Request, context: RouteContext) {
         {
           message: backendErrorMessage(
             data,
-            `Status job tidak tersedia (${response.status}).`,
+            `Status hasil tidak tersedia (${response.status}).`,
           ),
         },
         { status: response.status === 404 ? 404 : 502 },
@@ -80,8 +80,8 @@ export async function GET(request: Request, context: RouteContext) {
     });
   } catch (error) {
     const message = error instanceof DurableStoreError
-      ? "Pemeriksaan akses job sementara tidak tersedia."
-      : "Backend tidak dapat dijangkau.";
+      ? "Pemeriksaan akses hasil sementara tidak tersedia."
+      : "Layanan tidak dapat dijangkau.";
     return Response.json(
       { message },
       { status: error instanceof DurableStoreError ? 503 : 502 },

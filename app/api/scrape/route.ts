@@ -164,14 +164,14 @@ export async function POST(request: Request) {
     credit = await consumeCredit(license, visitor.id, rate.access);
   } catch {
     return Response.json(
-      { message: "Ledger kredit sementara tidak tersedia." },
+      { message: "Status jatah scan belum dapat dibaca. Coba lagi." },
       { status: 503, headers: noStoreHeaders },
     );
   }
   if (!credit.allowed) {
     return Response.json(
       {
-        message: `Kredit Tier ${credit.access.label} habis. Aktifkan atau perbarui lisensi untuk melanjutkan scan.`,
+        message: `Jatah scan paket ${credit.access.label} habis. Aktifkan atau perbarui lisensi untuk melanjutkan.`,
         access: credit.access,
       },
       { status: 429, headers: noStoreHeaders },
@@ -291,14 +291,14 @@ export async function POST(request: Request) {
     const jobId = data.job_id ?? data.id;
     if (typeof jobId !== "string" || !jobId) {
       return Response.json(
-        { message: "Backend tidak mengembalikan ID job." },
+        { message: "Layanan tidak mengembalikan ID hasil." },
         { status: 502, headers: responseHeaders },
       );
     }
 
     if (!await rememberJobOwner(jobId, visitor.id)) {
       return Response.json(
-        { message: "Job tidak dapat diamankan. Coba lagi." },
+        { message: "Scan tidak dapat disimpan. Coba lagi." },
         { status: 502, headers: responseHeaders },
       );
     }
@@ -314,8 +314,8 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     const message = error instanceof DurableStoreError
-      ? "Kontrol akses job sementara tidak tersedia."
-      : "Backend tidak dapat dijangkau.";
+      ? "Kontrol akses hasil sementara tidak tersedia."
+      : "Layanan tidak dapat dijangkau.";
     return Response.json(
       { message, access: credit.access },
       { status: error instanceof DurableStoreError ? 503 : 502, headers: responseHeaders },

@@ -26,12 +26,11 @@ export default function ProduksiPage() {
         <section className="production-masthead" aria-labelledby="production-title">
           <div className="production-heading wb-shell">
             <div>
-              <p>Workspace langsung · Google Maps live</p>
               <h1 id="production-title">Produksi</h1>
             </div>
             <p>
-              Tentukan niche dan wilayah. Pro menerima jumlah manual hingga 250; Max menerima
-              hingga 500 hasil per scan. Status hasil selalu menjelaskan bila sumber atau batas proses menghentikan pengambilan.
+              Cari bisnis berdasarkan niche dan wilayah. Atur jumlah hasil, jalankan scan,
+              lalu tinjau dan ekspor data yang tersedia.
             </p>
           </div>
         </section>

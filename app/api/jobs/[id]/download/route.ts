@@ -9,7 +9,7 @@ export async function GET(request: Request, context: RouteContext) {
   const config = getBackendConfig();
   if (!config) {
     return Response.json(
-      { message: "Backend API belum dikonfigurasi." },
+      { message: "Layanan unduhan belum tersedia." },
       { status: 503 },
     );
   }
@@ -23,7 +23,7 @@ export async function GET(request: Request, context: RouteContext) {
 
   const { id } = await context.params;
   if (!/^[a-zA-Z0-9_-]{6,128}$/.test(id)) {
-    return Response.json({ message: "ID job tidak valid." }, { status: 400 });
+    return Response.json({ message: "ID hasil tidak valid." }, { status: 400 });
   }
 
   try {
@@ -55,7 +55,7 @@ export async function GET(request: Request, context: RouteContext) {
   } catch (error) {
     const message = error instanceof DurableStoreError
       ? "Pemeriksaan akses file sementara tidak tersedia."
-      : "Backend tidak dapat dijangkau.";
+      : "Layanan tidak dapat dijangkau.";
     return Response.json(
       { message },
       { status: error instanceof DurableStoreError ? 503 : 502 },

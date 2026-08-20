@@ -1,259 +1,172 @@
-
-import Image from "next/image";
-
-const principles = [
-  {
-    term: "Manfaat",
-    detail: "Kumpulkan data bisnis yang relevan agar riset, analisis, dan tindak lanjut dapat dimulai dari konteks yang jelas.",
-  },
-  {
-    term: "Kelebihan",
-    detail: "Hasil Google Maps diminta saat scan berjalan, lalu dapat difilter dan diunduh dalam format kerja yang sesuai tanpa data contoh.",
-  },
-  {
-    term: "Cocok untuk",
-    detail: "Tim sales, peneliti pasar, agen, freelancer, dan siapa pun yang membutuhkan data bisnis untuk langkah berikutnya.",
-  },
-];
-
-const specifications = [
-  ["Sumber prospek", "Google Maps live", "Data diminta saat scan dijalankan"],
-  ["Alur kerja", "Cari · filter · ekspor", "Siap untuk riset dan outreach"],
-  ["Cocok untuk", "Layanan digital lokal", "Agen web, freelancer, dan tim sales"],
-  ["Akses", "Free, Pro, atau Max", "Pilih kapasitas sesuai ritme pencarian"],
-  ["Data", "Kontak sesuai sumber", "Kolom kosong tetap transparan"],
-  ["Langkah berikutnya", "Pilih paket lalu mulai scan", "CTA tersedia di setiap paket"],
-];
-
 const processSteps = [
   {
-    icon: "query",
-    coordinate: "01 / TEMUKAN",
-    title: "Tentukan pasar lokal",
-    detail: "Masukkan niche dan wilayah untuk mengarahkan pencarian kepada bisnis yang relevan dengan layanan Anda.",
+    number: "01",
+    title: "Masukkan niche",
+    detail: "Tulis jenis bisnis yang ingin dicari, misalnya klinik gigi, toko bangunan, atau bengkel motor.",
   },
   {
-    icon: "filter",
-    coordinate: "02 / PILAH",
-    title: "Fokus pada peluang",
-    detail: "Gunakan ketersediaan website, email, dan telepon sebagai konteks untuk memprioritaskan tindak lanjut.",
+    number: "02",
+    title: "Pilih wilayah",
+    detail: "Tentukan kota atau kabupaten. Paket Pro dan Max dapat mempersempit pencarian sampai kecamatan.",
   },
   {
-    icon: "export",
-    coordinate: "03 / TINDAK LANJUT",
-    title: "Bawa daftar kerja Anda",
-    detail: "Ekspor hasil yang dipilih ke CSV untuk riset, penawaran layanan, dan percakapan penjualan berikutnya.",
+    number: "03",
+    title: "Tinjau dan ekspor",
+    detail: "Periksa hasil, filter bisnis berdasarkan website atau kontak, lalu unduh daftar yang dipilih.",
   },
+] as const;
+
+const dataFields = [
+  ["Identitas", "Nama bisnis dan kategori"],
+  ["Lokasi", "Alamat, koordinat, dan tautan Maps"],
+  ["Kontak", "Telepon dan email bila tersedia"],
+  ["Kehadiran digital", "Website dan domain"],
+  ["Reputasi", "Rating dan jumlah ulasan"],
+  ["Transparansi", "Kolom kosong tidak diisi perkiraan"],
+] as const;
+
+const audiences = [
+  ["Sales dan agen", "Menyusun daftar bisnis lokal sebelum riset dan percakapan penawaran."],
+  ["Freelancer digital", "Mencari bisnis di wilayah target untuk layanan website, desain, atau pemasaran."],
+  ["Peneliti pasar", "Melihat lanskap niche dan lokasi sebelum menentukan segmen yang perlu ditinjau."],
+  ["Pemilik usaha", "Memetakan calon mitra, pemasok, kompetitor, atau cabang bisnis di area tertentu."],
 ] as const;
 
 const adminWhatsapp = "https://wa.me/6285111349699";
 
 const pricing = [
   {
-    code: "01 / FREE",
     tier: "Free",
     price: "Rp0",
     term: "selamanya",
-    badge: null,
-    capacity: "10 kredit · 10 hasil / scan",
-    cooldown: "Jeda 1 jam / scan",
+    scans: "10 scan",
+    results: "Maks. 10 bisnis / scan",
+    cooldown: "Cooldown 1 jam",
     cta: "Mulai Free →",
     href: "/produksi",
     external: false,
+    badge: null,
   },
   {
-    code: "02 / PRO",
     tier: "Pro",
     price: "Rp24.999",
     term: "/ 2 bulan",
-    badge: "Paling laris",
-    capacity: "500 kredit · input manual hingga 250 hasil / scan",
+    scans: "500 scan",
+    results: "Maks. 250 bisnis / scan",
     cooldown: "Tanpa cooldown",
-    cta: "Beli Pro via WhatsApp ↗",
+    cta: "Pilih Pro ↗",
     href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Pro 2 bulan seharga Rp24.999.")}`,
     external: true,
+    badge: "Paling laris",
   },
   {
-    code: "03 / MAX",
     tier: "Max",
     price: "Rp149.000",
     term: "/ 2 bulan",
-    badge: null,
-    capacity: "1.500 kredit · input manual hingga 500 hasil / scan",
+    scans: "1.500 scan",
+    results: "Maks. 500 bisnis / scan",
     cooldown: "Tanpa cooldown",
-    cta: "Beli Max via WhatsApp ↗",
+    cta: "Pilih Max ↗",
     href: `${adminWhatsapp}?text=${encodeURIComponent("Halo admin MScrape, saya ingin membeli lisensi Max 2 bulan seharga Rp149.000.")}`,
     external: true,
+    badge: null,
   },
 ] as const;
-
-function ProcessIcon({ name }: { name: (typeof processSteps)[number]["icon"] }) {
-  if (name === "query") {
-    return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="21" cy="21" r="11" /><path d="m29 29 9 9M21 15v12M15 21h12" /></svg>;
-  }
-  if (name === "filter") {
-    return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 12h32L28 25v10l-8 4V25L8 12Z" /><path d="M14 18h20" /></svg>;
-  }
-  return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 30v8h28v-8M24 8v22M16 22l8 8 8-8" /></svg>;
-}
 
 export function HomeDashboardContent() {
   return (
     <>
-      <section className="dashboard-pricing" id="pricing" aria-labelledby="pricing-title">
-          <div className="dashboard-pricing__inner wb-shell dashboard-scroll-scene">
-            <header className="dashboard-pricing__head dashboard-scroll-copy">
-              <div>
-                <p className="dashboard-pricing__kicker">Harga akses · Pro/Max aktif 2 bulan</p>
-                <h2 id="pricing-title">Pilih akses yang mendukung ritme penjualan Anda.</h2>
-              </div>
-              <div className="dashboard-pricing__intro">
-                <p>
-                  Mulai gratis untuk mencoba alur kerja. Pilih Pro atau Max saat Anda membutuhkan kapasitas pencarian
-                  yang lebih besar untuk membangun daftar prospek secara konsisten.
-                </p>
-                <span aria-hidden="true">Geser kartu untuk memilih paket →</span>
-              </div>
-            </header>
-
-            <div className="pricing-rail" aria-label="Harga lisensi MScrape" tabIndex={0}>
-              {pricing.map((plan) => (
-                <article className="pricing-card" id={`pricing-${plan.tier.toLowerCase()}`} data-tier={plan.tier.toLowerCase()} key={plan.tier}>
-                  <header className="pricing-card__head">
-                    <span>{plan.code}</span>
-                    {plan.badge ? <span className="pricing-card__badge">{plan.badge}</span> : <span>{plan.term}</span>}
-                  </header>
-                  <div className="pricing-card__title">
-                    <h3>{plan.tier}</h3>
-                    <p>{plan.price}</p>
-                  </div>
-                  <dl className="pricing-card__facts">
-                    <div><dt>Batas hasil</dt><dd>{plan.capacity}</dd></div>
-                    <div><dt>Kecepatan</dt><dd>{plan.cooldown}</dd></div>
-                  </dl>
-                  <a
-                    className="pricing-card__cta"
-                    href={plan.href}
-                    data-analytics-cta={`pricing_${plan.tier.toLowerCase()}`}
-                    {...(plan.external ? { target: "_blank", rel: "noreferrer" } : {})}
-                  >
-                    {plan.cta}
-                  </a>
-                </article>
-              ))}
-            </div>
-
-            <p className="dashboard-pricing__note">
-              Ingin memilih paket yang tepat? <a href={adminWhatsapp} target="_blank" rel="noreferrer" data-analytics-cta="pricing_chat_admin">Chat admin MScrape · 0851 1134 9699 ↗</a>
-            </p>
-          </div>
-        </section>
-
-        <section className="dashboard-essay wb-shell dashboard-scroll-scene" aria-labelledby="essay-title">
-          <header className="dashboard-section-head dashboard-scroll-copy">
-            <h2 id="essay-title">Satu alat untuk membuka peluang sebelum percakapan dimulai.</h2>
-            <p>
-              MScrape menyusun titik awal pencarian prospek. Workspace Produksi tetap menjadi tempat Anda menjalankan
-              scan, memeriksa hasil, dan menyiapkan daftar untuk ditindaklanjuti.
-            </p>
+      <section className="dashboard-process" id="cara-kerja" aria-labelledby="process-title">
+        <div className="dashboard-process__inner wb-shell">
+          <header className="dashboard-process__head">
+            <h2 id="process-title">Tiga langkah dari pencarian ke daftar kerja.</h2>
+            <p>Alurnya tetap pendek: tentukan bisnis, pilih area, lalu periksa hasil yang benar-benar dikembalikan sumber.</p>
           </header>
-          <div className="dashboard-essay__body">
-            <p>
-              Ketika Anda menjual website, strategi digital, atau layanan pemasaran, bisnis yang belum memiliki website
-              dapat menjadi pintu masuk percakapan yang relevan. Masukkan niche dan wilayah untuk mulai memetakan peluang lokal.
-            </p>
-            <p>
-              Data yang ditampilkan mengikuti hasil yang tersedia dari sumber: nama, alamat, telepon, email, website,
-              rating, jumlah ulasan, koordinat, dan tautan sumber. Transparansi ini membantu Anda menentukan prioritas outreach dengan konteks yang jelas.
-            </p>
-          </div>
-          <dl className="principle-ledger">
-            {principles.map((item) => (
-              <div key={item.term}>
-                <dt>{item.term}</dt>
-                <dd>{item.detail}</dd>
-              </div>
+          <ol className="process-track">
+            {processSteps.map((step) => (
+              <li key={step.number}>
+                <span className="process-track__number" aria-hidden="true">{step.number}</span>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.detail}</p>
+                </div>
+              </li>
             ))}
-          </dl>
-        </section>
+          </ol>
+        </div>
+      </section>
 
-        <section className="dashboard-process" aria-labelledby="process-title">
-          <div className="dashboard-process__inner wb-shell dashboard-scroll-scene">
-                      <header className="dashboard-process__head dashboard-scroll-copy">
-            <h2 id="process-title">Dari pencarian lokal ke peluang penjualan.</h2>
-              <p>
-                Tiga langkah sederhana menjaga fokus Anda: temukan bisnis yang relevan, pilah berdasarkan konteks,
-                lalu bawa daftar pilihan ke proses tindak lanjut.
-              </p>
-            </header>
-            <ol className="process-track dashboard-scroll-list">
-              {processSteps.map((step) => (
-                <li key={step.coordinate}>
-                  <span className="process-track__icon"><ProcessIcon name={step.icon} /></span>
-                  <div>
-                    <span className="process-track__coordinate">{step.coordinate}</span>
-                    <h3>{step.title}</h3>
-                    <p>{step.detail}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        <section className="dashboard-capture wb-shell dashboard-scroll-scene" aria-labelledby="capture-title">
-          <header className="dashboard-section-head dashboard-section-head--compact dashboard-scroll-copy">
-            <h2 id="capture-title">Workspace yang dibuat untuk mempercepat tindak lanjut.</h2>
-            <p>
-              Satu tampilan Produksi memperlihatkan alur dari konfigurasi pencarian sampai daftar prospek siap diperiksa.
-            </p>
-          </header>
-          <figure className="product-capture">
-            <div className="product-capture__image">
-              <Image
-                src="/media/production-console.webp"
-                alt="Workspace Produksi MScrape menampilkan konfigurasi, status API, dan hasil scan"
-                width={1600}
-                height={1000}
-                sizes="(min-width: 60rem) 72rem, 100vw"
-                loading="lazy"
-              />
-              <span className="capture-pin capture-pin--one" aria-hidden="true">1</span>
-              <span className="capture-pin capture-pin--two" aria-hidden="true">2</span>
-              <span className="capture-pin capture-pin--three" aria-hidden="true">3</span>
+      <section className="dashboard-data wb-shell" aria-labelledby="data-title">
+        <header className="dashboard-section-head">
+          <h2 id="data-title">Data yang tersedia, tanpa menebak kolom kosong.</h2>
+          <p>Setiap scan menyusun informasi bisnis yang benar-benar tersedia pada sumber ke dalam format yang mudah ditinjau.</p>
+        </header>
+        <dl className="data-ledger">
+          {dataFields.map(([term, detail]) => (
+            <div key={term}>
+              <dt>{term}</dt>
+              <dd>{detail}</dd>
             </div>
-            <figcaption>
-              <ol className="capture-legend">
-                <li><span>1</span> Tentukan pasar yang ingin Anda jangkau melalui niche dan wilayah.</li>
-                <li><span>2</span> Baca status scan serta data yang tersedia pada konteks yang sama.</li>
-                <li><span>3</span> Filter hasil dan ekspor daftar pilihan untuk proses outreach.</li>
-              </ol>
-            </figcaption>
-          </figure>
-        </section>
+          ))}
+        </dl>
+      </section>
 
-        <section className="dashboard-spec wb-shell dashboard-scroll-scene" aria-labelledby="spec-title">
-          <header className="dashboard-section-head dashboard-section-head--compact dashboard-scroll-copy">
-            <h2 id="spec-title">Nilai yang Anda bawa ke proses penjualan.</h2>
-            <p>Setiap bagian dirancang untuk membantu Anda bergerak dari pencarian lokal menuju daftar prospek yang lebih terarah.</p>
+      <section className="dashboard-pricing" id="pricing" aria-labelledby="pricing-title">
+        <div className="dashboard-pricing__inner wb-shell">
+          <header className="dashboard-pricing__head">
+            <div>
+              <h2 id="pricing-title">Pilih jumlah scan, lalu lihat batas hasil per scan.</h2>
+            </div>
+            <div className="dashboard-pricing__intro">
+              <p>Dua angka ini berbeda. Jumlah scan adalah jatah pencarian; batas hasil adalah jumlah maksimal bisnis dalam satu pencarian.</p>
+              <span aria-hidden="true">Geser untuk melihat paket →</span>
+            </div>
           </header>
-          <div className="spec-table-wrap">
-            <table className="dashboard-spec__table">
-              <caption className="sr-only">Manfaat dan perilaku MScrape</caption>
-              <thead>
-                <tr><th>Bagian</th><th>Manfaat</th><th>Untuk Anda</th></tr>
-              </thead>
-              <tbody>
-                {specifications.map(([part, behavior, note]) => (
-                  <tr key={part}>
-                    <th scope="row">{part}</th><td>{behavior}</td><td>{note}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
 
+          <div className="pricing-rail" aria-label="Harga lisensi MScrape" tabIndex={0}>
+            {pricing.map((plan) => (
+              <article className="pricing-card" id={`pricing-${plan.tier.toLowerCase()}`} data-tier={plan.tier.toLowerCase()} key={plan.tier}>
+                <header className="pricing-card__head">
+                  <span>{plan.tier}</span>
+                  {plan.badge ? <span className="pricing-card__badge">{plan.badge}</span> : <span>{plan.term}</span>}
+                </header>
+                <div className="pricing-card__title">
+                  <h3>{plan.price}</h3>
+                  <p>{plan.term}</p>
+                </div>
+                <dl className="pricing-card__facts">
+                  <div><dt>Jatah pencarian</dt><dd>{plan.scans}</dd></div>
+                  <div><dt>Per pencarian</dt><dd>{plan.results}</dd></div>
+                  <div><dt>Jeda</dt><dd>{plan.cooldown}</dd></div>
+                </dl>
+                <a
+                  className="pricing-card__cta"
+                  href={plan.href}
+                  data-analytics-cta={`pricing_${plan.tier.toLowerCase()}`}
+                  {...(plan.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                >
+                  {plan.cta}
+                </a>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="dashboard-audience wb-shell" aria-labelledby="audience-title">
+        <header className="dashboard-section-head">
+          <h2 id="audience-title">Untuk orang yang perlu memulai dari data lokal.</h2>
+          <p>MScrape membantu menyiapkan bahan riset. Penilaian dan cara menghubungi bisnis tetap berada di tangan Anda.</p>
+        </header>
+        <div className="audience-ledger">
+          {audiences.map(([title, detail]) => (
+            <article key={title}>
+              <h3>{title}</h3>
+              <p>{detail}</p>
+            </article>
+          ))}
+        </div>
+      </section>
     </>
   );
 }
