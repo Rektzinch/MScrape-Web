@@ -22,3 +22,13 @@ Homepage lokal menampilkan CTA yang dapat dicatat serta kontrol lokasi presisi o
 Lapisan grafis Hero juga diverifikasi di DOM: tiga node, orbit, dan garis sinyal dirender di atas visual workspace; node memakai animasi `home-signal-pulse` saat pengguna tidak memilih reduced-motion.
 
 Verifikasi pengiriman event lokal mencapai endpoint yang benar, tetapi ledger mengembalikan status tidak tersedia karena server pengembangan tidak menerima kredensial penyimpanan durable. Pengujian pencatatan nyata dijadwalkan pada deployment produksi yang memiliki konfigurasi Redis.
+
+Pada produksi, dua pengiriman `page_view` dari sesi browser yang sama menghasilkan `accepted: true` dan `recorded: false` keduanya, yang mengonfirmasi event awal dari pemuatan halaman telah direkam dan event ganda tidak ditulis kembali.
+
+Query analytics panel admin yang terautentikasi berhasil membaca ringkasan produksi: pengunjung hari ini dan tujuh hari, jumlah event, klik CTA, jam puncak, histogram 24 jam, serta aktivitas terbaru tersedia melalui gateway yang sama dengan ledger lisensi.
+
+Verifikasi visual panel produksi setelah autentikasi memperlihatkan blok **Live analytics** dengan jumlah pengunjung, klik CTA, event, jam tersibuk, grafik per jam, dan feed event yang memuat waktu serta lokasi jaringan atau lokasi opt-in ketika tersedia.
+
+Pada build panel terakhir, status sinkronisasi menampilkan waktu hingga detik dan feed memuat event produksi aktual setelah query awal selesai. Hal ini memungkinkan interval auto-refresh 10 detik dibaca secara presisi.
+
+Pengamatan langsung pada panel produksi mengonfirmasi refresh otomatis: timestamp sinkronisasi berubah dari `06.27.48` menjadi `06.28.00` tanpa memuat ulang halaman.
