@@ -11,20 +11,20 @@ export function AppHeader({ current }: AppHeaderProps) {
     <header className="ms-header">
       <div className="ms-header__inner wb-shell">
         <Link className="ms-wordmark" href="/" aria-label="MScrape — kembali ke Beranda">
-          <span className="ms-wordmark__name">mscrape</span>
+          <span className="ms-wordmark__name">MSCRAPE</span>
           <span className="ms-wordmark__signal" aria-hidden="true" />
         </Link>
         <nav className="ms-header__nav" aria-label="Navigasi utama">
-          <Link href="/#cara-kerja">Cara kerja</Link>
-          <Link href="/#data">Data</Link>
-          <Link href="/#pricing">Harga</Link>
-          <Link href="/#faq">FAQ</Link>
+          <Link href="/#cara-kerja"><span>01</span>Cara kerja</Link>
+          <Link href="/#data"><span>02</span>Data</Link>
+          <Link href="/#pricing"><span>03</span>Harga</Link>
+          <Link href="/#faq"><span>04</span>FAQ</Link>
         </nav>
         <div className="ms-header__actions">
           {current === "production" ? (
-            <span className="ms-header__current"><span aria-hidden="true" /> Produksi aktif</span>
+            <span className="ms-header__current"><span aria-hidden="true" /> Workspace aktif</span>
           ) : (
-            <TierCheckLink className="ms-header__production" href="/produksi">Buka Produksi <span aria-hidden="true">↗</span></TierCheckLink>
+            <TierCheckLink className="ms-header__production" href="/produksi">Buka workspace <span aria-hidden="true">↗</span></TierCheckLink>
           )}
         </div>
         <AppMenu current={current} />

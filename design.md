@@ -1,21 +1,22 @@
-# MScrape — Visual System 2026
+# MScrape — Signal Atlas System
 
-MScrape memakai bahasa visual “local intelligence workspace”: kanvas publik yang
-terang dan fokus mengambil inspirasi dari TokenHarbor, sementara permukaan produk,
-ritme garis, dan workspace gelap mengambil inspirasi dari Qoder. Identitas, copy,
-data, dan perilaku tetap milik MScrape.
+MScrape memakai bahasa visual “signal atlas”: gabungan editorial landing page,
+grafik pemetaan kota, dan permukaan kerja data yang padat. Arah ini mengambil
+pelajaran dari kualitas kurasi Awwwards, Land-book, Godly, Lapa Ninja, dan Refero,
+namun komposisi, identitas, copy, serta perilakunya dibuat khusus untuk MScrape.
 
 ## Prinsip
 
 - Satu ide per bidang: value proposition, aksi, bukti produk, manfaat, harga, lalu penutup.
 - Bukti produk wajib terlihat dalam viewport pertama di desktop dan langsung setelah aksi di mobile.
-- Hijau hanya untuk status hidup dan tindakan penting, bukan dekorasi massal.
-- Tidak memakai hero gradient, glass card, bento SaaS, pill berlebihan, atau ilustrasi AI.
+- Coral dipakai untuk tindakan dan penekanan; ungu untuk bidang sistem; kuning
+  untuk metadata penting; hijau hanya untuk status hidup.
+- Tidak memakai glass card, bento SaaS generik, pill berlebihan, atau ilustrasi AI.
 - Data kosong tidak diperkirakan dan status internal diterjemahkan ke bahasa pengguna.
 
 ## Identitas
 
-- Wordmark: teks lowercase `mscrape` dengan satu titik sinyal acid lime.
+- Wordmark: uppercase `MSCRAPE` dengan satu bar sinyal coral.
 - Display: Bricolage Grotesque Variable, weight 430–590.
 - Body/UI: Archivo Variable, weight 400–760.
 - Display tracking: -0.04em hingga -0.075em.
@@ -23,24 +24,26 @@ data, dan perilaku tetap milik MScrape.
 
 ## Warna
 
-- Landing paper: `#f3f2ec`
-- Landing ink: `#12130f`
-- Landing muted: `#70746b`
-- Landing rule: `#d5d5cb`
-- Workspace: `#0a0d0c`
-- Workspace raised: `#101411`
-- Workspace text: `#f5f4ee`
-- Workspace rule: `#2a312b`
-- Live/action: `#70dd70` dan `#b8ff68`
+- Landing paper: `#f3efe6`
+- Landing ink: `#11121a`
+- Landing muted: `#696975`
+- Landing rule: `#cbc4b7`
+- Coral signal: `#ff5a3d`
+- System violet: `#6558f5`
+- Metadata yellow: `#ffd34e`
+- Workspace: `#11121a`
+- Workspace raised: `#1a1b26`
+- Workspace text: `#f6f1e8`
+- Live status: `#a8e56a`
 
 ## Landing
 
-1. Announcement rail ringkas, header horizontal, dan satu CTA Produksi.
-2. Desktop memakai hero dua kolom: pesan/aksi di kiri, bukti produk di kanan.
+1. Announcement rail ringkas, header horizontal, dan satu CTA workspace.
+2. Desktop memakai hero asimetris: headline besar di kiri, bukti produk di kanan.
 3. Mobile memakai urutan copy → command → bukti produk tanpa overlap atau overflow.
-4. Empat promises berupa bidang ber-rule, bukan kartu lepas.
+4. Empat principles berupa bidang editorial bernomor, bukan kartu lepas.
 5. Product surface menyandingkan query dan schema dataset yang realistis.
-6. Harga berupa comparison rows yang menumpuk bersih di mobile.
+6. Harga berupa tiga ticket plans dengan latar berbeda yang menumpuk bersih di mobile.
 7. Audience strip, FAQ linear, dan closing prompt menjadi urutan penutup.
 
 ## Produksi

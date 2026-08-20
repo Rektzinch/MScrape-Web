@@ -1,22 +1,22 @@
 const promises = [
   {
     code: "01",
-    title: "Cari yang Anda maksud",
-    detail: "Gabungkan niche dan wilayah dalam satu pencarian yang jelas—dari kota sampai kecamatan untuk paket yang mendukung.",
+    title: "Query yang terarah",
+    detail: "Gabungkan niche dan wilayah dalam satu instruksi yang jelas—dari tingkat kota sampai kecamatan pada paket yang mendukung.",
   },
   {
     code: "02",
-    title: "Baca data sumber",
-    detail: "Nama, alamat, telepon, website, rating, ulasan, koordinat, dan email ditampilkan saat memang tersedia.",
+    title: "Field yang berguna",
+    detail: "Nama, alamat, telepon, website, rating, ulasan, koordinat, dan email ditampilkan ketika tersedia pada sumber.",
   },
   {
     code: "03",
-    title: "Kosong berarti kosong",
-    detail: "MScrape tidak menebak kontak atau website. Data yang tidak ditemukan tetap ditandai sebagai tidak tersedia.",
+    title: "Tanpa data karangan",
+    detail: "MScrape tidak menebak kontak atau website. Field yang tidak ditemukan tetap jujur ditandai sebagai tidak tersedia.",
   },
   {
     code: "04",
-    title: "Bawa ke alur kerja Anda",
+    title: "Siap ditindaklanjuti",
     detail: "Saring hasil lalu ekspor ke CSV, TXT, JSON, atau format yang siap dibuka di Google Sheets.",
   },
 ] as const;
@@ -84,9 +84,9 @@ export function HomeDashboardContent() {
     <>
       <section className="ms-promises wb-shell" id="cara-kerja" aria-labelledby="promises-title">
         <header className="ms-section-intro">
-          <p>Yang Anda dapat</p>
-          <h2 id="promises-title">Dari pencarian lokal<br />menjadi data yang siap dipakai.</h2>
-          <span>Empat hal yang kami jaga di setiap scan.</span>
+          <p>01 / Prinsip kerja</p>
+          <h2 id="promises-title">Pencarian lokal yang<br />berakhir sebagai data.</h2>
+          <span>Empat prinsip yang menjaga setiap scan tetap berguna dan bisa dipercaya.</span>
         </header>
         <ol className="ms-promise-list">
           {promises.map((item) => (
@@ -102,9 +102,9 @@ export function HomeDashboardContent() {
       <section className="ms-workflow" id="data" aria-labelledby="workflow-title">
         <div className="ms-workflow__inner wb-shell">
           <header className="ms-section-intro ms-section-intro--inverse">
-            <p>Alur produk</p>
-            <h2 id="workflow-title">Satu query masuk.<br />Dataset yang jujur keluar.</h2>
-            <span>Permukaan kerja dibuat untuk pencarian, bukan untuk pajangan.</span>
+            <p>02 / Mesin kerja</p>
+            <h2 id="workflow-title">Satu query masuk.<br />Dataset terstruktur keluar.</h2>
+            <span>Setiap kontrol mengarah ke hasil—tanpa dashboard dekoratif dan statistik palsu.</span>
           </header>
 
           <div className="ms-workflow__surface">
@@ -133,9 +133,9 @@ export function HomeDashboardContent() {
 
       <section className="ms-pricing wb-shell" id="pricing" aria-labelledby="pricing-title">
         <header className="ms-section-intro">
-          <p>Harga</p>
-          <h2 id="pricing-title">Kapasitas yang bisa<br />dibaca dalam sekali lihat.</h2>
-          <span>Satu pencarian memakai satu scan.</span>
+          <p>03 / Pilih kapasitas</p>
+          <h2 id="pricing-title">Harga yang terbaca.<br />Batas yang transparan.</h2>
+          <span>Satu pencarian memakai satu scan. Tidak ada perhitungan tersembunyi.</span>
         </header>
 
         <div className="ms-plan-list" aria-label="Harga lisensi MScrape">
@@ -165,8 +165,8 @@ export function HomeDashboardContent() {
       </section>
 
       <section className="ms-audience wb-shell" aria-labelledby="audience-title">
-        <p>Untuk kerja yang dimulai dari pasar lokal</p>
-        <h2 id="audience-title">Temukan bahannya.<br />Anda yang menentukan langkah berikutnya.</h2>
+        <p>04 / Dibangun untuk pekerjaan nyata</p>
+        <h2 id="audience-title">Temukan bahannya.<br />Tentukan langkah berikutnya.</h2>
         <div className="ms-audience__roles" aria-label="Pengguna MScrape">
           {audiences.map((audience, index) => <span key={audience}><i>0{index + 1}</i>{audience}</span>)}
         </div>

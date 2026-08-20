@@ -1,8 +1,4 @@
-/* Hallmark · macrostructure: Split Studio · tone: compact technical · anchor hue: coral · critique: P5 H5 E5 S5 R5 V5
- * enrichment: none · nav: N9 Edge-aligned minimal · footer: Ft2 Inline rule
- * theme: Coral · image: none · motion: status progress + paired reveal + button press
- * audience: local-business prospectors · use: scan and export leads · designed-as-app
- */
+/* MScrape foundation: accessible defaults shared by the public site and production workspace. */
 @import "../tokens.css";
 
 * {

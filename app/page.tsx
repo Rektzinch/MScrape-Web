@@ -66,8 +66,9 @@ export default function Home() {
       <AppHeader current="info" />
       <main className="ms-home">
         <aside className="ms-notice">
-          <span>10 scan gratis untuk memulai</span>
-          <Link href="/produksi">Coba sekarang <span aria-hidden="true">→</span></Link>
+          <span><b>Free access</b> 10 scan pertama</span>
+          <span className="ms-notice__truth">Data yang tersedia, tanpa isian buatan</span>
+          <Link href="/produksi">Mulai memetakan <span aria-hidden="true">↗</span></Link>
         </aside>
 
         <section className="ms-hero wb-shell" aria-labelledby="home-title">
@@ -111,16 +112,21 @@ export default function Home() {
             <div className="ms-map-scan"><i /><i /><i /><b /></div>
           </div>
           <div className="ms-hero__copy">
-            <p className="ms-hero__eyebrow"><span aria-hidden="true" /> MScrape / pencarian bisnis lokal</p>
-            <h1 id="home-title">Baca pasar lokal.<br /><em>Baris demi baris.</em></h1>
-            <p className="ms-hero__lead">Tentukan niche dan wilayah. MScrape menyusun data bisnis yang tersedia dari Google Maps menjadi daftar yang bisa Anda tinjau dan ekspor.</p>
+            <p className="ms-hero__eyebrow"><span aria-hidden="true" /> Google Maps / local intelligence</p>
+            <h1 id="home-title">Temukan bisnis.<br /><em>Baca pasarnya.</em></h1>
+            <p className="ms-hero__lead">Masukkan jenis bisnis dan wilayah. MScrape mengubah hasil Google Maps menjadi dataset yang rapi, bisa diperiksa, dan siap dibawa ke alur kerja Anda.</p>
 
             <div className="ms-command" aria-label="Contoh pencarian MScrape">
               <span className="ms-command__prompt" aria-hidden="true">QUERY</span>
-              <span className="ms-command__text">Klinik gigi di Makassar</span>
-              <Link href="/produksi" data-analytics-cta="hero_buka_produksi">Cari bisnis <span aria-hidden="true">↗</span></Link>
+              <span className="ms-command__text">Klinik gigi / Makassar</span>
+              <Link href="/produksi" data-analytics-cta="hero_buka_produksi">Jalankan scan <span aria-hidden="true">↗</span></Link>
             </div>
-            <a className="ms-hero__quiet-link" href="#cara-kerja" data-analytics-cta="hero_cara_kerja">Lihat alur dan data yang tersedia ↓</a>
+            <dl className="ms-hero-facts" aria-label="Ringkasan alur MScrape">
+              <div><dt>Input</dt><dd>Niche + wilayah</dd></div>
+              <div><dt>Output</dt><dd>Dataset bisnis</dd></div>
+              <div><dt>Ekspor</dt><dd>CSV · JSON · Sheets</dd></div>
+            </dl>
+            <a className="ms-hero__quiet-link" href="#cara-kerja" data-analytics-cta="hero_cara_kerja">Pelajari cara kerjanya <span aria-hidden="true">↓</span></a>
           </div>
 
           <div className="ms-hero-product" aria-label="Pratinjau workspace MScrape">
@@ -177,10 +183,10 @@ export default function Home() {
         </section>
 
         <section className="ms-closing wb-shell" aria-labelledby="home-cta-title">
-          <p>Query pertama</p>
-          <h2 id="home-cta-title">Niche apa yang<br />ingin Anda petakan?</h2>
-          <div><p>Jalankan 10 scan pertama tanpa biaya. Tidak perlu kartu pembayaran.</p>
-          <Link className="ms-closing__link" href="/produksi" data-analytics-cta="footer_buka_produksi">Buka Produksi <span aria-hidden="true">↗</span></Link></div>
+          <p>Mulai dari satu wilayah</p>
+          <h2 id="home-cta-title">Pasar mana yang<br />ingin Anda baca?</h2>
+          <div><p>Jalankan 10 scan pertama tanpa biaya dan tanpa kartu pembayaran.</p>
+          <Link className="ms-closing__link" href="/produksi" data-analytics-cta="footer_buka_produksi">Buka workspace <span aria-hidden="true">↗</span></Link></div>
         </section>
       </main>
       <AppFooter />

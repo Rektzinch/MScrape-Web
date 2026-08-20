@@ -282,6 +282,9 @@ export function ScrapeConsole() {
     ? Math.max(0, Math.ceil((new Date(api.access.nextAllowedAt).getTime() - now) / 1_000))
     : 0;
   const hasCredit = api.access.creditRemaining > 0;
+  const creditPercent = api.access.creditTotal > 0
+    ? Math.max(0, Math.min(100, (api.access.creditRemaining / api.access.creditTotal) * 100))
+    : 0;
   const active = job?.status === "pending" || job?.status === "running";
   const sourceRows = job?.rows ?? EMPTY_ROWS;
   const deferredResultQuery = useDeferredValue(resultQuery.trim().toLocaleLowerCase("id"));
@@ -571,6 +574,16 @@ export function ScrapeConsole() {
           <div className="license-dock__identity">
             <span id="license-dock-title">Akses saat ini</span>
             <strong>{api.access.label} · {scanCountLabel(api.access.creditRemaining)}/{scanCountLabel(api.access.creditTotal)} scan tersisa</strong>
+            <div
+              className="license-dock__credit"
+              role="progressbar"
+              aria-label="Jatah scan tersisa"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(creditPercent)}
+            >
+              <span style={{ width: `${creditPercent}%` }} />
+            </div>
           </div>
           <div className="license-dock__actions">
             {api.access.tier === "free" ? <a className="license-dock__upgrade" href={ADMIN_WHATSAPP} target="_blank" rel="noreferrer">Upgrade ↗</a> : null}

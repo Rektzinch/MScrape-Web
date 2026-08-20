@@ -1,20 +1,20 @@
 :root {
-  --color-paper: oklch(98.5% 0.006 248);
-  --color-paper-2: oklch(96% 0.014 248);
-  --color-paper-3: oklch(92.5% 0.025 248);
-  --color-ink: oklch(19% 0.045 258);
-  --color-ink-2: oklch(31% 0.05 258);
-  --color-muted: oklch(49% 0.04 255);
-  --color-rule: oklch(85% 0.025 250);
-  --color-rule-strong: oklch(67% 0.04 252);
-  --color-accent: oklch(55% 0.22 260);
-  --color-accent-warm: oklch(79% 0.16 160);
-  --color-accent-ink: oklch(99% 0.004 248);
-  --color-focus: oklch(62% 0.2 255);
+  --color-paper: #f3efe6;
+  --color-paper-2: #e8e2d5;
+  --color-paper-3: #d9d1c2;
+  --color-ink: #11121a;
+  --color-ink-2: #353642;
+  --color-muted: #696975;
+  --color-rule: #cbc4b7;
+  --color-rule-strong: #8f8c94;
+  --color-accent: #ff5a3d;
+  --color-accent-warm: #ffd34e;
+  --color-accent-ink: #11121a;
+  --color-focus: #ff5a3d;
   --color-focus-inner: var(--color-paper);
-  --color-success: oklch(49% 0.13 157);
-  --color-error: oklch(46% 0.18 26);
-  --color-warning: oklch(50% 0.12 78);
+  --color-success: #8ed65f;
+  --color-error: #d73633;
+  --color-warning: #d69c21;
   --color-transparent: oklch(0% 0 0 / 0);
 
   --font-display: "Bricolage Grotesque Variable", "Archivo Variable", sans-serif;
@@ -53,11 +53,11 @@
 
   --rule-hair: 1px;
   --rule-strong: 2px;
-  --radius-control: 0.75rem;
-  --radius-card: 1.25rem;
+  --radius-control: 0.45rem;
+  --radius-card: 1rem;
 
-  --page-max: 94rem;
-  --page-gutter: clamp(1rem, 4vw, 3.5rem);
+  --page-max: 90rem;
+  --page-gutter: clamp(1rem, 4vw, 4rem);
   --nav-height: 4.75rem;
   --control-height: 3rem;
 

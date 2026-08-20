@@ -22,13 +22,17 @@ test("landing dan produksi baru terisolasi dari selector layout lama", async () 
   assert.match(consoleView, /className="ms-console"/);
   assert.doesNotMatch(`${home}\n${pricing}`, /product-stage|ms-process|ms-use-list/);
 
-  assert.match(rebrand, /@media\s*\(max-width:\s*39\.99rem\)[\s\S]*?\.ms-header__actions \{ display: none; \}/);
-  assert.match(rebrand, /@media\s*\(max-width:\s*56rem\)[\s\S]*?\.ms-plan-list \{ grid-template-columns: minmax\(0,1fr\); \}/);
-  assert.match(rebrand, /--ms-paper: #f3f2ec;/);
-  assert.match(rebrand, /--ms-accent: #70dd70;/);
-  assert.match(rebrand, /\.ms-plan \{[^}]*background: #faf9f4;/);
+  assert.match(rebrand, /\.ms-header__nav,\s*\.ms-header__actions \{ display: none; \}/);
+  assert.match(rebrand, /@media\s*\(min-width:\s*40rem\)[\s\S]*?\.ms-plan-list \{ grid-template-columns: repeat\(2, minmax\(0, 1fr\)\); \}/);
+  assert.match(rebrand, /@media\s*\(min-width:\s*64rem\)[\s\S]*?\.ms-header__actions \{ display: flex;/);
+  assert.match(rebrand, /--ms-paper: #f3efe6;/);
+  assert.match(rebrand, /--ms-coral: #ff5a3d;/);
+  assert.match(rebrand, /--ms-violet: #6558f5;/);
+  assert.match(rebrand, /\.ms-plan\[data-tier="pro"\] \{[^}]*background: var\(--ms-coral\);/);
+  assert.match(rebrand, /\.ms-plan\[data-tier="max"\] \{[^}]*background: var\(--ms-violet\);/);
   assert.match(rebrand, /\.ms-production \.combobox__trigger > svg \{ width: 1rem; height: 1rem;/);
-  assert.match(rebrand, /\.ms-production \.ms-console \{[\s\S]*?grid-template-columns:/);
-  assert.match(rebrand, /\.ms-production \.results \{ grid-column: 2; grid-row: 2;/);
-  assert.match(rebrand, /@media\s*\(max-width:\s*56rem\)[\s\S]*?\.ms-production \.results \{ grid-column: 1; grid-row: 3;/);
+  assert.match(rebrand, /\.ms-production \.ms-console \{[^}]*display: grid;/);
+  assert.match(rebrand, /\.ms-production \.results \{ min-height: 30rem; \}/);
+  assert.match(rebrand, /@media\s*\(min-width:\s*64rem\)[\s\S]*?\.ms-production \.ms-console \{ grid-template-columns:/);
+  assert.match(rebrand, /@media\s*\(min-width:\s*64rem\)[\s\S]*?\.ms-production \.results \{ grid-column: 2; grid-row: 2;/);
 });
