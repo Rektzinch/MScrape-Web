@@ -23,9 +23,11 @@ test("landing dan produksi baru terisolasi dari selector layout lama", async () 
   assert.doesNotMatch(`${home}\n${pricing}`, /product-stage|ms-process|ms-use-list/);
 
   assert.match(rebrand, /@media\s*\(max-width:\s*39\.99rem\)[\s\S]*?\.ms-header__actions \{ display: none; \}/);
-  assert.match(rebrand, /@media\s*\(max-width:\s*39\.99rem\)[\s\S]*?\.ms-plan \{[^}]*grid-template-columns: 1fr;/);
+  assert.match(rebrand, /@media\s*\(max-width:\s*56rem\)[\s\S]*?\.ms-plan-list \{ grid-template-columns: minmax\(0,1fr\); \}/);
   assert.match(rebrand, /--ms-paper: #f3f2ec;/);
   assert.match(rebrand, /--ms-accent: #70dd70;/);
+  assert.match(rebrand, /\.ms-plan \{[^}]*background: #faf9f4;/);
+  assert.match(rebrand, /\.ms-production \.combobox__trigger > svg \{ width: 1rem; height: 1rem;/);
   assert.match(rebrand, /\.ms-production \.ms-console \{[\s\S]*?grid-template-columns:/);
   assert.match(rebrand, /\.ms-production \.results \{ grid-column: 2; grid-row: 2;/);
   assert.match(rebrand, /@media\s*\(max-width:\s*56rem\)[\s\S]*?\.ms-production \.results \{ grid-column: 1; grid-row: 3;/);
