@@ -71,6 +71,45 @@ export default function Home() {
         </aside>
 
         <section className="ms-hero wb-shell" aria-labelledby="home-title">
+          <div className="ms-hero-map" aria-hidden="true">
+            <svg viewBox="0 0 1440 860" preserveAspectRatio="xMidYMid slice">
+              <g className="ms-hero-map__blocks">
+                <path d="M-20 126 154 73l93 84-35 120-183 29Z" />
+                <path d="m280 20 182 25 54 96-86 84-166-39Z" />
+                <path d="m535 61 167-47 111 95-38 137-209-11Z" />
+                <path d="m840 25 202 11 56 129-107 67-167-76Z" />
+                <path d="m1127 14 205 55 56 131-197 46-68-93Z" />
+                <path d="m94 352 165-55 115 96-27 129-226 12Z" />
+                <path d="m420 286 210 23 44 143-169 83-126-112Z" />
+                <path d="m755 293 173-68 126 106-58 160-223 28-63-113Z" />
+                <path d="m1092 291 217-42 98 121-79 160-216-16-57-112Z" />
+                <path d="m-35 621 238-42 99 123-68 150-232-7Z" />
+                <path d="m350 598 183-66 142 102-31 182-221 34-96-126Z" />
+                <path d="m744 584 202-50 118 117-68 181-221 9-76-139Z" />
+                <path d="m1095 599 209-41 148 132-72 169-236-22-79-129Z" />
+              </g>
+              <g className="ms-hero-map__routes">
+                <path d="M-50 520C185 463 276 528 474 407S779 166 982 248s280 60 508-43" />
+                <path d="M231-20c66 190 204 278 146 446S323 712 431 900" />
+                <path d="M1038-40c-76 164-34 282 65 399s117 280 31 541" />
+                <path d="M-40 198c240 102 410 33 597 74s348 139 523 103 253-4 410 108" />
+                <path d="M-30 744c215-87 369-26 543-12s332-89 497-45 292 57 481-4" />
+              </g>
+              <g className="ms-hero-map__minor">
+                <path d="M14 408 337 93M126 812 611 285M502 856 847 280M800 863l517-517M953 754l435-282M97 63l438 392M538 20l-80 811M705 0l148 860M1189 0l-104 860M0 666l1440-94M0 344l1440 311" />
+              </g>
+              <g className="ms-hero-map__points">
+                <circle cx="278" cy="454" r="4" /><circle cx="491" cy="316" r="4" />
+                <circle cx="823" cy="274" r="4" /><circle cx="1096" cy="363" r="4" />
+                <circle cx="1007" cy="686" r="4" /><circle cx="427" cy="735" r="4" />
+              </g>
+            </svg>
+            <span className="ms-map-coordinate ms-map-coordinate--north">05°08′ S</span>
+            <span className="ms-map-coordinate ms-map-coordinate--east">119°25′ E</span>
+            <span className="ms-map-district ms-map-district--one">PANAKKUKANG / 37</span>
+            <span className="ms-map-district ms-map-district--two">RAPPOCINI / 24</span>
+            <div className="ms-map-scan"><i /><i /><i /><b /></div>
+          </div>
           <p className="ms-hero__eyebrow"><span aria-hidden="true" /> MScrape / pencarian bisnis lokal</p>
           <h1 id="home-title">Baca pasar lokal.<br /><em>Baris demi baris.</em></h1>
           <p className="ms-hero__lead">Tentukan niche dan wilayah. MScrape menyusun data bisnis yang tersedia dari Google Maps menjadi daftar yang bisa Anda tinjau dan ekspor.</p>

@@ -120,11 +120,26 @@ html { scroll-padding-top: calc(var(--nav-height) + 1rem); }
 
 /* Landing */
 .ms-home {
+  position: relative;
   overflow: clip;
-  background: var(--ms-bg);
+  background:
+    linear-gradient(90deg, #080a0d 0%, #0b0e0d 48%, #080a0d 100%);
   color: var(--ms-text);
   font-family: var(--font-body);
 }
+
+.ms-home::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  opacity: .035;
+}
+
+.ms-home > * { position: relative; z-index: 1; }
 
 .ms-notice {
   min-height: 2.55rem;
@@ -156,13 +171,82 @@ html { scroll-padding-top: calc(var(--nav-height) + 1rem); }
   position: absolute;
   inset: 0 var(--page-gutter);
   pointer-events: none;
-  background-image:
-    linear-gradient(to right, transparent calc(50% - .5px), color-mix(in srgb, var(--ms-line) 70%, transparent) 50%, transparent calc(50% + .5px)),
-    repeating-linear-gradient(to right, transparent 0, transparent calc(25% - 1px), color-mix(in srgb, var(--ms-line) 35%, transparent) 25%);
-  opacity: .46;
+  border-inline: 1px solid color-mix(in srgb, var(--ms-line) 68%, transparent);
+  background:
+    linear-gradient(to bottom, rgba(8, 10, 13, .05) 0%, rgba(8, 10, 13, .2) 68%, var(--ms-bg) 100%),
+    repeating-linear-gradient(to right, transparent 0, transparent calc(25% - 1px), color-mix(in srgb, var(--ms-line) 42%, transparent) 25%);
+  opacity: .9;
 }
 
 .ms-hero > * { position: relative; z-index: 1; }
+
+.ms-hero-map {
+  position: absolute;
+  inset: 0 var(--page-gutter);
+  z-index: 0 !important;
+  overflow: hidden;
+  border-inline: 1px solid var(--ms-line);
+  pointer-events: none;
+  opacity: .94;
+}
+
+.ms-hero-map::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(8, 10, 13, .1) 0 18%, rgba(8, 10, 13, .76) 60%, rgba(8, 10, 13, .96) 100%),
+    linear-gradient(to bottom, rgba(8, 10, 13, .15), transparent 30%, rgba(8, 10, 13, .82) 92%);
+}
+
+.ms-hero-map svg { width: 100%; height: 100%; display: block; }
+.ms-hero-map__blocks { fill: #111711; stroke: #253023; stroke-width: 1; }
+.ms-hero-map__routes { fill: none; stroke: #56634d; stroke-width: 2.2; stroke-dasharray: 2 8; }
+.ms-hero-map__minor { fill: none; stroke: #273027; stroke-width: 1; }
+.ms-hero-map__points { fill: var(--ms-accent); filter: drop-shadow(0 0 8px rgba(200, 255, 61, .48)); }
+
+.ms-map-coordinate,
+.ms-map-district {
+  position: absolute;
+  z-index: 2;
+  color: #697164;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .52rem;
+  letter-spacing: .12em;
+}
+
+.ms-map-coordinate--north { inset: 2rem auto auto 1rem; }
+.ms-map-coordinate--east { inset: auto 1rem 2rem auto; }
+.ms-map-district--one { inset: 27% auto auto 4%; }
+.ms-map-district--two { inset: auto 5% 25% auto; }
+
+.ms-map-scan {
+  position: absolute;
+  inset: 39% 8% auto auto;
+  z-index: 2;
+  width: clamp(8rem, 14vw, 13rem);
+  aspect-ratio: 1;
+  border: 1px solid rgba(200, 255, 61, .23);
+  border-radius: 50%;
+}
+
+.ms-map-scan::before,
+.ms-map-scan::after,
+.ms-map-scan i {
+  content: "";
+  position: absolute;
+  inset: 50%;
+  border: 1px solid rgba(200, 255, 61, .16);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ms-map-scan::before { width: 68%; height: 68%; }
+.ms-map-scan::after { width: 35%; height: 35%; }
+.ms-map-scan i:nth-child(1) { width: 1px; height: 116%; border: 0; border-radius: 0; background: rgba(200, 255, 61, .18); }
+.ms-map-scan i:nth-child(2) { width: 116%; height: 1px; border: 0; border-radius: 0; background: rgba(200, 255, 61, .18); }
+.ms-map-scan i:nth-child(3) { width: .45rem; height: .45rem; border: 0; background: var(--ms-accent); box-shadow: 0 0 0 .4rem rgba(200, 255, 61, .08), 0 0 1.5rem rgba(200, 255, 61, .55); }
+.ms-map-scan b { position: absolute; inset: 50% 50% auto auto; width: 45%; height: 1px; display: block; background: linear-gradient(to left, var(--ms-accent), transparent); transform-origin: right center; transform: rotate(-28deg); opacity: .55; }
 
 .ms-hero__eyebrow {
   margin: 0 0 clamp(2.5rem, 5vw, 4.5rem);
@@ -181,6 +265,7 @@ html { scroll-padding-top: calc(var(--nav-height) + 1rem); }
 .ms-hero h1 {
   max-width: 12ch;
   margin: 0;
+  text-shadow: 0 1rem 4rem rgba(0, 0, 0, .72);
   font-family: var(--font-display);
   font-size: clamp(4rem, 8.7vw, 8.8rem);
   font-weight: 590;
@@ -207,7 +292,8 @@ html { scroll-padding-top: calc(var(--nav-height) + 1rem); }
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  background: var(--ms-surface);
+  background: color-mix(in srgb, var(--ms-surface) 94%, transparent);
+  backdrop-filter: blur(12px);
   box-shadow: 0 1.6rem 4.5rem rgba(0, 0, 0, .28);
   text-align: left;
 }
@@ -253,7 +339,8 @@ html { scroll-padding-top: calc(var(--nav-height) + 1rem); }
   margin-top: clamp(3rem, 7vw, 6rem);
   border-top: 1px solid var(--ms-line-strong);
   border-bottom: 1px solid var(--ms-line-strong);
-  background: color-mix(in srgb, var(--ms-bg) 84%, transparent);
+  background: color-mix(in srgb, var(--ms-surface) 91%, transparent);
+  backdrop-filter: blur(14px);
   text-align: left;
 }
 
@@ -729,7 +816,11 @@ html { scroll-padding-top: calc(var(--nav-height) + 1rem); }
   .ms-menu-trigger { min-width: 4.2rem; }
   .ms-notice { justify-content: space-between; font-size: .62rem; }
   .ms-hero { min-height: auto; padding-block: 4.5rem 3.5rem; }
-  .ms-hero::before { inset-inline: 1rem; background-image: linear-gradient(to right, transparent calc(50% - .5px), color-mix(in srgb, var(--ms-line) 60%, transparent) 50%, transparent calc(50% + .5px)); }
+  .ms-hero::before { inset-inline: 1rem; background-image: linear-gradient(to bottom, rgba(8, 10, 13, .05), rgba(8, 10, 13, .82) 86%), linear-gradient(to right, transparent calc(50% - .5px), color-mix(in srgb, var(--ms-line) 60%, transparent) 50%, transparent calc(50% + .5px)); }
+  .ms-hero-map { inset-inline: 1rem; opacity: .8; }
+  .ms-hero-map::after { background: radial-gradient(circle at 50% 34%, rgba(8, 10, 13, .22) 0 16%, rgba(8, 10, 13, .78) 62%, rgba(8, 10, 13, .98) 100%); }
+  .ms-map-scan { inset: 16% -2.5rem auto auto; width: 8rem; }
+  .ms-map-district { display: none; }
   .ms-hero__eyebrow { margin-bottom: 2.5rem; font-size: .55rem; }
   .ms-hero h1 { max-width: 10ch; font-size: clamp(3.45rem, 17vw, 5.2rem); line-height: .88; }
   .ms-hero__lead { font-size: .88rem; }
