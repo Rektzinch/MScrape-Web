@@ -77,6 +77,16 @@ function mapsUrl(
   return `https://www.google.com/maps/search/?${params}`;
 }
 
+function websiteDomain(value: string) {
+  if (!value) return "";
+
+  try {
+    return new URL(value).hostname.replace(/^www\./i, "");
+  } catch {
+    return value.replace(/^https?:\/\//i, "").split("/")[0] || "";
+  }
+}
+
 function toLead(value: unknown): { key: string; row: LeadRow } | null {
   const business = text(at(value, 11));
   if (!business) return null;
@@ -88,22 +98,36 @@ function toLead(value: unknown): { key: string; row: LeadRow } | null {
   const dataId = text(at(value, 10));
   const rating = text(at(value, 4, 7));
   const reviewCount = text(at(value, 4, 8));
+  const website = text(at(value, 7, 0));
 
   return {
     key: placeId || dataId || `${business}|${address}`,
     row: {
       business,
       address,
+      city: "",
+      regency: "",
+      subdistrict: "",
       phone: text(at(value, 178, 0, 0)),
-      website: text(at(value, 7, 0)),
+      website,
+      domain: websiteDomain(website),
       email: findEmail(value),
       rating,
       reviewCount,
       category: stringList(at(value, 13)).join(", "),
+      primaryCategory: "",
+      additionalCategories: "",
       coordinates:
         latitude && longitude ? `${latitude}, ${longitude}` : "",
       latitude,
       longitude,
+      placeId,
+      businessStatus: "",
+      openStatus: "",
+      regularHours: "",
+      priceRange: "",
+      attributes: "",
+      photoUrl: "",
       source: mapsUrl(business, address, latitude, longitude, placeId),
     },
   };

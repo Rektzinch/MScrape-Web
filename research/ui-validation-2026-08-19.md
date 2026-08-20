@@ -32,3 +32,9 @@ Verifikasi visual panel produksi setelah autentikasi memperlihatkan blok **Live 
 Pada build panel terakhir, status sinkronisasi menampilkan waktu hingga detik dan feed memuat event produksi aktual setelah query awal selesai. Hal ini memungkinkan interval auto-refresh 10 detik dibaca secara presisi.
 
 Pengamatan langsung pada panel produksi mengonfirmasi refresh otomatis: timestamp sinkronisasi berubah dari `06.27.48` menjadi `06.28.00` tanpa memuat ulang halaman.
+
+## Penyederhanaan Hero dan top-bar
+
+Verifikasi lokal menunjukkan lapisan orbit, node, dan garis sinyal telah dihapus dari visual Hero. Top-bar kini menggunakan latar grid kertas yang sama dengan Homepage, garis aksen oranye, serta tombol menu berpermukaan tinta berkontras tinggi.
+
+Halaman Produksi lokal juga berhasil dirender setelah perluasan model hasil. Top-bar yang sama tampil konsisten di atas workspace dan kontrol ekspor kini menjelaskan bahwa CSV berisi data bisnis lengkap.

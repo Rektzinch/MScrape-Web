@@ -102,13 +102,6 @@ export default function Home() {
             <HomeAnalytics />
           </div>
           <figure className="home-fold__visual">
-            <div className="home-visual-signal" aria-hidden="true">
-              <span className="home-visual-signal__orbit" />
-              <span className="home-visual-signal__line" />
-              <span className="home-visual-signal__node home-visual-signal__node--one" />
-              <span className="home-visual-signal__node home-visual-signal__node--two" />
-              <span className="home-visual-signal__node home-visual-signal__node--three" />
-            </div>
             <Image
               src="/media/production-console.webp"
               alt="Workspace Produksi MScrape untuk mengatur pencarian dan meninjau hasil bisnis"

@@ -84,18 +84,18 @@ test("kredit paket dikurangi atomik satu kali per scan dan masa lisensi mengikut
 });
 
 test("hasil menampilkan ulasan dan Homepage menggantikan Dashboard sebagai tujuan publik", async () => {
-  const [scraper, consolePage, home, dashboard, menu, styles] = await Promise.all([
+  const [scraper, rowRenderer, home, dashboard, menu, styles] = await Promise.all([
     source("lib/google-maps-live.ts"),
-    source("app/_components/scrape-console.tsx"),
+    source("app/_components/scan-result-row.ts"),
     source("app/page.tsx"),
     source("app/dashboard/page.tsx"),
     source("app/_components/app-menu.tsx"),
     source("app/workbench.css"),
   ]);
   assert.match(scraper, /reviewCount/);
-  assert.match(consolePage, /data-label="Ulasan"/);
-  assert.match(consolePage, /ulasan Google Maps/);
-  assert.match(consolePage, /Tidak dikirim sumber/);
+  assert.match(rowRenderer, /data-label": "Ulasan"/);
+  assert.match(rowRenderer, /ulasan Google Maps/);
+  assert.match(rowRenderer, /Tidak dikirim sumber/);
   assert.match(styles, /@media \(max-width: 59\.99rem\), \(pointer: coarse\)/);
   assert.match(styles, /Hasil scan: perangkat sentuh selalu memakai kartu satu kolom/);
   assert.match(styles, /Homepage motion: urutan masuk mengikuti ritme membaca/);
@@ -163,13 +163,37 @@ test("analytics Homepage mencatat interaksi tanpa IP mentah dan panel admin memb
   assert.match(home, /href="\/produksi" data-analytics-cta="hero_buka_produksi"/);
   assert.match(dashboardContent, /href=\{plan\.href\}\s+data-analytics-cta=/);
   assert.doesNotMatch(client, /preventDefault/);
-  assert.match(home, /home-visual-signal/);
-  assert.match(styles, /home-signal-orbit/);
-  assert.match(styles, /prefers-reduced-motion: no-preference/);
-  assert.match(styles, /home-visual-signal__node/);
+  assert.doesNotMatch(home, /home-visual-signal/);
+  assert.doesNotMatch(styles, /home-signal-orbit|home-signal-pulse|home-visual-signal/);
+  assert.match(styles, /\.app-header::after/);
+  assert.match(styles, /background-image:/);
+  assert.match(styles, /\.app-menu-trigger:focus-visible/);
   assert.match(adminProduction, /analytics: t\.procedure/);
   assert.match(adminLocal, /analytics: publicProcedure/);
   assert.match(adminHome, /refetchInterval: 10_000/);
   assert.match(adminHome, /analyticsQuery\.refetch\(\)/);
   assert.match(adminHome, /analytics-feed/);
+});
+
+test("hasil scan menormalisasi identitas, lokasi, operasional, atribut, dan ekspor detail tanpa memadatkan tabel", async () => {
+  const [leads, live, console, exporter, rowRenderer] = await Promise.all([
+    source("lib/leads.ts"),
+    source("lib/google-maps-live.ts"),
+    source("app/_components/scrape-console.tsx"),
+    source("lib/lead-export.ts"),
+    source("app/_components/scan-result-row.ts"),
+  ]);
+  assert.match(leads, /primaryCategory|additionalCategories/);
+  assert.match(leads, /city: pick|regency: pick|subdistrict: pick/);
+  assert.match(leads, /placeId: pick/);
+  assert.match(leads, /businessStatus: pick|openStatus: pick|regularHours: pick/);
+  assert.match(leads, /sourceAttributes/);
+  assert.match(leads, /websiteDomain/);
+  assert.match(live, /placeId,/);
+  assert.match(live, /domain: websiteDomain\(website\)/);
+  assert.match(exporter, /"Place ID"/);
+  assert.match(exporter, /"Jam Operasional"/);
+  assert.match(exporter, /"Fasilitas\/Atribut"/);
+  assert.match(console, /<ScanResultRow key=/);
+  assert.match(rowRenderer, /className: "lead-details"/);
 });

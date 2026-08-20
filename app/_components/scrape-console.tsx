@@ -2,8 +2,16 @@
 
 import { type FormEvent, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import type { LeadRow } from "@/lib/leads";
+import {
+  recordsToCsv as serializeRecordsToCsv,
+  recordsToJson as serializeRecordsToJson,
+  recordsToSheetsCsv as serializeRecordsToSheetsCsv,
+  recordsToText as serializeRecordsToText,
+  toExportRecord as makeExportRecord,
+} from "@/lib/lead-export";
 import { ALL_RESULTS_LIMIT, planAccess, type PlanAccess, type ResultLimit } from "@/lib/plans";
 import { SearchableCombobox, type ComboboxOption } from "./searchable-combobox";
+import { ScanResultRow } from "./scan-result-row";
 import { Turnstile } from "./turnstile";
 
 type ApiState = {
@@ -37,20 +45,6 @@ type WebsiteFilter = "ready" | "missing" | "all" | "present";
 type DownloadFormat = "csv" | "txt" | "json" | "sheets";
 type NoticeTone = "info" | "success" | "error";
 
-type ExportRecord = {
-  business: string;
-  category: string;
-  phone: string;
-  email: string;
-  address: string;
-  cityProvince: string;
-  rating: string;
-  reviews: string;
-  websiteStatus: string;
-  website: string;
-  googleMaps: string;
-};
-
 type ActionNotice = {
   id: number;
   title: string;
@@ -80,7 +74,7 @@ const websiteOptions: ComboboxOption[] = [
 ];
 
 const downloadOptions: ComboboxOption[] = [
-  { value: "csv", label: "CSV", description: "12 kolom data bisnis untuk spreadsheet" },
+  { value: "csv", label: "CSV", description: "Data bisnis lengkap untuk spreadsheet" },
   { value: "txt", label: "TXT", description: "Ringkasan teks berurutan per bisnis" },
   { value: "json", label: "JSON", description: "Metadata pencarian dan data bisnis terstruktur" },
   { value: "sheets", label: "Google Sheets", description: "CSV siap impor dengan kolom tindak lanjut" },
@@ -100,103 +94,6 @@ function messageFrom(value: unknown, fallback: string) {
     if (typeof message === "string" && message) return message;
   }
   return fallback;
-}
-
-function csvCell(value: string | number) {
-  const normalized = String(value).replace(/[\r\n]+/g, " ").trim();
-  const formulaSafe = /^[=+\-@]/.test(normalized) ? `'${normalized}` : normalized;
-  return `"${formulaSafe.replaceAll('"', '""')}"`;
-}
-
-const exportColumns = [
-  ["business", "Nama Bisnis"],
-  ["category", "Kategori"],
-  ["phone", "Telepon"],
-  ["email", "Email"],
-  ["address", "Alamat"],
-  ["cityProvince", "Kota/Provinsi"],
-  ["rating", "Rating"],
-  ["reviews", "Ulasan"],
-  ["websiteStatus", "Status Website"],
-  ["website", "Website"],
-  ["googleMaps", "Google Maps"],
-] as const satisfies readonly (readonly [keyof ExportRecord, string])[];
-
-const exportHeaders = exportColumns.map(([, label]) => label);
-
-function toExportRecord(row: LeadRow, city: string): ExportRecord {
-  return {
-    business: row.business,
-    category: row.category,
-    phone: row.phone,
-    email: row.email,
-    address: row.address,
-    cityProvince: city,
-    rating: row.rating,
-    reviews: row.reviewCount,
-    websiteStatus: row.website ? "Memiliki website" : "Belum memiliki website",
-    website: row.website,
-    googleMaps: row.source,
-  };
-}
-
-function rowsToCsv(headers: string[], rows: Array<Array<string | number>>) {
-  return `\uFEFF${[
-    headers.map(csvCell).join(","),
-    ...rows.map((row) => row.map(csvCell).join(",")),
-  ].join("\r\n")}`;
-}
-
-function recordsToCsv(records: ExportRecord[]) {
-  return rowsToCsv(
-    exportHeaders,
-    records.map((record) => exportColumns.map(([key]) => record[key])),
-  );
-}
-
-function recordsToSheetsCsv(records: ExportRecord[]) {
-  const headers = [...exportHeaders, "Status Prospek", "Terakhir Dihubungi", "Follow-up", "Catatan"];
-  const rows = records.map((record) => [
-    ...exportColumns.map(([key]) => record[key]),
-    "", "", "", "",
-  ]);
-  return rowsToCsv(headers, rows);
-}
-
-function recordsToText(records: ExportRecord[]) {
-  return records.map((record, index) => [
-    `# ${index + 1}`,
-    `Nama Bisnis: ${record.business}`,
-    `Kategori: ${record.category}`,
-    `Kontak: ${record.phone}`,
-    `Email: ${record.email}`,
-    `Alamat: ${record.address}`,
-    `Rating/Ulasan: ${[record.rating, record.reviews && `${record.reviews} ulasan`].filter(Boolean).join(" · ")}`,
-    `Status Website: ${record.websiteStatus}`,
-    `Website: ${record.website}`,
-    `Google Maps: ${record.googleMaps}`,
-  ].join("\n")).join("\n\n");
-}
-
-function recordsToJson(records: ExportRecord[], job: JobState, websiteFilter: WebsiteFilter) {
-  return JSON.stringify({
-    metadataPencarian: {
-      kataKunci: job.keyword,
-      kota: job.city,
-      filterWebsite: websiteFilter,
-      waktuPengambilan: job.fetchedAt,
-      jumlahBisnis: records.length,
-    },
-    bisnis: records.map((record) => ({
-      nama: record.business,
-      kategori: record.category,
-      kontak: { telepon: record.phone, email: record.email },
-      lokasi: { alamat: record.address, kotaProvinsi: record.cityProvince },
-      ratingUlasan: { rating: record.rating, ulasan: record.reviews },
-      website: { status: record.websiteStatus, url: record.website },
-      googleMaps: record.googleMaps,
-    })),
-  }, null, 2);
 }
 
 function triggerDownload(content: BlobPart, type: string, filename: string) {
@@ -614,7 +511,7 @@ export function ScrapeConsole() {
   async function downloadResults() {
     if (!job || visibleRows.length === 0) return;
 
-    const records = visibleRows.map((row) => toExportRecord(row, job.city));
+    const records = visibleRows.map((row) => makeExportRecord(row, job.city));
     const queryName = [safeFilenamePart(job.keyword), safeFilenamePart(job.city)].filter(Boolean).join("-");
     const filename = `mscrape-${queryName || job.id}-${websiteFilter}`;
     const format = downloadOptions.find((option) => option.value === downloadFormat)?.label || "File";
@@ -622,14 +519,14 @@ export function ScrapeConsole() {
     setDownloading(true);
     try {
       if (downloadFormat === "csv") {
-        triggerDownload(recordsToCsv(records), "text/csv;charset=utf-8", `${filename}.csv`);
+        triggerDownload(serializeRecordsToCsv(records), "text/csv;charset=utf-8", `${filename}.csv`);
       } else if (downloadFormat === "txt") {
-        triggerDownload(recordsToText(records), "text/plain;charset=utf-8", `${filename}.txt`);
+        triggerDownload(serializeRecordsToText(records), "text/plain;charset=utf-8", `${filename}.txt`);
       } else if (downloadFormat === "json") {
-        triggerDownload(recordsToJson(records, job, websiteFilter), "application/json;charset=utf-8", `${filename}.json`);
+        triggerDownload(serializeRecordsToJson(records, job, websiteFilter), "application/json;charset=utf-8", `${filename}.json`);
       } else {
         triggerDownload(
-          recordsToSheetsCsv(records),
+          serializeRecordsToSheetsCsv(records),
           "text/csv;charset=utf-8",
           `${filename}-google-sheets.csv`,
         );
@@ -760,6 +657,7 @@ export function ScrapeConsole() {
 
         <dl className="result-facts" aria-label="Ringkasan hasil"><div><dt>Diterima</dt><dd>{sourceRows.length || "—"}</dd></div><div><dt>Tanpa website</dt><dd>{sourceRows.length ? missingWebsiteCount : "—"}</dd></div><div><dt>Punya nomor</dt><dd>{sourceRows.length ? contactableWithoutWebsiteCount : "—"}</dd></div></dl>
         <p className="results__captured">{job?.fetchedAt ? `Diambil ${new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short" }).format(new Date(job.fetchedAt))} · ${emailCount} baris memiliki email. ${completionLabel(job.completion)}` : "Waktu pengambilan dan jumlah email akan dicatat setelah scan selesai."}</p>
+        {sourceRows.length > 0 ? <p className="results__detail-note"><strong>{api.mode === "google-live" ? "Mode Google Maps live:" : "Mode backend:"}</strong> {api.mode === "google-live" ? "nama, kategori, alamat, kontak, website, domain, koordinat, Place ID, rating, dan tautan Maps dapat diterima bila tersedia. Wilayah administratif, jam operasional, status buka, harga, atribut, dan foto memerlukan sumber detail yang mendukungnya." : "field detail ditampilkan hanya bila backend atau sumber detail benar-benar mengirimkannya."} Kolom kosong tidak diisi dengan perkiraan.</p> : null}
         {job?.status === "completed" && sourceRows.length === 0 ? <div className="results-empty"><h3>Tidak ada baris yang dikembalikan.</h3><p>Ubah niche atau perluas wilayah, lalu jalankan scan baru.</p></div> : null}
         {sourceRows.length > 0 && visibleRows.length === 0 ? <div className="results-empty"><h3>Tidak ada bisnis pada filter ini.</h3><p>Ganti filter website untuk melihat baris lain dari request yang sama.</p></div> : null}
 
@@ -772,20 +670,7 @@ export function ScrapeConsole() {
               </thead>
               <tbody>{pagedRows.map((row, index) => {
                 const sequence = pageStart + index + 1;
-                const telephone = row.phone.replace(/[^\d+]/g, "");
-                return (
-                  <tr key={`${row.business}-${row.address}-${sequence}`}>
-                    <td data-label="No"><span className="result-index">{sequence}</span></td>
-                    <td data-label="Bisnis" className="business-cell"><strong>{row.business || "Nama tidak tersedia"}</strong><span>{row.category || "Kategori tidak tersedia"}</span></td>
-                    <td data-label="Alamat" className="address-cell">{row.address || "Alamat tidak tersedia"}</td>
-                    <td data-label="Kontak" className="contact-cell">{row.phone ? <a href={`tel:${telephone}`}>{row.phone}</a> : <span>Telepon tidak tersedia</span>}{row.email ? <a href={`mailto:${row.email}`}>{row.email}</a> : <span>Email tidak tersedia</span>}</td>
-                    <td data-label="Website" className="website-cell">{row.website ? <><span className="status-tag" data-status="ready">Tersedia</span><a href={row.website} target="_blank" rel="noreferrer">Buka website ↗</a></> : <span className="status-tag" data-status="missing">Belum ada</span>}</td>
-                    <td data-label="Rating" className="rating-cell"><strong>{row.rating || "—"}</strong></td>
-                    <td data-label="Ulasan" className="review-count-cell"><strong>{row.reviewCount || "—"}</strong><span className="cell-note">{row.reviewCount ? "ulasan Google Maps" : "Tidak dikirim sumber"}</span></td>
-                    <td data-label="Koordinat" className="numeric-cell">{row.coordinates || "—"}</td>
-                    <td data-label="Sumber" className="source-cell">{row.source ? <a href={row.source} target="_blank" rel="noreferrer">Buka Maps ↗</a> : <span>—</span>}</td>
-                  </tr>
-                );
+                return <ScanResultRow key={`${row.business}-${row.address}-${sequence}`} row={row} sequence={sequence} />;
               })}</tbody>
             </table>
           </div>
