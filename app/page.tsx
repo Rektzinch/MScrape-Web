@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { AppFooter } from "./_components/app-footer";
 import { AppHeader } from "./_components/app-header";
@@ -67,53 +66,68 @@ export default function Home() {
       <AppHeader current="info" />
       <main className="seo-page seo-page--home dashboard-page">
         <section className="home-hero wb-shell" aria-labelledby="home-title">
+          <div className="home-hero__index" aria-hidden="true">
+            <span>BUSINESS DISCOVERY</span><span>INDONESIA / 2026</span>
+          </div>
           <div className="home-hero__copy">
-            <p className="home-hero__signal">Google Maps live · Indonesia</p>
-            <h1 id="home-title">Cari data bisnis.<br />Mulai percakapan yang lebih tepat.</h1>
-            <p className="home-hero__lead">
-              Cari bisnis berdasarkan niche dan wilayah, lalu dapatkan nama, alamat, telepon,
-              website, rating, serta data kontak yang tersedia dalam satu workspace.
-            </p>
-            <div className="home-hero__actions">
-              <Link className="seo-button seo-button--primary" href="/produksi" data-analytics-cta="hero_buka_produksi">Mulai scan</Link>
-              <a className="home-hero__text-link" href="#cara-kerja" data-analytics-cta="hero_cara_kerja">Lihat cara kerja ↓</a>
+            <p className="home-hero__signal"><span aria-hidden="true" /> Google Maps live · siap digunakan</p>
+            <h1 id="home-title">Cari data bisnis.<br /><em>Temukan peluang lokal.</em></h1>
+            <div className="home-hero__lower">
+              <p className="home-hero__lead">
+                Cari bisnis berdasarkan niche dan wilayah. Susun nama, alamat, telepon,
+                website, rating, dan data kontak yang tersedia dalam satu workspace.
+              </p>
+              <div className="home-hero__actions">
+                <Link className="seo-button seo-button--primary" href="/produksi" data-analytics-cta="hero_buka_produksi">Mulai scan <span aria-hidden="true">↗</span></Link>
+                <a className="home-hero__text-link" href="#cara-kerja" data-analytics-cta="hero_cara_kerja">Pelajari alur <span aria-hidden="true">↓</span></a>
+              </div>
             </div>
-            <dl className="home-hero__facts" aria-label="Ringkasan layanan MScrape">
-              <div><dt>Sumber</dt><dd>Google Maps live</dd></div>
-              <div><dt>Cakupan</dt><dd>Kota &amp; kecamatan</dd></div>
-              <div><dt>Output</dt><dd>CSV · TXT · JSON</dd></div>
-            </dl>
           </div>
 
-          <figure className="home-hero__visual">
-            <div className="home-hero__visual-frame">
-              <Image
-                src="/media/production-console.webp"
-                alt="Workspace Produksi MScrape untuk mengatur pencarian dan meninjau hasil bisnis"
-                width={1600}
-                height={1000}
-                sizes="(min-width: 60rem) 54vw, 100vw"
-                priority
-              />
-              <span className="home-hero__pin home-hero__pin--one" aria-hidden="true">1</span>
-              <span className="home-hero__pin home-hero__pin--two" aria-hidden="true">2</span>
-              <span className="home-hero__pin home-hero__pin--three" aria-hidden="true">3</span>
+          <div className="product-stage" aria-label="Contoh workspace pencarian MScrape">
+            <div className="product-stage__rail">
+              <span className="product-stage__brand"><i aria-hidden="true">M</i> MScrape / Produksi</span>
+              <span className="product-stage__live"><i aria-hidden="true" /> Live source</span>
             </div>
-            <figcaption>
-              <span><b>1</b> Masukkan niche</span>
-              <span><b>2</b> Pilih wilayah</span>
-              <span><b>3</b> Ekspor hasil</span>
-            </figcaption>
-          </figure>
+            <div className="product-stage__canvas">
+              <div className="product-stage__query">
+                <div className="product-stage__panel-head"><span>01 / QUERY</span><strong>Rancang scan</strong></div>
+                <div className="product-stage__field"><span>Cari apa?</span><b>Klinik gigi</b></div>
+                <div className="product-stage__field"><span>Di mana?</span><b>Makassar</b></div>
+                <div className="product-stage__query-row"><div className="product-stage__field"><span>Cakupan</span><b>Kota / Kabupaten</b></div><div className="product-stage__field"><span>Jumlah</span><b>100 bisnis</b></div></div>
+                <span className="product-stage__button">Mulai scan <b aria-hidden="true">↗</b></span>
+              </div>
+              <div className="product-stage__dataset">
+                <div className="product-stage__panel-head"><span>02 / DATASET</span><strong>Hasil pencarian</strong></div>
+                <div className="product-stage__stats"><span><b>100</b> Diterima</span><span><b>37</b> Tanpa website</span><span><b>28</b> Punya nomor</span></div>
+                <div className="product-stage__table" role="presentation">
+                  <div><span>Bisnis</span><span>Area</span><span>Kontak</span></div>
+                  <div><strong>Ruang Dental Care</strong><span>Panakkukang</span><span>+62 8•••</span></div>
+                  <div><strong>Klinik Senyum</strong><span>Rappocini</span><span>+62 8•••</span></div>
+                  <div><strong>Dental Point</strong><span>Tamalate</span><span>+62 4•••</span></div>
+                </div>
+              </div>
+            </div>
+            <ol className="product-stage__notes">
+              <li><span>01</span> Tentukan niche</li><li><span>02</span> Pilih wilayah</li><li><span>03</span> Ekspor dataset</li>
+            </ol>
+          </div>
+
+          <dl className="home-hero__facts" aria-label="Ringkasan layanan MScrape">
+            <div><dt>01 / Sumber</dt><dd>Google Maps live</dd></div>
+            <div><dt>02 / Cakupan</dt><dd>Kota &amp; kecamatan</dd></div>
+            <div><dt>03 / Output</dt><dd>CSV · TXT · JSON</dd></div>
+            <div><dt>04 / Mulai</dt><dd>10 scan gratis</dd></div>
+          </dl>
           <HomeAnalytics />
         </section>
 
         <HomeDashboardContent />
 
-        <section className="seo-faq wb-shell" aria-labelledby="faq-title">
+        <section className="seo-faq wb-shell" id="faq" aria-labelledby="faq-title">
           <div className="seo-section-heading">
-            <h2 id="faq-title">Pertanyaan yang sering muncul.</h2>
-            <p>Jawaban singkat sebelum Anda menjalankan scan pertama.</p>
+            <p>06 / FAQ</p>
+            <h2 id="faq-title">Sebelum scan pertama.</h2>
           </div>
           <div className="seo-faq__list">
             {faqs.map((faq) => (
@@ -126,13 +140,10 @@ export default function Home() {
         </section>
 
         <section className="seo-cta wb-shell" aria-labelledby="home-cta-title">
-          <div>
-            <h2 id="home-cta-title">Mulai dari niche dan wilayah yang Anda pahami.</h2>
-          </div>
-          <div>
-            <p>Jalankan scan Free pertama, tinjau data yang tersedia, lalu ekspor daftar yang ingin Anda tindak lanjuti.</p>
-            <Link className="seo-button seo-button--dark" href="/produksi" data-analytics-cta="footer_buka_produksi">Buka Produksi →</Link>
-          </div>
+          <p>READY WHEN YOU ARE</p>
+          <h2 id="home-cta-title">Mulai dari pasar<br />yang Anda pahami.</h2>
+          <div><p>Jalankan 10 scan pertama tanpa biaya. Tinjau data yang tersedia, lalu pilih daftar yang layak ditindaklanjuti.</p>
+          <Link className="seo-button seo-button--dark" href="/produksi" data-analytics-cta="footer_buka_produksi">Buka Produksi <span aria-hidden="true">↗</span></Link></div>
         </section>
       </main>
       <AppFooter />

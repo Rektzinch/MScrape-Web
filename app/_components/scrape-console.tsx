@@ -621,6 +621,10 @@ export function ScrapeConsole() {
       </section>
 
       <div className="scanner__console" aria-busy={submitting || active}>
+        <header className="workspace-panel__head">
+          <span>01 / QUERY BUILDER</span>
+          <h2>Rancang scan</h2>
+        </header>
         <div className="console__bar">
           <div className="console__identity">
             <span>Scan baru</span>
@@ -677,10 +681,14 @@ export function ScrapeConsole() {
       </div>
 
       <div className="results" id="results">
+        <header className="workspace-panel__head workspace-panel__head--results">
+          <span>02 / DATASET</span>
+          <h2>Hasil pencarian</h2>
+        </header>
         {sourceRows.length > 0 ? (
           <>
             <div className="results__head">
-              <div><h2>Hasil scan</h2><p>{sourceRows.length} {job?.keyword || "bisnis"} ditemukan → {missingWebsiteCount} tidak punya website → {contactableWithoutWebsiteCount} punya nomor.</p></div>
+              <div><h3>Dataset siap</h3><p>{sourceRows.length} {job?.keyword || "bisnis"} ditemukan → {missingWebsiteCount} tidak punya website → {contactableWithoutWebsiteCount} punya nomor.</p></div>
               <div className="results__actions">
                 <label className="results-search"><span>Cari hasil</span><input type="search" value={resultQuery} onChange={(event) => { setResultQuery(event.target.value); setResultPage(1); }} placeholder="Nama, alamat, atau kontak" /></label>
                 <SearchableCombobox label="Filter website" value={websiteFilter} options={websiteOptions} onChange={changeWebsiteFilter} searchPlaceholder="Cari filter" />

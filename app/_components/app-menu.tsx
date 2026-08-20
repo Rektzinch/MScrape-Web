@@ -48,26 +48,27 @@ export function AppMenu({ current }: AppMenuProps) {
         <div className="app-menu-layer" onClick={closeMenu}>
           <aside id="app-side-menu" className="app-side-menu" aria-label="Menu MScrape" onClick={(event) => event.stopPropagation()}>
             <div className="app-side-menu__top">
-              <p>MSCRAPE / MENU</p>
+              <p>NAVIGASI / MSCRAPE</p>
               <button className="app-side-menu__close" type="button" onClick={closeMenu} aria-label="Tutup menu">×</button>
             </div>
 
             <nav className="app-side-menu__nav" aria-label="Navigasi utama">
               <Link className="app-side-menu__nav-link" href="/" onClick={closeMenu}>
-                Homepage <span aria-hidden="true">↖</span>
+                Beranda <span aria-hidden="true">01</span>
               </Link>
               {current === "production" ? (
                 <span className="app-side-menu__nav-link app-side-menu__nav-link--current" aria-current="page">
-                  Produksi <span aria-hidden="true">●</span>
+                  Produksi <span aria-hidden="true">02</span>
                 </span>
               ) : (
                 <TierCheckLink className="app-side-menu__nav-link" href="/produksi">
-                  Produksi <span aria-hidden="true">↗</span>
+                  Produksi <span aria-hidden="true">02</span>
                 </TierCheckLink>
               )}
-              <Link className="app-side-menu__nav-link" href="/tentang-mscrape" onClick={closeMenu}>Tentang MScrape</Link>
-              <Link className="app-side-menu__nav-link" href="/syarat-ketentuan" onClick={closeMenu}>Syarat &amp; Ketentuan</Link>
-              <Link className="app-side-menu__nav-link" href="/developer" onClick={closeMenu}>Developer</Link>
+              <Link className="app-side-menu__nav-link" href="/#cara-kerja" onClick={closeMenu}>Cara kerja <span aria-hidden="true">03</span></Link>
+              <Link className="app-side-menu__nav-link" href="/#pricing" onClick={closeMenu}>Harga <span aria-hidden="true">04</span></Link>
+              <Link className="app-side-menu__nav-link" href="/tentang-mscrape" onClick={closeMenu}>Tentang <span aria-hidden="true">05</span></Link>
+              <Link className="app-side-menu__nav-link" href="/developer" onClick={closeMenu}>Developer <span aria-hidden="true">06</span></Link>
             </nav>
           </aside>
         </div>,

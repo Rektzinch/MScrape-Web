@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 export function AppFooter() {
@@ -6,14 +5,16 @@ export function AppFooter() {
     <footer className="app-footer wb-shell">
       <div className="app-footer__line">
         <Link className="app-footer__brand" href="/" aria-label="MScrape — Beranda">
-          <Image className="app-footer__logo" src="/media/mscrape-logo.png" alt="MScrape" width={2172} height={724} />
+          <span className="app-footer__mark" aria-hidden="true">M</span>
+          <span>MScrape</span>
         </Link>
-        <p>Data bisnis untuk riset dan tindak lanjut.</p>
+        <p>Business discovery workspace<br />untuk pasar lokal Indonesia.</p>
         <nav className="app-footer__links" aria-label="Informasi MScrape">
           <Link href="/tentang-mscrape">Tentang</Link>
           <Link href="/syarat-ketentuan">Ketentuan</Link>
           <Link href="/developer">Developer</Link>
         </nav>
+        <p className="app-footer__edition">MS / 26</p>
       </div>
     </footer>
   );

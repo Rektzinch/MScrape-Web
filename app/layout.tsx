@@ -4,9 +4,10 @@ import "@fontsource-variable/bricolage-grotesque";
 import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
 import "./workbench.css";
+import "./rebrand.css";
 
 const socialImage = siteUrl
-  ? new URL("/media/production-console.webp", siteUrl).toString()
+  ? new URL("/opengraph-image", siteUrl).toString()
   : undefined;
 const brandLogo = siteUrl
   ? new URL("/media/mscrape-logo.png", siteUrl).toString()

@@ -79,31 +79,32 @@ export function HomeDashboardContent() {
       <section className="dashboard-process" id="cara-kerja" aria-labelledby="process-title">
         <div className="dashboard-process__inner wb-shell">
           <header className="dashboard-process__head">
-            <h2 id="process-title">Tiga langkah dari pencarian ke daftar kerja.</h2>
-            <p>Alurnya tetap pendek: tentukan bisnis, pilih area, lalu periksa hasil yang benar-benar dikembalikan sumber.</p>
+            <p>02 / CARA KERJA</p>
+            <h2 id="process-title">Dari pertanyaan<br />menjadi dataset.</h2>
           </header>
           <ol className="process-track">
             {processSteps.map((step) => (
               <li key={step.number}>
                 <span className="process-track__number" aria-hidden="true">{step.number}</span>
-                <div>
-                  <h3>{step.title}</h3>
-                  <p>{step.detail}</p>
-                </div>
+                <h3>{step.title}</h3>
+                <p>{step.detail}</p>
+                <span className="process-track__arrow" aria-hidden="true">↘</span>
               </li>
             ))}
           </ol>
         </div>
       </section>
 
-      <section className="dashboard-data wb-shell" aria-labelledby="data-title">
+      <section className="dashboard-data wb-shell" id="data" aria-labelledby="data-title">
         <header className="dashboard-section-head">
-          <h2 id="data-title">Data yang tersedia, tanpa menebak kolom kosong.</h2>
-          <p>Setiap scan menyusun informasi bisnis yang benar-benar tersedia pada sumber ke dalam format yang mudah ditinjau.</p>
+          <p>03 / STRUKTUR DATA</p>
+          <h2 id="data-title">Yang ditemukan.<br /><em>Bukan yang diperkirakan.</em></h2>
+          <p className="dashboard-section-head__aside">Setiap kolom mengikuti data yang tersedia di sumber. Informasi yang tidak ditemukan dibiarkan kosong—tanpa asumsi buatan.</p>
         </header>
         <dl className="data-ledger">
-          {dataFields.map(([term, detail]) => (
+          {dataFields.map(([term, detail], index) => (
             <div key={term}>
+              <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
               <dt>{term}</dt>
               <dd>{detail}</dd>
             </div>
@@ -114,29 +115,25 @@ export function HomeDashboardContent() {
       <section className="dashboard-pricing" id="pricing" aria-labelledby="pricing-title">
         <div className="dashboard-pricing__inner wb-shell">
           <header className="dashboard-pricing__head">
-            <div>
-              <h2 id="pricing-title">Pilih jumlah scan, lalu lihat batas hasil per scan.</h2>
-            </div>
+            <div><p>04 / AKSES</p><h2 id="pricing-title">Kapasitas yang jelas.<br />Tanpa hitungan samar.</h2></div>
             <div className="dashboard-pricing__intro">
-              <p>Dua angka ini berbeda. Jumlah scan adalah jatah pencarian; batas hasil adalah jumlah maksimal bisnis dalam satu pencarian.</p>
-              <span aria-hidden="true">Geser untuk melihat paket →</span>
+              <p>Jumlah scan adalah jatah pencarian. Batas hasil adalah jumlah maksimal bisnis yang diminta dalam satu scan.</p>
             </div>
           </header>
 
-          <div className="pricing-rail" aria-label="Harga lisensi MScrape" tabIndex={0}>
+          <div className="pricing-rail" aria-label="Harga lisensi MScrape">
             {pricing.map((plan) => (
               <article className="pricing-card" id={`pricing-${plan.tier.toLowerCase()}`} data-tier={plan.tier.toLowerCase()} key={plan.tier}>
                 <header className="pricing-card__head">
-                  <span>{plan.tier}</span>
-                  {plan.badge ? <span className="pricing-card__badge">{plan.badge}</span> : <span>{plan.term}</span>}
+                  <span>{plan.tier}</span>{plan.badge ? <span className="pricing-card__badge">{plan.badge}</span> : null}
                 </header>
                 <div className="pricing-card__title">
                   <h3>{plan.price}</h3>
                   <p>{plan.term}</p>
                 </div>
                 <dl className="pricing-card__facts">
-                  <div><dt>Jatah pencarian</dt><dd>{plan.scans}</dd></div>
-                  <div><dt>Per pencarian</dt><dd>{plan.results}</dd></div>
+                  <div><dt>Total pencarian</dt><dd>{plan.scans}</dd></div>
+                  <div><dt>Kapasitas</dt><dd>{plan.results}</dd></div>
                   <div><dt>Jeda</dt><dd>{plan.cooldown}</dd></div>
                 </dl>
                 <a
@@ -155,14 +152,17 @@ export function HomeDashboardContent() {
 
       <section className="dashboard-audience wb-shell" aria-labelledby="audience-title">
         <header className="dashboard-section-head">
-          <h2 id="audience-title">Untuk orang yang perlu memulai dari data lokal.</h2>
-          <p>MScrape membantu menyiapkan bahan riset. Penilaian dan cara menghubungi bisnis tetap berada di tangan Anda.</p>
+          <p>05 / USE CASE</p>
+          <h2 id="audience-title">Dibuat untuk kerja<br />yang dimulai dari lokal.</h2>
+          <p className="dashboard-section-head__aside">MScrape menyiapkan bahan riset. Penilaian dan cara menghubungi bisnis tetap berada di tangan Anda.</p>
         </header>
         <div className="audience-ledger">
-          {audiences.map(([title, detail]) => (
+          {audiences.map(([title, detail], index) => (
             <article key={title}>
+              <span aria-hidden="true">0{index + 1}</span>
               <h3>{title}</h3>
               <p>{detail}</p>
+              <b aria-hidden="true">↗</b>
             </article>
           ))}
         </div>
