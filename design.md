@@ -9,14 +9,15 @@ namun komposisi, identitas, copy, serta perilakunya dibuat khusus untuk MScrape.
 
 - Satu ide per bidang: value proposition, aksi, bukti produk, manfaat, harga, lalu penutup.
 - Bukti produk wajib terlihat dalam viewport pertama di desktop dan langsung setelah aksi di mobile.
-- Coral dipakai untuk tindakan dan penekanan; ungu untuk bidang sistem; kuning
-  untuk metadata penting; hijau hanya untuk status hidup.
-- Tidak memakai glass card, bento SaaS generik, pill berlebihan, atau ilustrasi AI.
+- Violet dipakai untuk tindakan dan penekanan utama; biru-violet untuk signal sistem;
+  lavender dipakai untuk metadata penting; hijau hanya untuk status hidup.
+- Tidak memakai glass card, bento SaaS generik, atau ilustrasi AI; pill hanya dipakai
+  pada CTA/control yang memang berperilaku sebagai action.
 - Data kosong tidak diperkirakan dan status internal diterjemahkan ke bahasa pengguna.
 
 ## Identitas
 
-- Wordmark: uppercase `MSCRAPE` dengan satu bar sinyal coral.
+- Wordmark: uppercase `MSCRAPE` dengan satu bar sinyal blue-violet.
 - Display: Bricolage Grotesque Variable, weight 430–590.
 - Body/UI: Archivo Variable, weight 400–760.
 - Display tracking: -0.04em hingga -0.075em.
@@ -24,17 +25,17 @@ namun komposisi, identitas, copy, serta perilakunya dibuat khusus untuk MScrape.
 
 ## Warna
 
-- Landing paper: `#f3efe6`
-- Landing ink: `#11121a`
-- Landing muted: `#696975`
-- Landing rule: `#cbc4b7`
-- Coral signal: `#ff5a3d`
-- System violet: `#6558f5`
-- Metadata yellow: `#ffd34e`
-- Workspace: `#11121a`
-- Workspace raised: `#1a1b26`
-- Workspace text: `#f6f1e8`
-- Live status: `#a8e56a`
+- Canvas: `#000000`
+- Surface: `#09090b`
+- Raised surface: `#18181b`
+- Text utama: `#fafafa`
+- Text sekunder: `#e4e4e7`
+- Muted: `#a1a1aa`
+- Rule: `#222225` / `#3f3f46`
+- Violet brand: `#2e1b9c`
+- Blue-violet signal: `#556af3`
+- Lavender metadata: `#8b7dff`
+- Live status: `#8cff8c`
 
 ## Landing
 
@@ -69,6 +70,6 @@ namun komposisi, identitas, copy, serta perilakunya dibuat khusus untuk MScrape.
 ## Interaksi
 
 - Target sentuh minimum 44 px.
-- Focus ring acid lime terlihat di semua kontrol.
+- Focus ring blue-violet terlihat di semua kontrol.
 - Motion hanya memberi respons pada tombol, dropdown, progress, dan toast.
 - `prefers-reduced-motion` mematikan animasi dan transisi non-esensial.
